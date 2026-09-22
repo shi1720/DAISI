@@ -97,6 +97,16 @@ def main() -> None:
         ROOT / "docs/evaluation.md",
         ROOT / "docs/rules-and-eligibility.md",
         ROOT / "docs/databricks-deployment.md",
+        ROOT / "output/pdf/hawkerbridge-round1.pdf",
+        ROOT / "output/pdf/hawkerbridge-final-pitch.pdf",
+        ROOT / "output/pdf/hawkerbridge-concept-note.pdf",
+        ROOT / "output/pdf/hawkerbridge-video-narration.pdf",
+        ROOT / "output/pdf/example-continuity-plan.pdf",
+        ROOT / "output/presentations/hawkerbridge-round1.pptx",
+        ROOT / "output/presentations/hawkerbridge-final-pitch.pptx",
+        ROOT / "output/video/hawkerbridge-demo-silent.mp4",
+        ROOT / "output/video/recording-timeline.json",
+        ROOT / "output/video/provenance.json",
     ]
     for folder, patterns in {
         "docs": ["*.md"],
@@ -104,6 +114,7 @@ def main() -> None:
         "output/presentations": ["*.pptx"],
         "docs/screenshots": ["*.png", "README.md", "provenance.json"],
         "submission": ["*.md", "*.srt", "deployment-status.json", "team.json"],
+        "submission/assets": ["*.png"],
         "output": ["example-continuity-plan.csv", "example-continuity-plan.json"],
         "output/video": [
             "hawkerbridge-demo-silent.mp4",
@@ -114,18 +125,20 @@ def main() -> None:
     }.items():
         for pattern in patterns:
             paths.extend((ROOT / folder).glob(pattern))
+    revision = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+    package_source(revision)
+    paths.append(ROOT / "output/HawkerBridge-source.zip")
     paths = sorted(set(paths))
     missing = [str(p.relative_to(ROOT)) for p in paths if not p.is_file()]
     if missing:
         raise SystemExit(f"Required files missing: {missing}")
-    revision = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
     manifest = {
         "product": "HawkerBridge",
         "project_owner": "Shivam Gupta",
         "assembled_at": datetime.now(UTC).isoformat(),
         "repository": "https://github.com/shi1720/DAISI",
         "repository_revision_at_assembly": revision,
-        "note": "Materials for review, not proof of submission, student eligibility, cloud deployment or observed social impact. See submission/deployment-status.json. The complete application code is in the repository.",
+        "note": "Materials for review, not proof of submission, student eligibility, cloud deployment or observed social impact. See submission/deployment-status.json. The complete application source is in the included output/HawkerBridge-source.zip and in the repository.",
         "files": [
             {
                 "path": str(p.relative_to(ROOT)),
@@ -140,7 +153,7 @@ def main() -> None:
     with zipfile.ZipFile(destination, "w", compression=zipfile.ZIP_DEFLATED) as archive:
         archive.writestr(
             "HawkerBridge/READ_THIS_FIRST.txt",
-            "This archive contains submission materials, screenshots and video assets. It is not the full application source. Clone https://github.com/shi1720/DAISI to run the app and its checks. Start with START_HERE.md. For the video, follow submission/recording-guide.md; the supplied footage is silent and needs your real voiceover. Cloud evidence and participant details remain separate submission gates.\n",
+            "This archive contains submission materials, screenshots, video assets and a separate source archive at output/HawkerBridge-source.zip. Extract that source archive into a separate directory and follow its README.md to run the app and checks. The source is also at https://github.com/shi1720/DAISI. Start with START_HERE.md. For the video, follow submission/recording-guide.md; the supplied footage is silent and needs your real voiceover. Cloud evidence and participant details remain separate submission gates.\n",
         )
         for path in paths:
             archive.write(path, "HawkerBridge/" + str(path.relative_to(ROOT)))
@@ -153,7 +166,6 @@ def main() -> None:
                 == item["sha256"]
             )
     print(f"Verified {len(paths)} files in {destination}")
-    package_source(revision)
 
 
 if __name__ == "__main__":

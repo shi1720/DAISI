@@ -5,5 +5,13 @@
   "successful_pipeline_run_url": null,
   "mlflow_run_url": null,
   "public_or_unlisted_video_url": null,
-  "note": "This records actual evidence, not intended architecture. Populate cloud links only after successful workspace execution."
+  "note": "This records actual evidence, not intended architecture. Populate cloud links only after successful workspace execution.",
+  "local_browser_workflow_verified": true,
+  "verified_ci_run_url": "https://github.com/shi1720/DAISI/actions/runs/35690578006",
+  "verified_ci_revision": "507c354",
+  "local_source_archive_install_verified": true,
+  "local_source_archive_verification": "Frozen dependency installation, frontend build, isolated local server, authenticated 225-meal proposal, five preserved sources, PDF export and synthetic plan cleanup.",
+  "local_source_archive_code_revision": "c279088",
+  "silent_demo_path": "output/video/hawkerbridge-demo-silent.mp4",
+  "silent_demo_execution_environment": "Local application in isolated GitHub Actions runner; not a recording of a hosted Databricks App."
 }

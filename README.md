@@ -118,6 +118,7 @@ The GitHub Actions workflow runs backend, frontend and Chromium browser checks, 
 - **Round 1:** `output/pdf/hawkerbridge-round1.pdf`, based on the official three-slide template.
 - **Round 2:** `output/pdf/hawkerbridge-final-pitch.pdf` and its editable presentation, plus product screenshots.
 - **Finish the video:** [recording guide](submission/recording-guide.md) and [editable captions](submission/hawkerbridge-captions.srt).
+- **Actual screen recording:** [silent walkthrough](output/video/hawkerbridge-demo-silent.mp4), ready for Shivam's voiceover; [provenance](output/video/provenance.json).
 - **Narration and storyboard:** [video script](submission/video-script.md) and [printable narration](output/pdf/hawkerbridge-video-narration.pdf).
 - **Supplementary one-page note:** [concept note](output/pdf/hawkerbridge-concept-note.pdf).
 - **Ready-to-adapt copy:** [Devpost description](submission/devpost-description.md), [judge Q&A](submission/judge-qa.md), [what’s next](submission/whats-next.md).

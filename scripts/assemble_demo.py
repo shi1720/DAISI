@@ -35,6 +35,11 @@ def main() -> None:
         help="A real recording of the participant reading submission/video-script.md",
     )
     parser.add_argument("--output", type=Path, default=ROOT / "output/video/hawkerbridge-demo.mp4")
+    parser.add_argument(
+        "--omit-local-caption",
+        action="store_true",
+        help="Omit the local-execution footer only when assembling separately verified cloud footage",
+    )
     args = parser.parse_args()
     if not shutil.which("ffmpeg") or not shutil.which("ffprobe"):
         parser.error("Install FFmpeg from its official distribution or a trusted package manager")
@@ -49,25 +54,48 @@ def main() -> None:
     args.output.parent.mkdir(parents=True, exist_ok=True)
     command = ["ffmpeg", "-hide_banner", "-i", str(args.footage)]
     if args.voiceover:
+        command += ["-i", str(args.voiceover)]
+    if not args.omit_local_caption:
+        caption = ROOT / "submission/assets/local-execution-caption.png"
+        if not caption.is_file():
+            parser.error(f"Execution-status caption is missing: {caption}")
+        width = int(
+            subprocess.check_output(
+                [
+                    "ffprobe",
+                    "-v",
+                    "error",
+                    "-select_streams",
+                    "v:0",
+                    "-show_entries",
+                    "stream=width",
+                    "-of",
+                    "csv=p=0",
+                    str(args.footage),
+                ],
+                text=True,
+            ).strip()
+        )
+        index = 2 if args.voiceover else 1
         command += [
+            "-loop",
+            "1",
             "-i",
-            str(args.voiceover),
+            str(caption),
+            "-filter_complex",
+            f"[0:v]tpad=stop_mode=clone:stop_duration=5[footage];"
+            f"[{index}:v]scale={width}:-1[caption];"
+            "[footage][caption]overlay=0:H-h:enable='gte(t,163)'[finished]",
             "-map",
-            "0:v:0",
-            "-map",
-            "1:a:0",
-            "-af",
-            "apad",
-            "-c:a",
-            "aac",
-            "-b:a",
-            "192k",
+            "[finished]",
         ]
+    else:
+        command += ["-map", "0:v:0", "-vf", "tpad=stop_mode=clone:stop_duration=5"]
+    if args.voiceover:
+        command += ["-map", "1:a:0", "-af", "apad", "-c:a", "aac", "-b:a", "192k"]
     else:
         command += ["-an"]
     command += [
-        "-vf",
-        "tpad=stop_mode=clone:stop_duration=5",
         "-t",
         "175",
         "-c:v",
