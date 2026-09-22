@@ -67,7 +67,7 @@ jobs:
             ffprobe -v error -show_entries format=duration,size:stream=width,height,codec_name -of json output/demo-footage/hawkerbridge-silent-walkthrough.mp4
           fi
       - name: Preserve PNG evidence in logs
-        if: always()
+        if: failure() || github.event.inputs.record_demo == 'true'
         env:
           HAWKERBRIDGE_RECORD_DEMO: ${{ github.event.inputs.record_demo == 'true' && '1' || '' }}
         run: |
@@ -102,7 +102,7 @@ jobs:
               print('HB_MEDIA_END|' + name)
           PY
       - name: Preserve browser evidence
-        if: always()
+        if: failure() || github.event.inputs.record_demo == 'true'
         continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
@@ -113,4 +113,4 @@ jobs:
             output/browser-results
             ${{ github.event.inputs.record_demo == 'true' && 'output/demo-footage' || '' }}
             coverage.xml
-          retention-days: 14
+          retention-days: ${{ github.event.inputs.record_demo == 'true' && 14 || 3 }}
