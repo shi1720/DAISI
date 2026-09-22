@@ -1,0 +1,11 @@
+# Dataset namespace binding is handled by the Dashboard resource, not SQL interpolation.
+# Viewer credentials preserve Unity Catalog checks; no broad viewer grants or schedule.
+resources:
+  dashboards:
+    hawkerbridge_evidence:
+      display_name: HawkerBridge — closure evidence and planning quality
+      file_path: ../databricks/dashboard/hawkerbridge-evidence.lvdash.json
+      warehouse_id: ${var.warehouse_id}
+      dataset_catalog: ${var.catalog}
+      dataset_schema: ${var.schema}
+      embed_credentials: false

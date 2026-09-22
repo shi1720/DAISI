@@ -1,0 +1,529 @@
+{
+  "datasets": [
+    {
+      "name": "closures_on_demo_date",
+      "displayName": "Known closures \u00b7 28 September 2026",
+      "query": "SELECT closure_date, closed_centres, food_stalls_closed\nFROM published_closure_calendar\nWHERE closure_date = DATE '2026-09-28'"
+    },
+    {
+      "name": "evaluated_budget_comparison",
+      "displayName": "Same-budget model comparison \u00b7 22 September 2026",
+      "query": "SELECT budget AS daily_budget_sgd, 'Optimised proposal' AS strategy, weighted_benefit AS weighted_meal_benefit\nFROM published_evaluations\nWHERE evaluation_date = DATE '2026-09-22'\nUNION ALL\nSELECT budget AS daily_budget_sgd, 'Largest-demand-first baseline' AS strategy, baseline_weighted_benefit AS weighted_meal_benefit\nFROM published_evaluations\nWHERE evaluation_date = DATE '2026-09-22'\nORDER BY daily_budget_sgd, strategy"
+    },
+    {
+      "name": "published_source_provenance",
+      "displayName": "Source audit \u00b7 latest successful publication",
+      "query": "SELECT source_key, source_fetched_at, coalesce(archived_reused_at, 'No reuse marker') AS reuse_status,\n       CASE WHEN mirror THEN 'Mirror' ELSE 'Official source' END AS source_route, sha256, source_url\nFROM published_bronze_sources\nORDER BY source_key"
+    },
+    {
+      "name": "unresolved_interval_review",
+      "displayName": "Unresolved closure intervals \u00b7 operator review queue",
+      "query": "SELECT coalesce(c.name, q.centre_id) AS centre, q.kind AS closure_kind,\n       coalesce(q.source_start, '') AS reported_start, coalesce(q.source_end, '') AS reported_end,\n       q.reason, q.source_text\nFROM published_quarantine q\nLEFT JOIN published_centres c ON q.centre_id = c.id\nORDER BY q.reason, centre, q.kind, q.source_start"
+    }
+  ],
+  "pages": [
+    {
+      "name": "hawkerbridge_evidence",
+      "displayName": "Closure evidence & planning quality",
+      "layout": [
+        {
+          "widget": {
+            "name": "closed_centre_counter",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "closures_on_demo_date",
+                  "disaggregated": true,
+                  "fields": [
+                    {
+                      "name": "closed_centres",
+                      "expression": "`closed_centres`"
+                    }
+                  ]
+                }
+              }
+            ],
+            "spec": {
+              "version": 2,
+              "widgetType": "counter",
+              "frame": {
+                "showTitle": true,
+                "title": "Centres scheduled closed",
+                "showDescription": true,
+                "description": "28 September 2026 \u00b7 infrastructure count, not people without food. Latest successful publication."
+              },
+              "encodings": {
+                "value": {
+                  "fieldName": "closed_centres",
+                  "displayName": "Scheduled closed centres"
+                }
+              }
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 0,
+            "width": 2,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "same_budget_comparison",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "evaluated_budget_comparison",
+                  "disaggregated": true,
+                  "fields": [
+                    {
+                      "name": "daily_budget_sgd",
+                      "expression": "`daily_budget_sgd`"
+                    },
+                    {
+                      "name": "strategy",
+                      "expression": "`strategy`"
+                    },
+                    {
+                      "name": "weighted_meal_benefit",
+                      "expression": "`weighted_meal_benefit`"
+                    }
+                  ]
+                }
+              }
+            ],
+            "spec": {
+              "version": 3,
+              "widgetType": "bar",
+              "frame": {
+                "showTitle": true,
+                "title": "Does the allocation improve on the baseline?",
+                "showDescription": true,
+                "description": "22 September 2026 \u00b7 800 m reach \u00b7 5% assumed uptake. Weighted meal benefit is modelled, not observed impact."
+              },
+              "encodings": {
+                "x": {
+                  "fieldName": "daily_budget_sgd",
+                  "displayName": "Daily budget (S$)",
+                  "scale": {
+                    "type": "categorical"
+                  },
+                  "axis": {
+                    "title": "Daily budget (S$)"
+                  }
+                },
+                "y": {
+                  "fieldName": "weighted_meal_benefit",
+                  "displayName": "Weighted meal benefit",
+                  "scale": {
+                    "type": "quantitative"
+                  },
+                  "axis": {
+                    "title": "Weighted meal benefit"
+                  }
+                },
+                "color": {
+                  "fieldName": "strategy",
+                  "displayName": "Allocation strategy",
+                  "scale": {
+                    "type": "categorical"
+                  }
+                },
+                "label": {
+                  "show": false
+                }
+              },
+              "mark": {
+                "colors": [
+                  "#CA8A04",
+                  "#167D73"
+                ],
+                "layout": "group"
+              }
+            }
+          },
+          "position": {
+            "x": 2,
+            "y": 0,
+            "width": 4,
+            "height": 3
+          }
+        },
+        {
+          "widget": {
+            "name": "source_provenance_table",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "published_source_provenance",
+                  "disaggregated": true,
+                  "fields": [
+                    {
+                      "name": "source_key",
+                      "expression": "`source_key`"
+                    },
+                    {
+                      "name": "source_fetched_at",
+                      "expression": "`source_fetched_at`"
+                    },
+                    {
+                      "name": "reuse_status",
+                      "expression": "`reuse_status`"
+                    },
+                    {
+                      "name": "source_route",
+                      "expression": "`source_route`"
+                    },
+                    {
+                      "name": "sha256",
+                      "expression": "`sha256`"
+                    },
+                    {
+                      "name": "source_url",
+                      "expression": "`source_url`"
+                    }
+                  ]
+                }
+              }
+            ],
+            "spec": {
+              "version": 1,
+              "widgetType": "table",
+              "frame": {
+                "showTitle": true,
+                "title": "Every published input has a provenance trail",
+                "showDescription": true,
+                "description": "Original fetch times remain visible when slow-changing geometry is reused. Full SHA-256 values and source URLs are available in the table."
+              },
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "source_key",
+                    "displayName": "Source",
+                    "title": "Source",
+                    "type": "string",
+                    "displayAs": "string",
+                    "booleanValues": [
+                      "false",
+                      "true"
+                    ],
+                    "visible": true,
+                    "order": 100000,
+                    "alignContent": "left",
+                    "allowHTML": false,
+                    "allowSearch": true,
+                    "highlightLinks": false,
+                    "preserveWhitespace": false,
+                    "useMonospaceFont": false,
+                    "defaultColumnWidth": 140
+                  },
+                  {
+                    "fieldName": "source_fetched_at",
+                    "displayName": "Original fetch time",
+                    "title": "Original fetch time",
+                    "type": "string",
+                    "displayAs": "string",
+                    "booleanValues": [
+                      "false",
+                      "true"
+                    ],
+                    "visible": true,
+                    "order": 100001,
+                    "alignContent": "left",
+                    "allowHTML": false,
+                    "allowSearch": true,
+                    "highlightLinks": false,
+                    "preserveWhitespace": false,
+                    "useMonospaceFont": false,
+                    "defaultColumnWidth": 190
+                  },
+                  {
+                    "fieldName": "reuse_status",
+                    "displayName": "Reuse marker",
+                    "title": "Reuse marker",
+                    "type": "string",
+                    "displayAs": "string",
+                    "booleanValues": [
+                      "false",
+                      "true"
+                    ],
+                    "visible": true,
+                    "order": 100002,
+                    "alignContent": "left",
+                    "allowHTML": false,
+                    "allowSearch": true,
+                    "highlightLinks": false,
+                    "preserveWhitespace": false,
+                    "useMonospaceFont": false,
+                    "defaultColumnWidth": 190
+                  },
+                  {
+                    "fieldName": "source_route",
+                    "displayName": "Source route",
+                    "title": "Source route",
+                    "type": "string",
+                    "displayAs": "string",
+                    "booleanValues": [
+                      "false",
+                      "true"
+                    ],
+                    "visible": true,
+                    "order": 100003,
+                    "alignContent": "left",
+                    "allowHTML": false,
+                    "allowSearch": true,
+                    "highlightLinks": false,
+                    "preserveWhitespace": false,
+                    "useMonospaceFont": false,
+                    "defaultColumnWidth": 130
+                  },
+                  {
+                    "fieldName": "sha256",
+                    "displayName": "SHA-256",
+                    "title": "SHA-256",
+                    "type": "string",
+                    "displayAs": "string",
+                    "booleanValues": [
+                      "false",
+                      "true"
+                    ],
+                    "visible": true,
+                    "order": 100004,
+                    "alignContent": "left",
+                    "allowHTML": false,
+                    "allowSearch": true,
+                    "highlightLinks": false,
+                    "preserveWhitespace": false,
+                    "useMonospaceFont": true,
+                    "defaultColumnWidth": 440
+                  },
+                  {
+                    "fieldName": "source_url",
+                    "displayName": "Official dataset",
+                    "title": "Official dataset",
+                    "type": "string",
+                    "displayAs": "string",
+                    "booleanValues": [
+                      "false",
+                      "true"
+                    ],
+                    "visible": true,
+                    "order": 100005,
+                    "alignContent": "left",
+                    "allowHTML": false,
+                    "allowSearch": true,
+                    "highlightLinks": false,
+                    "preserveWhitespace": false,
+                    "useMonospaceFont": false,
+                    "defaultColumnWidth": 300
+                  }
+                ]
+              },
+              "allowHTMLByDefault": false,
+              "condensed": true,
+              "itemsPerPage": 10,
+              "paginationSize": "default",
+              "invisibleColumns": [],
+              "withRowNumber": false
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 3,
+            "width": 6,
+            "height": 4
+          }
+        },
+        {
+          "widget": {
+            "name": "quarantine_table",
+            "queries": [
+              {
+                "name": "main_query",
+                "query": {
+                  "datasetName": "unresolved_interval_review",
+                  "disaggregated": true,
+                  "fields": [
+                    {
+                      "name": "centre",
+                      "expression": "`centre`"
+                    },
+                    {
+                      "name": "closure_kind",
+                      "expression": "`closure_kind`"
+                    },
+                    {
+                      "name": "reported_start",
+                      "expression": "`reported_start`"
+                    },
+                    {
+                      "name": "reported_end",
+                      "expression": "`reported_end`"
+                    },
+                    {
+                      "name": "reason",
+                      "expression": "`reason`"
+                    },
+                    {
+                      "name": "source_text",
+                      "expression": "`source_text`"
+                    }
+                  ]
+                }
+              }
+            ],
+            "spec": {
+              "version": 1,
+              "widgetType": "table",
+              "frame": {
+                "showTitle": true,
+                "title": "Unresolved dates need a human decision",
+                "showDescription": true,
+                "description": "Invalid or partial intervals are retained here. An unresolved interval is never evidence that a centre is open."
+              },
+              "encodings": {
+                "columns": [
+                  {
+                    "fieldName": "centre",
+                    "displayName": "Centre",
+                    "title": "Centre",
+                    "type": "string",
+                    "displayAs": "string",
+                    "booleanValues": [
+                      "false",
+                      "true"
+                    ],
+                    "visible": true,
+                    "order": 100000,
+                    "alignContent": "left",
+                    "allowHTML": false,
+                    "allowSearch": true,
+                    "highlightLinks": false,
+                    "preserveWhitespace": false,
+                    "useMonospaceFont": false,
+                    "defaultColumnWidth": 280
+                  },
+                  {
+                    "fieldName": "closure_kind",
+                    "displayName": "Kind",
+                    "title": "Kind",
+                    "type": "string",
+                    "displayAs": "string",
+                    "booleanValues": [
+                      "false",
+                      "true"
+                    ],
+                    "visible": true,
+                    "order": 100001,
+                    "alignContent": "left",
+                    "allowHTML": false,
+                    "allowSearch": true,
+                    "highlightLinks": false,
+                    "preserveWhitespace": false,
+                    "useMonospaceFont": false,
+                    "defaultColumnWidth": 100
+                  },
+                  {
+                    "fieldName": "reported_start",
+                    "displayName": "Reported start",
+                    "title": "Reported start",
+                    "type": "string",
+                    "displayAs": "string",
+                    "booleanValues": [
+                      "false",
+                      "true"
+                    ],
+                    "visible": true,
+                    "order": 100002,
+                    "alignContent": "left",
+                    "allowHTML": false,
+                    "allowSearch": true,
+                    "highlightLinks": false,
+                    "preserveWhitespace": false,
+                    "useMonospaceFont": false,
+                    "defaultColumnWidth": 110
+                  },
+                  {
+                    "fieldName": "reported_end",
+                    "displayName": "Reported end",
+                    "title": "Reported end",
+                    "type": "string",
+                    "displayAs": "string",
+                    "booleanValues": [
+                      "false",
+                      "true"
+                    ],
+                    "visible": true,
+                    "order": 100003,
+                    "alignContent": "left",
+                    "allowHTML": false,
+                    "allowSearch": true,
+                    "highlightLinks": false,
+                    "preserveWhitespace": false,
+                    "useMonospaceFont": false,
+                    "defaultColumnWidth": 110
+                  },
+                  {
+                    "fieldName": "reason",
+                    "displayName": "Why quarantined",
+                    "title": "Why quarantined",
+                    "type": "string",
+                    "displayAs": "string",
+                    "booleanValues": [
+                      "false",
+                      "true"
+                    ],
+                    "visible": true,
+                    "order": 100004,
+                    "alignContent": "left",
+                    "allowHTML": false,
+                    "allowSearch": true,
+                    "highlightLinks": false,
+                    "preserveWhitespace": false,
+                    "useMonospaceFont": false,
+                    "defaultColumnWidth": 210
+                  },
+                  {
+                    "fieldName": "source_text",
+                    "displayName": "Original interval text",
+                    "title": "Original interval text",
+                    "type": "string",
+                    "displayAs": "string",
+                    "booleanValues": [
+                      "false",
+                      "true"
+                    ],
+                    "visible": true,
+                    "order": 100005,
+                    "alignContent": "left",
+                    "allowHTML": false,
+                    "allowSearch": true,
+                    "highlightLinks": false,
+                    "preserveWhitespace": false,
+                    "useMonospaceFont": false,
+                    "defaultColumnWidth": 280
+                  }
+                ]
+              },
+              "allowHTMLByDefault": false,
+              "condensed": true,
+              "itemsPerPage": 10,
+              "paginationSize": "default",
+              "invisibleColumns": [],
+              "withRowNumber": false
+            }
+          },
+          "position": {
+            "x": 0,
+            "y": 7,
+            "width": 6,
+            "height": 4
+          }
+        }
+      ]
+    }
+  ]
+}
