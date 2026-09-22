@@ -6,6 +6,10 @@ A closure calendar answers *when*. HawkerBridge helps a coordinator decide *wher
 
 Built for **DAISI Singapore 2026, C3: KopilamAI**. Project owner: **Shivam Gupta**.
 
+[Submission and demo guide](START_HERE.md) · [Verified screenshots](docs/screenshots/README.md)
+
+![HawkerBridge overview from the verified browser journey](docs/screenshots/overview.png)
+
 > **Execution status:** the application, ingestion, allocation engine, authentication and exports run locally. The Databricks deployment package is implemented and tested with adapters; an authenticated workspace run must still be verified. This repository does not claim a completed cloud deployment or measured social impact.
 
 ## Run in three commands
@@ -50,7 +54,7 @@ These outputs are scenario calculations. A candidate locality is a subzone repre
 | Evaluation | Largest-demand-first baseline, independently audited constraints, exhaustive tiny-instance tests, fixed scenario grid and sensitivity |
 | Product | Responsive React interface, offline map geometry, calendar, scenario comparison, saved plans, review, briefs and PDF/CSV/JSON |
 | Security | Argon2id passwords locally, opaque HttpOnly sessions, CSRF/origin checks, throttling, owner-scoped plans and escaped exports |
-| Databricks | One serverless job, Bronze/Silver/Gold Delta tables, Unity Catalog grants, MLflow experiments, SQL evidence queries and Databricks Apps configuration |
+| Databricks | One serverless job, Bronze/Silver/Gold Delta tables, Unity Catalog grants, MLflow experiments, native AI/BI evidence dashboard, SQL queries and Databricks Apps configuration |
 
 The optimiser uses **SciPy/HiGHS mixed-integer programming**, not a prediction trained on invented demand labels. Within the predeclared nine primary benchmark scenarios, it improves the chosen policy-weighted allocation objective by **0.3–9.2%** over the baseline (median 8.8%). All 15 unique primary/sensitivity scenarios pass independent feasibility checks. [Protocol and full results](docs/evaluation.md).
 
@@ -71,7 +75,7 @@ flowchart LR
   C --> D[Silver validated entities]
   D --> E[Gold access and allocation]
   E --> F[Databricks Apps]
-  E --> G[SQL evidence queries]
+  E --> G[AI/BI evidence dashboard]
   B --> H[MLflow comparisons]
   I[Unity Catalog] -. governs .-> C
   I -. governs .-> D
@@ -113,6 +117,7 @@ The GitHub Actions workflow runs backend, frontend and Chromium browser checks, 
 
 - **Round 1:** `output/pdf/hawkerbridge-round1.pdf`, based on the official three-slide template.
 - **Round 2:** `output/pdf/hawkerbridge-final-pitch.pdf` and its editable presentation, plus product screenshots.
+- **Finish the video:** [recording guide](submission/recording-guide.md) and [editable captions](submission/hawkerbridge-captions.srt).
 - **Narration and storyboard:** [video script](submission/video-script.md) and [printable narration](output/pdf/hawkerbridge-video-narration.pdf).
 - **Supplementary one-page note:** [concept note](output/pdf/hawkerbridge-concept-note.pdf).
 - **Ready-to-adapt copy:** [Devpost description](submission/devpost-description.md), [judge Q&A](submission/judge-qa.md), [what’s next](submission/whats-next.md).

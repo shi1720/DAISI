@@ -6,7 +6,7 @@ The application has a complete local path and an explicit Databricks path. Works
 
 ## What is deployed
 
-The bundle creates one Lakeflow Job with **one serverless notebook task**, one MLflow experiment and one Databricks App. It reuses an existing SQL warehouse. It does not create a cluster, serving endpoint, vector index, account-level resource or recurring schedule.
+The bundle creates one Lakeflow Job with **one serverless notebook task**, one MLflow experiment, one Databricks App and one AI/BI evidence dashboard. It reuses an existing SQL warehouse. It does not create a cluster, serving endpoint, vector index, account-level resource or recurring schedule.
 
 ```mermaid
 flowchart LR
@@ -97,7 +97,7 @@ Select the deployed catalog/schema in the SQL editor. The notebook creates these
 
 Every staged analytical row carries a `publication_id`. The final append to `gold_snapshots` is the visibility boundary after evaluations and MLflow logging complete. `published_*` SQL views filter to that publication. This is **not a cross-table ACID transaction**: incomplete staging remains auditable but is hidden from application inputs and published views. No table is dropped or replaced to publish new data, so grants remain intact. A future retention job should remove old staging/history only after a documented retention period; no destructive cleanup is automated here.
 
-Use [the dashboard query pack](../databricks/sql/dashboard_queries.sql) to create AI/BI datasets for publication status, closure calendar, flagged-subzone demographics, optimiser comparison, provenance and quarantine. Pick one query per dataset and use the `evaluation_date` DATE parameter for the three precomputed evaluation dates. Other dates remain available dynamically in the app. The query pack is supplied; no AI/BI dashboard object is claimed as already created.
+The bundle includes a [four-widget AI/BI evidence dashboard](../databricks/dashboard/README.md) for closure counts, optimiser comparison, provenance and quarantine. Its namespace and existing warehouse are bound through the bundle. Refresh and inspect the actual workspace dashboard after the pipeline succeeds. Use [the extended SQL query pack](../databricks/sql/dashboard_queries.sql) for additional publication status, demographics and density views. Pick one query per dataset and use the `evaluation_date` DATE parameter for the three precomputed evaluation dates. Other dates remain available dynamically in the app. The dashboard definition and query pack are supplied; actual cloud creation and rendering remain deployment verification steps.
 
 Open the bundle's MLflow experiment. It contains a parent publication run and nine child scenarios: three predeclared dates × three budgets. The real engine produces planned meals, spend, weighted benefit, baseline weighted benefit, solver status and elapsed time. Every scenario is checked for budget feasibility and against the feasible baseline. Source manifest and evaluation JSON are logged as artifacts. These are **modelled decision objectives**, not predictive accuracy, observed meal demand or people helped. No trained model is fabricated or registered just to add a platform feature.
 

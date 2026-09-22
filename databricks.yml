@@ -2,7 +2,7 @@
 # No workspace hostname, token, principal identifier, or personal email is embedded.
 bundle:
   name: hawkerbridge
-  databricks_cli_version: ">=0.283.0"
+  databricks_cli_version: ">=1.17.0"
 
 include:
   - resources/*.yml

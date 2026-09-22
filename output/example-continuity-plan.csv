@@ -1,0 +1,29 @@
+﻿HawkerBridge planning proposal,28 September - capacity review
+Date,2026-09-28,Status,draft
+Basis,Assumed meals; candidate localities require venue/operator verification
+Source fingerprint,dd1bdfc7d889f25faef2091cc269e91322a526efc608b6fdfbc396d339f1b6d6
+Model,hawkerbridge-1.0.0
+Notes,"Demonstration draft. Verify operators, accessible venues, uptake, costs and capacity before use. No food has been dispatched."
+
+Candidate locality,Planning area,Latitude,Longitude,Planned meals / day,Cost SGD / day,Served subzone IDs
+Clementi West,Clementi,1.3019504,103.7638649,100,700.0,clsz08
+Clementi Woods,Clementi,1.3024062,103.7681792,125,800.0,clsz08
+
+Assumptions,"{""budget"": 1500.0, ""date"": ""2026-09-28"", ""max_sites"": 3, ""meal_cost"": 4.0, ""meals_per_site"": 150, ""participation_rate"": 0.05, ""planning_areas"": [], ""radius_m"": 800, ""rescheduled_closure_ids"": [], ""senior_weight"": 2.0, ""site_cost"": 300.0}"
+Limitation,"Exposure means loss of a nearby listed hawker centre, not measured hunger or food insecurity."
+Limitation,"Distances are straight-line estimates from subzone representative points, not walking routes or wheelchair access."
+Limitation,"The model covers listed hawker centres only. Coffee shops, food courts, home cooking and delivery are outside its coverage."
+Limitation,Census residents are aggregated geographically. The model does not locate or identify individual residents.
+Limitation,Absence of a published closure is not confirmation that a centre or its stalls are operating.
+Limitation,"Resident and senior counts are Census 2020 observations, not 2026 population estimates; published counts are rounded."
+Limitation,"Subzone locations are polygon representative points, not homes or population-weighted centroids. Distance is a spatial screening proxy."
+Limitation,"NEA stall counts measure infrastructure, not operating stalls, spare meal capacity, demand or observed footfall."
+Limitation,"Missing/TBC and staggered block closure intervals are quarantined, so scheduled-open means no resolved full-centre closure recorded, not a guarantee."
+Limitation,The closure calendar is a current 2026 schedule with some older works retained; it is not a complete historical closure archive and has no reliable permanent-closure labels.
+Limitation,Food-waste data are annual national totals covering all sectors. No centre-level waste or causal intervention outcome is observed.
+Limitation,URA boundaries are from Master Plan 2019; geometry is simplified only for display and is not a pedestrian routing network.
+Limitation,"Only NEA-listed hawker centres are included; coffee shops, food courts and other meal providers are omitted."
+Limitation,"Meal uptake, daily setup cost, per-meal cost and site capacity are editable assumptions, not measured or quoted values."
+Limitation,"Collection localities are candidate geographic points, not confirmed available premises. No provider or venue has agreed to deliver this plan."
+Limitation,"Senior weighting is a policy preference applied to aggregate demographics, not an estimate of individual vulnerability."
+Limitation,"Sensitivity holds allocations fixed. Potential surplus is a meal-count scenario, not an estimate of measured food waste."

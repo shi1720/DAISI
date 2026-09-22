@@ -22,18 +22,18 @@ The normal root deployment creates/updates the resource. Run the pipeline before
 After the root bootstrap has authenticated, deployed and published data:
 
 ```sh
-databricks bundle summary --target dev --profile hawkerbridge
+databricks bundle summary --target dev --profile DAISI
 ```
 
 Open the `hawkerbridge_evidence` resource link returned by that command. Refresh the four datasets. Before sharing, inspect both SQL results and visual layout in the target workspace. If a separate publish action is required, use the actual returned dashboard ID:
 
 ```sh
 databricks lakeview publish "$HAWKERBRIDGE_DASHBOARD_ID" \
-  --embed-credentials=false --profile hawkerbridge
+  --embed-credentials=false --profile DAISI
 databricks lakeview get "$HAWKERBRIDGE_DASHBOARD_ID" \
-  --profile hawkerbridge --output json
+  --profile DAISI --output json
 databricks lakeview get-published "$HAWKERBRIDGE_DASHBOARD_ID" \
-  --profile hawkerbridge --output json
+  --profile DAISI --output json
 ```
 
 The dashboard resource explicitly sets `embed_credentials: false`. It neither broadens access nor creates a schedule. Viewers need dashboard access, permission to use the existing warehouse, namespace usage and SELECT on the five views listed above. The authenticated app's principal has a different, smaller table-access contract; do not grant access to private saved plans to make this dashboard work. Publishing with viewer credentials is not public or anonymous access. [Databricks dashboard resource reference](https://docs.databricks.com/aws/en/dev-tools/bundles/resources#dashboard)

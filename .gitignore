@@ -32,3 +32,6 @@ research/data-probe/*.dat
 research/data-probe/*.geojson
 data/raw/20260922T042307-aed765/
 .tools/
+.chart-data-*/
+output/ci-*/
+output/ci-*.log
