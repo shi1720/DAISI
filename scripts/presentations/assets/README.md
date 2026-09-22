@@ -1,0 +1,9 @@
+# Final pitch assets
+
+`tampines-hawker-centre.jpg` is the original image by Kagenlim, dated 12 February 2020, from [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Hawker_Center,_Singapore.jpg). License: [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/). The cover crops this photograph for layout; the photo crop retains the same license. The scene provides historical context and does not depict a HawkerBridge pilot, closure or participating customer. Attribution appears on the cover and in its notes.
+
+`overview.png` and `saved-plan.png` are crops of actual application screens from the [successful browser CI run 35689097551](https://github.com/shi1720/DAISI/actions/runs/35689097551). Four browser journeys passed. Both screens use 28 September 2026, 800 m and All Singapore. The saved plan uses a S$1,500 budget and contains 225 planned meals. The automated test exercises the review checklist and actual PDF download. No real venue verification, operator review or delivery occurred.
+
+The original files are `output/ci-35689097551/02-overview-hero.png` (1440 × 1000) and `04-saved-plan.png` (1440 × 1531). Crops remove unrelated navigation and lower page content, without altering the interface. Exact crop bounds, source hashes and cropped-file hashes are in `screenshots.json`. The authoring script refuses to produce final output without both images. No mock interface image belongs in the final deck.
+
+Deck build uses `@oai/artifact-tool` with native editable text, tables and a chart. Run `scripts/presentations/build-final.mjs` with the bundled Node runtime and a new `PPTX_REVISION` to generate a candidate, validate it and export a new revision. Review all rendered slides before promoting the revision to the requested final filename. The script reads `submission/deployment-status.json` at build time so status changes require evidence rather than a manual claim.

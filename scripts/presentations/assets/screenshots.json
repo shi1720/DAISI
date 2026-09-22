@@ -1,0 +1,50 @@
+[
+  {
+    "file": "overview.png",
+    "original_file": "output/ci-35689097551/02-overview-hero.png",
+    "original_size": [
+      1440,
+      1000
+    ],
+    "crop_pixels": [
+      260,
+      275,
+      1415,
+      990
+    ],
+    "original_sha256": "0e40eade00bb1cada1045de296ccb1e29216690a82194fccfa5c2d790bdeae3b",
+    "cropped_sha256": "4794a97b7faf6c1ba9f9363c6e02a6563d1eeac9cf5f744182dae033b5df012a",
+    "ci_run_url": "https://github.com/shi1720/DAISI/actions/runs/35689097551",
+    "scenario": {
+      "date": "2026-09-28",
+      "radius_m": 800,
+      "scope": "All Singapore",
+      "budget_sgd": null
+    },
+    "description": "Actual executed browser-test screen. Crop only; no edited or reconstructed UI."
+  },
+  {
+    "file": "saved-plan.png",
+    "original_file": "output/ci-35689097551/04-saved-plan.png",
+    "original_size": [
+      1440,
+      1531
+    ],
+    "crop_pixels": [
+      260,
+      195,
+      1420,
+      1030
+    ],
+    "original_sha256": "153b4ecf7725f6de6204a803ed83330c566b1f5a51ba4c1dae34ec2211434435",
+    "cropped_sha256": "b3a4420c3a25efba28a81d79bea06a64de6072471b0406fceaf9b3b315a91e51",
+    "ci_run_url": "https://github.com/shi1720/DAISI/actions/runs/35689097551",
+    "scenario": {
+      "date": "2026-09-28",
+      "radius_m": 800,
+      "scope": "All Singapore",
+      "budget_sgd": 1500
+    },
+    "description": "Actual executed browser-test screen. Crop only; no edited or reconstructed UI."
+  }
+]
