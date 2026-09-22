@@ -15,3 +15,9 @@ React, Vite, TypeScript, FastAPI, Uvicorn, NumPy, SciPy, HiGHS, Shapely, ReportL
 The Round 1 template was downloaded from the [official DAISI participant guide](https://daisi.online/guide). Its original layout, red header, typeface, slide structure and footer are retained. It is supplied for participation, not relicensed by this project.
 
 Illustrative product artwork is original SVG code. It is not a photograph of a real venue. Any browser evidence shows the implemented application using the documented source snapshot and scenario assumptions.
+
+## Presentation photograph and narration
+
+The final pitch cover uses Kagenlim's photograph of Tampines Round Market and Food Centre, dated 12 February 2020, from [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Hawker_Center,_Singapore.jpg), under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/). The cover crop retains that licence and is not covered by this repository's MIT licence. It provides historical context and does not depict a project pilot or participating operator. Attribution appears on the slide and in its notes.
+
+The final demonstration uses a generic OpenAI cedar synthetic narrator, with word-timed captions. It does not clone Shivam Gupta's voice. `output/video/narrated-provenance.json` records the actual media hashes, source capture and review. Product logos, title cards and the thumbnail are original project artwork.

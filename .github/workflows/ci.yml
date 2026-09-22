@@ -68,9 +68,11 @@ jobs:
           fi
       - name: Preserve PNG evidence in logs
         if: always()
+        env:
+          HAWKERBRIDGE_RECORD_DEMO: ${{ github.event.inputs.record_demo == 'true' && '1' || '' }}
         run: |
           python3 - <<'PY'
-          import base64, hashlib
+          import base64, hashlib, os
           from pathlib import Path
           paths = [(p.name, p) for p in sorted(Path('output/screenshots').glob('*.png'))]
           paths += [(f'failure-{p.parent.name}.png', p) for p in sorted(Path('output/browser-results').rglob('test-failed-*.png'))]
@@ -84,7 +86,8 @@ jobs:
               for i in range(0, len(encoded), 4096):
                   print('HB_PNG_DATA|' + encoded[i:i+4096])
               print('HB_PNG_END|' + name)
-          for name in ['hawkerbridge-silent-walkthrough.mp4', 'timeline.json', 'recorded-demo-plan.pdf']:
+          media = ['hawkerbridge-silent-walkthrough.mp4', 'timeline.json', 'recorded-demo-plan.pdf'] if os.environ.get('HAWKERBRIDGE_RECORD_DEMO') == '1' else []
+          for name in media:
               path = Path('output/demo-footage') / name
               if not path.exists():
                   continue
@@ -108,6 +111,6 @@ jobs:
             output/screenshots
             output/browser-report
             output/browser-results
-            output/demo-footage
+            ${{ github.event.inputs.record_demo == 'true' && 'output/demo-footage' || '' }}
             coverage.xml
           retention-days: 14

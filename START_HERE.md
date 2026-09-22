@@ -6,6 +6,8 @@
 
 HawkerBridge helps a community coordinator prepare for a scheduled hawker-centre closure. Compare cleaning dates, identify areas to investigate, and allocate a reviewable meal-support proposal under budget and capacity limits. In the demonstration, doubling the budget from S$3,000 to S$6,000 adds no meals because three localities at 150 meals each already reach capacity.
 
+[Watch the narrated demo](https://youtu.be/vioVop-MEVA), with timed English captions.
+
 ## Try the product
 
 Open **[hawkerbridge-sg.web.app](https://hawkerbridge-sg.web.app)** and choose **Explore as a guest**. Set **28 September 2026**, **All Singapore**, **800 m access**. In the planner compare budgets **1,500**, **3,000** and **6,000**. Expected proposals: **225 / 450 / 450 planned meals**. Save a draft, inspect its review checklist and export PDF, CSV or JSON. [Full testing instructions](submission/testing-instructions.md).
@@ -29,7 +31,7 @@ Three tabular sources were fetched live; two checksummed URA geometry archives w
 - **Example output:** [exported plan PDF](output/pdf/example-continuity-plan.pdf), [CSV](output/example-continuity-plan.csv) and [JSON with preserved provenance](output/example-continuity-plan.json).
 - **Commercial case:** [operator pilot, pricing hypotheses and cost sensitivity](docs/business-case.md). No customers, measured impact or revenue are claimed.
 
-The [submission ZIP](output/HawkerBridge-submission-pack.zip) includes a separate [source ZIP](output/HawkerBridge-source.zip). Both have verified SHA256 manifests. The source installs independently of GitHub. ZIPs are generated locally from committed source with `uv run python scripts/build_submission_pack.py`.
+The [submission ZIP](https://github.com/shi1720/DAISI/releases/download/daisi-2026/HawkerBridge-submission-pack.zip) includes a separate [source ZIP](https://github.com/shi1720/DAISI/releases/download/daisi-2026/HawkerBridge-source.zip). Both have verified SHA256 manifests. The source installs independently of GitHub. ZIPs are generated locally from committed source with `uv run python scripts/build_submission_pack.py`.
 
 ## Reproduce and deploy
 

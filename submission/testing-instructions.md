@@ -2,7 +2,7 @@
 
 Open [HawkerBridge](https://hawkerbridge-sg.web.app) and select **Explore as a guest**. No API key, shared password or Databricks account is required for the public application. Named accounts use email/password through Firebase Authentication; private proposals use Cloud Firestore. Code and reproducible setup are at [github.com/shi1720/DAISI](https://github.com/shi1720/DAISI).
 
-**Release status:** actual Databricks execution, hosted HTTP acceptance and saved-plan persistence across a container rollout passed. The public checks cover sign-in, owner isolation, 225/450/450 allocations, exports, source evidence, CSRF/origin boundaries and stale edits. Final hosted browser journeys and video review remain in progress. See `output/hosted-smoke.json`, `output/hosted-restart-smoke.json` and `submission/deployment-status.json` for the exact evidence boundary.
+**Release status:** actual Databricks execution, hosted HTTP acceptance and saved-plan persistence across a container rollout passed. The public checks cover sign-in, owner isolation, 225/450/450 allocations, exports, source evidence, CSRF/origin boundaries and stale edits. [Final hosted verification](https://github.com/shi1720/DAISI/actions/runs/35697740614) passed all four browser journeys, six Axe scans and mobile checks at 320px/390px. The reviewed 175-second demo is [public](https://youtu.be/vioVop-MEVA). See `output/hosted-smoke.json`, `output/hosted-restart-smoke.json` and `submission/deployment-status.json` for the exact evidence boundary.
 
 ## Five-minute walkthrough
 

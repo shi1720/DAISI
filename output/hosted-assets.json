@@ -1,0 +1,18 @@
+{
+  "base_url": "https://hawkerbridge-sg.web.app",
+  "source_revision": "b539db724c3731897595e81061a73070655920cf",
+  "cloud_run_revision": "hawkerbridge-api-00006-lnl",
+  "assets": [
+    {
+      "asset": "/assets/index-DASgXwJL.js",
+      "sha256": "a5d2ed8ca8988d32d0684a4b0ed451490df7e56d9340605d0acb11861ea591b3",
+      "cache_control": "public,max-age=31536000,immutable"
+    },
+    {
+      "asset": "/assets/index-De7vXbZU.css",
+      "sha256": "1162f6096503bc3e5251db9e959a882783a630806277adaf91cd997fe4ca6d23",
+      "cache_control": "public,max-age=31536000,immutable"
+    }
+  ],
+  "passed": true
+}

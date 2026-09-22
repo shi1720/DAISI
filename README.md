@@ -6,7 +6,7 @@ A closure calendar answers *when*. HawkerBridge helps a coordinator decide *wher
 
 Built for **DAISI Singapore 2026, C3: KopilamAI**. Project owner: **Shivam Gupta**.
 
-[Try HawkerBridge](https://hawkerbridge-sg.web.app) · [Submission and demo guide](START_HERE.md) · [Verified screenshots](docs/screenshots/README.md)
+[Try HawkerBridge](https://hawkerbridge-sg.web.app) · [Watch the 2:55 demo](https://youtu.be/vioVop-MEVA) · [Submission and demo guide](START_HERE.md) · [Verified screenshots](docs/screenshots/README.md)
 
 ![HawkerBridge overview from the verified browser journey](docs/screenshots/overview.png)
 
@@ -122,6 +122,8 @@ npm --prefix frontend audit --audit-level=high
 The GitHub Actions workflow runs backend, frontend and Chromium browser checks, then attempts to save screenshots, traces, video and exported-plan evidence as an artifact. Selected evidence also has a checksum-verified CI-log fallback when GitHub artifact storage is full. Browser tests live in `browser-tests/`. They cover account creation, authenticated planning, advanced-form validity, scope, saving, review, download, independent accounts and mobile overflow.
 
 ## Submission pack
+
+[Download all submission materials](https://github.com/shi1720/DAISI/releases/download/daisi-2026/HawkerBridge-submission-pack.zip) or [download the independent source archive](https://github.com/shi1720/DAISI/releases/download/daisi-2026/HawkerBridge-source.zip). Both contain SHA256 manifests.
 
 - **Round 1:** `output/pdf/hawkerbridge-round1.pdf`, based on the official three-slide template.
 - **Round 2:** `output/pdf/hawkerbridge-final-pitch.pdf` and its editable presentation, plus product screenshots.

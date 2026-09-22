@@ -1,80 +1,96 @@
 {
-  "kind": "real_application_browser_capture",
+  "kind": "real_hosted_application_browser_capture",
   "captured_on": "2026-09-22",
-  "source_commit": "94b96cf7994093bc77a23eac1171c9a2624a784e",
-  "ci_run": "https://github.com/shi1720/DAISI/actions/runs/35689097551",
-  "browser": "Playwright Chromium on GitHub Actions Ubuntu",
-  "data_snapshot_fetched_at": "2026-09-22T04:25:32.462291Z",
-  "data_content_sha256": "5b7aaf83b6cdc25fb4262eaa99ee116925d4c5ab8a634647f46f35d21acde783",
-  "scenario": {
-    "date": "2026-09-28",
-    "radius_m": 800,
-    "planning_areas": []
-  },
-  "privacy": "Isolated guest workspace and synthetic test records only. No private resident records.",
-  "postprocessing": "None. These PNGs are byte-for-byte verified CI captures; viewport and full-page captures are separately named.",
-  "verification": {
-    "browser_journeys_passed": 4,
-    "overview_axe_wcag2a_wcag2aa_violations": 0,
-    "mobile_width_px": 390,
-    "recording_test": "Opt-in; skipped in this run."
-  },
+  "base_url": "https://hawkerbridge-sg.web.app",
+  "source_commit": "b539db724c3731897595e81061a73070655920cf",
+  "ci_run": "https://github.com/shi1720/DAISI/actions/runs/35697233597",
+  "capture_run_result": "failure",
+  "capture_run_note": "These screenshots come from the passing main and mobile journeys. Three journeys passed. A separate scoped journey exceeded its5s initial-readiness assertion while the server returned a successful analysis. The test now awaits actual API readiness; final verification is recorded separately.",
+  "data_content_sha256": "a3b84df2577a59a9d1cf6ccaf8cb45b47a0caffa4429122e1f409a29de274c4f",
+  "privacy": "Synthetic guest workspace and test notes only. No private resident records.",
+  "postprocessing": "None. PNG bytes verified against CI log SHA256 records.",
   "files": [
     {
       "file": "welcome.png",
       "original_capture": "01-welcome.png",
       "width": 1440,
       "height": 1040,
-      "sha256": "f2b2fa4309dcc2ee84e7ad3e5358ad87906365258b87972a2ea9c5dd61a5a5d2"
+      "sha256": "53ea4faabe83b1ec4f863b0c23d31b34838af5ecd39ca5fe68f16da429b13906"
     },
     {
       "file": "overview.png",
       "original_capture": "02-overview-hero.png",
       "width": 1440,
       "height": 1000,
-      "sha256": "0e40eade00bb1cada1045de296ccb1e29216690a82194fccfa5c2d790bdeae3b"
+      "sha256": "39c4df849ee218c177ba297b1e5b11dad28b1ba5f6cb61c15760850ee0549d93"
     },
     {
       "file": "planner.png",
       "original_capture": "03-continuity-planner-hero.png",
       "width": 1440,
       "height": 1000,
-      "sha256": "bc22fde84515d99afd9259cd3155c2c125a6817f53634b2969a8f2fb8b4b23a3"
+      "sha256": "5f3a9ca9342bf39bbefd410f56612287b64cd50a33d8e53506d2b32a20fc4b72"
     },
     {
       "file": "capacity-comparison.png",
       "original_capture": "03b-capacity-450-hero.png",
       "width": 1440,
       "height": 1000,
-      "sha256": "5a99ed31a75159d3c7eb91230f2fd534f4683ca75cbfc910c8858988f1b1aadc"
+      "sha256": "236542ff1e3784e46c1d5a59eeb4d61aa6a132e10ecd4b8e3e18a3b17c54bb36"
     },
     {
       "file": "saved-plan.png",
       "original_capture": "04-saved-plan.png",
       "width": 1440,
       "height": 1531,
-      "sha256": "153b4ecf7725f6de6204a803ed83330c566b1f5a51ba4c1dae34ec2211434435"
+      "sha256": "0a936685f42f9dfc4b338cce37b4e48dcbca787e39cadb7d5e176be8704b7bf7"
     },
     {
       "file": "evidence.png",
       "original_capture": "05-evidence.png",
       "width": 1440,
-      "height": 3208,
-      "sha256": "e264ebe7f7a7187c0de740da6d08eeb48593bd7ee8a0bd71846a6890dd59ab78"
+      "height": 3719,
+      "sha256": "54128971bea3c4435a12cf14c9b27ec4071067f56bbfb50d5489b5f9d6aaac86"
+    },
+    {
+      "file": "databricks-publication.png",
+      "original_capture": "05b-databricks-publication.png",
+      "width": 1440,
+      "height": 1040,
+      "sha256": "fcafd881cca1368d6932b34dc2e54a56e989d045d664ddca66b089b82dbbd3c0"
     },
     {
       "file": "mobile-overview.png",
       "original_capture": "07-mobile-overview.png",
       "width": 390,
       "height": 2613,
-      "sha256": "d16810152cef0a8fc5f1fefccd5ac981bddcd53cffab184145420f5e951a78c3"
+      "sha256": "015d2b9e2cbccc8c9f444daac5d85dc9c27bf35af9148f2d56768033ec78aa75"
     },
     {
       "file": "mobile-planner.png",
       "original_capture": "08-mobile-planner.png",
       "width": 390,
       "height": 3399,
-      "sha256": "2b8bf2f31873bb8fc74bd83c8578c37d171e08c65f75c91cbd1a5132b1f5f531"
+      "sha256": "84dcf4bd93d00117456a840a3381433b9ceb741ab40c750acb40b1534e8bbfa0"
+    },
+    {
+      "file": "small-mobile-planner.png",
+      "original_capture": "09-small-mobile-planner.png",
+      "width": 320,
+      "height": 3736,
+      "sha256": "2af767fbd8d9207ecd456ae0820af23e244329caba3976a3c8ba1bfae7c4cce8"
     }
-  ]
+  ],
+  "final_hosted_verification": {
+    "run": "https://github.com/shi1720/DAISI/actions/runs/35697740614",
+    "test_revision": "16b538d821f332102dfd2c111a55465fa6660daa",
+    "product_revision": "b539db724c3731897595e81061a73070655920cf",
+    "result": "success",
+    "browser_journeys_passed": 4,
+    "axe_screens_without_violations": 6,
+    "mobile_widths": [
+      320,
+      390
+    ]
+  }
 }

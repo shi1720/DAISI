@@ -16,7 +16,7 @@ The final release video is **175 seconds**, below the three-minute limit. It rec
      --output output/video/hawkerbridge-demo-narrated.mp4
    ```
 
-The renderer begins with an original 8.5-second title card while the recorded page loads, then preserves the actual browser footage. It aligns six narration scenes, burns readable captions and labels the synthetic narration. It also writes an editable SRT track and media hashes to `output/video/narrated-provenance.json`. It refuses to replace an existing final video silently.
+The renderer begins with an original 8.5-second title card while the recorded page loads, then preserves the actual browser footage until a six-second closing card displays the public website. It aligns six narration scenes, burns readable captions and labels the synthetic narration. It also writes an editable SRT track and media hashes to `output/video/narrated-provenance.json`. It refuses to replace an existing final video silently.
 
 ## Final review
 

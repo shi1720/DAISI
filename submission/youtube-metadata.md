@@ -1,5 +1,9 @@
 # YouTube publication copy
 
+Published publicly: https://youtu.be/vioVop-MEVA
+
+Verified title, author, 175-second playback, manual English captions and original thumbnail. Copyright and Community Guidelines checks completed without reported issues.
+
 ## Title
 
 HawkerBridge | When More Budget Does Not Mean More Meals | DAISI Singapore 2026
@@ -32,8 +36,8 @@ Shivam Gupta initiated the brief, set the product goals and owns the project. Re
 
 ## Publishing instructions, not description text
 
-- **Release gate:** Databricks execution, hosted HTTP acceptance, matching cloud publication and saved-plan persistence across rollout are verified. Final hosted browser journeys and video capture/review remain in progress at this edit. Publish only after the actual footage has been inspected and the browser run has completed successfully. Prepared copy is not evidence of a completed video.
-- Use **Public** visibility as requested. Verify the actual video and Devpost URLs in a signed-out browser before adding them. No video URL is invented here.
+- **Release verified:** Databricks execution, hosted HTTP acceptance, rollout persistence and final hosted browser CI 35697740614 passed. The actual hosted edit was visually reviewed before publication. Capture and verification have separate provenance files.
+- Public visibility was verified in Studio, actual playback in the browser and unauthenticated oEmbed access. Devpost remains a draft until participant eligibility details and final declarations are complete.
 - Category: **Science & Technology**. Language: **English**. Tags: HawkerBridge, DAISI Singapore 2026, Databricks, hawker centres, community planning, open data, food access, optimisation.
 - Thumbnail: actual product capture with **WHEN MORE BUDGET IS NOT ENOUGH** and the 450 planned-meal result. No invented impact figure.
 - Add captions aligned to final audio and keep the video below three minutes. If Shivam records his own narration, remove the synthetic-narrator sentence.

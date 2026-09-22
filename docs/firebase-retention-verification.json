@@ -11,5 +11,13 @@
   "dry_run_execution": "hawkerbridge-retention-xhpl7",
   "last_execute_execution": "hawkerbridge-retention-n46ws",
   "workspaces_per_run_limit": 1000,
-  "guest_expiry_days": 7
+  "guest_expiry_days": 7,
+  "final_release_worker": {
+    "image": "asia-southeast1-docker.pkg.dev/gen-lang-client-0444960702/hawkerbridge/api:20260922065459",
+    "execution": "hawkerbridge-retention-224tm",
+    "result": "Succeeded",
+    "scheduler_state": "ENABLED",
+    "saved_command": "python -m hawkerbridge.firebase_cleanup --limit 1000 --execute",
+    "verified_at": "2026-09-22T06:59:29Z"
+  }
 }
