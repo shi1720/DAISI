@@ -41,6 +41,8 @@ The GitHub Actions workflow runs backend, frontend and real Chromium journeys. I
 
 ## Participant and submission gates
 
-The official guide gives the Round 1 deadline as **6 October 2026, 11:59 PM Singapore time**. The entry needs Shivam's current Singapore IHL, course, year, team email and any teammates. These facts have not been invented. Fill [team.json](submission/team.json), then run `uv run python scripts/check_submission.py --round 1`. Round 2 additionally checks the verified cloud execution and real video URL.
+Devpost confirmed **[Project submitted](https://devpost.com/software/hawkerbridge)** on 22 September 2026 after Shivam's explicit authorisation. It remains editable before the deadline. Submission does not establish student eligibility.
+
+The official guide gives the Round 1 deadline as **6 October 2026, 11:59 PM Singapore time**. Shivam supplied Computer Science as his course. The organiser contact is saved privately in Devpost. Current Singapore IHL, year of study, enrolment and any additional teammates still require confirmation. Fill [team.json](submission/team.json), then run `uv run python scripts/check_submission.py --round 1`. Round 2 additionally checks the verified cloud execution and real video URL.
 
 These are planning calculations based on public area data and explicit assumptions. They do not count people fed, identify vulnerable individuals or confirm venues. Field validation and a suitable paid production environment remain prerequisites for a commercial service.

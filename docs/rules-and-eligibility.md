@@ -1,6 +1,6 @@
 # DAISI rules, eligibility and submission readiness
 
-Verified against the [official Devpost rules](https://daisisg26.devpost.com/rules), [Devpost overview](https://daisisg26.devpost.com/) and [participant guide](https://daisi.online/guide) on 22 September 2026. Organisers may update dates and terms; recheck before submitting. This document records requirements and pending facts, not confirmation of eligibility or submission.
+Verified against the [official Devpost rules](https://daisisg26.devpost.com/rules), [Devpost overview](https://daisisg26.devpost.com/) and [participant guide](https://daisi.online/guide) on 22 September 2026. Organisers may update dates and terms. Devpost confirmed submission on 22 September after Shivam's explicit authorisation. This document records requirements and pending facts, not confirmation of eligibility.
 
 ## Eligibility: confirmation still needed
 
@@ -8,14 +8,14 @@ Official rules require current enrolment at a Singapore Institute of Higher Lear
 
 Known team information: **Shivam Gupta**. Project/team working name: **HawkerBridge**.
 
-Pending before registration or submission:
+Participant facts still requiring completion or confirmation:
 
 | Field or fact | Status |
 | --- | --- |
 | Institution and current Singapore IHL enrolment | Not provided; verify eligibility |
-| Course/programme | Not provided |
+| Course/programme | Computer Science, supplied by Shivam |
 | Year of study | Not provided |
-| Submission/contact email | Not provided |
+| Submission/contact email | Saved privately in Devpost from the verified signed-in account |
 | Age and geographic eligibility | Not verified |
 | Any additional members and single-team participation | Not provided |
 | Student-status evidence if organisers request it | Not collected |
@@ -75,4 +75,4 @@ The guide describes Free Edition as non-commercial, quota limited and without an
 6. Rehearse the exact three-minute story and retain a clearly identified fallback recording.
 7. Submit through Devpost only with accurate team particulars and actual artifact links.
 
-No eligibility claim, account registration, video upload or Devpost submission has been completed by this checklist.
+Actual publication is recorded in [publication-audit.md](../submission/publication-audit.md): the video is public and Devpost confirmed submission after explicit user authorisation. No institution, year or enrolment status has been invented. These missing facts still need completion before the deadline.

@@ -47,7 +47,7 @@ The critical assumption is task frequency. A single site's occasional cleaning c
 
 The hosted video preserves its actual capture provenance: recording test passed on earlier source `6cd7e8` in run `35695869659`; another journey in that run found a Leaflet teardown defect, subsequently fixed. The recording is not relabelled as a capture of `b539db7`. [Capture provenance](../output/demo-footage/provenance.json) identifies this boundary. Final hosted run `35697740614` separately verifies the corrected product. The preceding run's five-second readiness assertion was resolved by waiting for the initial API success, not by retrying a failed application journey.
 
-The public application uses the verified `a3b84df…` data publication. The repo is public, with `main` as its only branch. The official three-slide Round 1 and nine-slide final decks were rebuilt and visually reviewed with current cloud and hosted evidence. The narrated MP4 and public video are delivered artifacts. Devpost project `1192740` has the updated story, testing evidence, five captioned screenshots, public video URL and official Round 1 PDF saved. It remains at 4/5 completion; required academic/enrolment details have been requested, so no final submission is claimed. Gallery captures come from run `35697233597` on product `b539db7`; successful run `35697740614` verifies that unchanged product.
+The public application uses the verified `a3b84df…` data publication. The repo is public, with `main` as its only branch. The official three-slide Round 1 and nine-slide final decks were rebuilt and visually reviewed with current cloud and hosted evidence. The narrated MP4 and public video are delivered artifacts. After Shivam's explicit final authorisation, Devpost project `1192740` displayed “Project submitted!” with the updated story, testing evidence, five captioned screenshots, public video and official Round 1 PDF. Academic details remain incomplete; submission does not establish eligibility. Gallery captures come from run `35697233597` on product `b539db7`; successful run `35697740614` verifies that unchanged product.
 
 ## Closed release findings
 
@@ -59,8 +59,8 @@ Earlier stale roadmap/API-contract statements were corrected. Publication copy d
 
 ## Remaining decisions
 
-1. Regenerate source/submission ZIPs from the final committed artifacts and check their manifests. Do not infer fresh packaging from earlier files.
-2. Confirm Singapore IHL eligibility, institution, course, year and team particulars with Shivam before an eligibility attestation. The Devpost primary contact was taken from the verified signed-in account; student eligibility cannot be inferred from that account or the implementation.
+1. The source/submission archive builder passed manifest verification with 183 source files and 67 delivery files. Release archives are regenerated from the final metadata commit; use their manifests to identify the precise revision.
+2. Computer Science is the participant-supplied course. Confirm Singapore IHL eligibility, institution, year and team particulars with Shivam before an eligibility attestation. The Devpost primary contact was taken from the verified signed-in account; student eligibility cannot be inferred from that account or the implementation.
 3. Rehearse the three-minute presentation and explain the proxy, capacity assumptions, two evaluation sets and data limitations without equating scenario meals with deliveries or residents with measured need.
 4. Validate one real operator workflow before claiming adoption or impact. The proposed 30% preparation-time reduction, S$1,000 pilot and S$250–500 monthly subscription remain hypotheses. A rare single-site closure may justify a project fee rather than recurring software spend.
 

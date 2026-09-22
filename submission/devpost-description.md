@@ -52,7 +52,7 @@ The next step is one operator and one scheduled closure. A four-to-six-week pilo
 
 Our buyer hypothesis is an estate operator or funded community organisation managing repeated disruptions. We would test a **S$1,000 scoped pilot** and a **S$250 to S$500 monthly organisation subscription**. These are pricing hypotheses; there are no claimed customers, interviews, partnerships or revenue. Residents would not pay for essential assistance information. Commercial operation requires suitable paid infrastructure.
 
-**Project owner: Shivam Gupta.** Shivam initiated the brief, set the product goals and owns the project. Research, implementation, testing and presentation preparation used AI assistance. Sources, software and visual credits are documented in the [repository](https://github.com/shi1720/DAISI).
+**Project owner: Shivam Gupta. Course: Computer Science.** Shivam initiated the brief, set the product goals and owns the project. Research, implementation, testing and presentation preparation used AI assistance. Sources, software and visual credits are documented in the [repository](https://github.com/shi1720/DAISI).
 
 ## Testing instructions
 

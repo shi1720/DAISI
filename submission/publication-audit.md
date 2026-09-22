@@ -1,6 +1,6 @@
 # Publication handoff and rubric audit
 
-Internal notes, updated 22 September 2026, for existing Devpost project **1192740**. This document records implementation and verification evidence. The narrated video is public and verified; Devpost remains at 4/5 completion while required academic/enrolment details are unverified. Final submission is not claimed.
+Internal notes, updated 22 September 2026, for Devpost project **1192740**. The narrated video is public and verified. After Shivam explicitly authorised accepting the final terms and submitting, Devpost displayed **“Project submitted!”** and listed DAISI under **Submitted to**. Academic details remain incomplete; platform submission is not proof of eligibility.
 
 ## Field map
 
@@ -17,7 +17,7 @@ Internal notes, updated 22 September 2026, for existing Devpost project **119274
 | Video | [Public narrated demonstration](https://youtu.be/vioVop-MEVA), 175 seconds, with 33 English captions. Studio publication, watch-page playback and unauthenticated oEmbed resolution are verified. |
 | Round 1 | `output/pdf/hawkerbridge-round1.pdf`, official three-slide format |
 | Final deck | `output/pdf/hawkerbridge-final-pitch.pdf`, nine pages |
-| Team | Shivam Gupta. Primary contact is taken from the verified signed-in account. Institution, course, year and eligibility still require verified participant information. |
+| Team | Shivam Gupta. Primary contact is taken from the verified signed-in account. Computer Science is the supplied course. Institution, year and eligibility still require verified participant information. |
 
 Preserve the existing Devpost project. Fill any additional form-specific fields from actual evidence. Do not attest to unknown student status.
 
@@ -48,11 +48,11 @@ The guide specifies the common three-slide Round 1 template and 6 October 2026, 
 
 Lead with the coordinator's cleaning comparison and the S$3,000 versus S$6,000 capacity plateau. The buyer, schedule owner, meal operator and resident may differ. Pricing and the 30% preparation-time target remain pilot hypotheses, with no customers, partnerships or revenue claimed. Cloud Run requires linked billing and Databricks Free Edition is noncommercial; do not promise cost-free commercial hosting.
 
-## Remaining handoff gates
+## Release packaging and participant follow-up
 
-1. Synchronise all copy and rebuild ZIPs from the final committed artifacts. Preserve accurate capture history: the video was recorded from an earlier hosted revision, not relabelled as the latest source. Final hosted acceptance, public video publication, both rebuilt decks and HTTP/rollout checks are complete.
-2. Complete required member details only from verified participant information. The correct official Round 1 PDF is already attached. Verify the resulting submission state after completing the remaining form; workspace URLs may require authorised access, and credentials must never be shared.
+1. The archive builder completed with 183 committed source files and 67 delivery files, validating every SHA256 manifest entry and the 35 MB size limit. Release archives are regenerated from the final metadata commit; their manifests identify that exact revision. Preserve accurate capture history: the video was recorded from an earlier hosted revision, not relabelled as the latest source.
+2. Complete missing member details only from verified participant information. The updated official Round 1 PDF, including Computer Science, was attached before submission. Workspace URLs may require authorised access, and credentials must never be shared.
 
 The user authorised filling the existing project and public YouTube publication. This authorisation does not justify claiming unfinished checks, unknown eligibility or an upload that has not happened.
 
-Current publishing handoff: Devpost is at 4/5 completion, with the final story, testing evidence, five captioned screenshots, public video URL and official Round 1 PDF saved. Primary contact was taken from the verified signed-in account. Gallery screenshots were captured by run `35697233597` on product `b539db7`; later successful run `35697740614` verifies the unchanged application. Institution, course, year and Singapore IHL eligibility have been requested and remain unverified; form progress is not a completed-submission claim.
+Current publishing handoff: [Devpost submission](https://devpost.com/software/hawkerbridge) is submitted and remains editable before the deadline. It includes the final story, testing evidence, five captioned screenshots, public video and updated official Round 1 PDF. Primary contact was taken from the verified signed-in account. Gallery screenshots were captured by run `35697233597` on product `b539db7`; later successful run `35697740614` verifies the unchanged application. Computer Science is confirmed as the course. Institution, year and current Singapore IHL eligibility remain unverified. No missing academic facts were invented.

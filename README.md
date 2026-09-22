@@ -123,6 +123,8 @@ The GitHub Actions workflow runs backend, frontend and Chromium browser checks, 
 
 ## Submission pack
 
+**[Submitted on Devpost](https://devpost.com/software/hawkerbridge)** on 22 September 2026 with Shivam's explicit authorisation. Academic details below still need completion before the deadline.
+
 [Download all submission materials](https://github.com/shi1720/DAISI/releases/download/daisi-2026/HawkerBridge-submission-pack.zip) or [download the independent source archive](https://github.com/shi1720/DAISI/releases/download/daisi-2026/HawkerBridge-source.zip). Both contain SHA256 manifests.
 
 - **Round 1:** `output/pdf/hawkerbridge-round1.pdf`, based on the official three-slide template.
@@ -133,7 +135,7 @@ The GitHub Actions workflow runs backend, frontend and Chromium browser checks, 
 - **Ready-to-adapt copy:** [Devpost description](submission/devpost-description.md), [judge Q&A](submission/judge-qa.md), [what’s next](submission/whats-next.md).
 - **Participant details:** fill `submission/team.json`, then run `uv run python scripts/check_submission.py --round 1`.
 
-The participant must confirm Singapore IHL eligibility and institution/course/year/email. The checker deliberately blocks incomplete metadata. Round 2 also requires a verified workspace deployment and a public or unlisted video link. The guide gives the Round 1 deadline as **6 October 2026, 11:59 PM SGT**.
+Shivam supplied Computer Science as his course. Institution, year and current Singapore IHL eligibility still require confirmation. The organiser contact is saved privately in Devpost; the public team record does not repeat that email. The checker deliberately blocks incomplete metadata. Round 2 also requires a verified workspace deployment and a public or unlisted video link. The guide gives the Round 1 deadline as **6 October 2026, 11:59 PM SGT**.
 
 ## Ownership and attribution
 

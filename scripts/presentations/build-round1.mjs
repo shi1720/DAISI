@@ -17,7 +17,7 @@ const revision=Date.now();
 const source=root+'/research/official/round1-template.pptx';
 const p=await PresentationFile.importPptx(await FileBlob.load(source));
 const bodies=[
-`Team name: HawkerBridge     Project owner: Shivam Gupta
+`Team name: HawkerBridge | Shivam Gupta | Course: Computer Science
 Problem statement: C3 - KopilamAI: hawker culture and food access
 
 The problem: A closure notice does not tell a community coordinator which
@@ -57,7 +57,7 @@ repeat use, then test a paid pilot. Current prices and impact targets are hypoth
 ];
 const anchors=['sh/65g3298r','sh/a10jqpsj','sh/3ah8rqlg'];
 const notes=[
-'Sources: NEA Dates of Hawker Centre Closures, https://data.gov.sg/datasets/d_bda4baa634dd1cc7a6c7cad5f19e2d68/view . Counts recomputed from the 22 Sep 2026 snapshot for 28 Sep 2026. No claim of food insecurity is inferred. Town council scheduling role: https://www.nea.gov.sg/our-services/hawker-management/announcements . Team institution/course/year/email are required separately before submission.',
+'Sources: NEA Dates of Hawker Centre Closures, https://data.gov.sg/datasets/d_bda4baa634dd1cc7a6c7cad5f19e2d68/view . Counts recomputed from the 22 Sep 2026 snapshot for 28 Sep 2026. No claim of food insecurity is inferred. Town council scheduling role: https://www.nea.gov.sg/our-services/hawker-management/announcements . Course confirmed by the participant: Computer Science. Institution, year and current Singapore IHL enrolment remain unconfirmed; full team particulars are required before submission.',
 'Sources: NEA closure dataset d_bda4baa634dd1cc7a6c7cad5f19e2d68; Census 2020 age and subzone population d_d95ae740c0f8961a0b10435836660ce0; URA planning areas d_4765db0e87b9c86336792efe8a1f7a66 and subzones d_8594ae9ff96d0c708bc2af633048edfb; NEA waste d_daf568968ab40dc81e7b08887a83c8fa. All data.gov.sg. Spatial model uses geographic representative points, not population centroids or walking routes. Closure discovery already exists in myENV and public products; the differentiation is coordinator planning.',
 'A real Databricks live run published governed tables after 12 quality checks and 9 MLflow scenarios. Three tabular sources were fetched live; two checksum-verified URA archives retained their original timestamps. See submission/deployment-status.json and data/processed/databricks-publication.json. The separate local robustness benchmark has 15 scenarios. Free Edition is for non-commercial learning/prototyping: https://daisi.online/guide and https://docs.databricks.com/aws/en/getting-started/free-edition-limitations . Pilot targets and pricing are unvalidated. AI-assisted development is disclosed in the repository; project owner and presenter is Shivam Gupta.'
 ];

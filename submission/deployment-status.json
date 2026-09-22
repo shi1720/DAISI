@@ -53,8 +53,15 @@
   "narrated_demo_capture_provenance": "output/demo-footage/provenance.json",
   "narrated_demo_provenance": "output/video/narrated-provenance.json",
   "native_app_final_deployment_id": "01f1b6527c711b68b2453297522778e5",
-  "devpost_status": "Draft,4/5 steps complete. Official Round1 PDF, final story and testing instructions, ten technologies, five captioned hosted screenshots, website/repository/public video, datasets, architecture and signed-in account contact saved. Current Singapore IHL,course,year and team particulars remain unconfirmed; final terms checkbox is not selected.",
+  "devpost_status": "Submitted. On 22 September 2026 Shivam explicitly authorised accepting the final terms and submitting. Devpost displayed Project submitted! and DAISI under Submitted to. The updated Round 1 PDF, Computer Science course, final story, testing instructions, ten technologies, five captioned screenshots, website/repository/public video, datasets, architecture and private organiser contact were saved. Institution, year and current Singapore IHL enrolment remain unconfirmed. Submission is not proof of eligibility.",
   "devpost_preview_url": "https://devpost.com/software/hawkerbridge",
   "public_asset_verification": "output/hosted-assets.json",
-  "youtube_caption_track": "English manual SRT saved in Studio and displayed on the public player, alongside burned captions."
+  "youtube_caption_track": "English manual SRT saved in Studio and displayed on the public player, alongside burned captions.",
+  "primary_contact_saved_privately_in_devpost": true,
+  "devpost_submitted": true,
+  "devpost_submission_verified_at": "2026-09-22T07:20:00Z",
+  "devpost_submission_confirmation": "Project submitted! Continue to edit your project until the hackathon deadline: October 06, 2026 at 12:00pm EDT.",
+  "latest_local_ci_url": "https://github.com/shi1720/DAISI/actions/runs/35698487489",
+  "latest_local_ci_revision": "1efba17973001ac02274d8ad8fb540c3d6edc3a5",
+  "latest_local_ci_conclusion": "success"
 }
