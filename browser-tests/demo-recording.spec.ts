@@ -7,6 +7,7 @@ test('record the community-continuity walkthrough',async({browser})=>{
   test.skip(process.env.HAWKERBRIDGE_RECORD_DEMO !== '1','Enable record_demo in workflow_dispatch to capture narrated-demo source footage.');
   test.setTimeout(220000);
   const context=await browser.newContext({baseURL:'http://127.0.0.1:8000',viewport:{width:1440,height:1080},recordVideo:{dir:'../output/demo-footage/raw',size:{width:1440,height:1080}},reducedMotion:'reduce'});
+  context.setDefaultTimeout(12000);
   const authentication=await context.request.post('/api/auth/demo',{data:{}});
   expect(authentication.ok()).toBe(true);
   const session=await authentication.json();
@@ -24,8 +25,8 @@ test('record the community-continuity walkthrough',async({browser})=>{
   await page.waitForLoadState('networkidle');
   await page.evaluate(()=>document.fonts.ready);
   await cue(5,'Overview: resolved closures and subzones flagged for review');
-  await cue(18,'Map: select a scheduled closure');
-  await page.locator('.centre-marker.closed').first().click();
+  await cue(18,'Map: select a scheduled closure from the accessible centre list');
+  await page.locator('.closure-row').first().click();
   await cue(29,'Planning-area ranking and census limitations');
   await page.locator('.area-panel').scrollIntoViewIfNeeded();
   await cue(42,'Return to the dated access overview');

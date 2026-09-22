@@ -32,6 +32,11 @@ jobs:
       - run: .venv/bin/pytest --cov=hawkerbridge --cov-report=term-missing --cov-report=xml -q
       - run: npm ci && npm test && npm run build && npm audit --audit-level=high
         working-directory: frontend
+      - name: Cache Chromium browser runtime
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('browser-tests/package-lock.json') }}
       - run: npm ci && npx playwright install --with-deps chromium
         working-directory: browser-tests
       - run: npm test

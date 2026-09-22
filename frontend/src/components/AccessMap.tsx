@@ -58,11 +58,11 @@ export default function AccessMap({ snapshot, analysis, sites = noSites, selecte
     analysis.centres.filter(c => (showOpen || c.status === 'closed') && (!selectedArea || c.planning_area === selectedArea)).forEach(centre => {
       const closed = centre.status === 'closed';
       if (centre.food_access_eligible === false || centre.food_stalls === 0) return;
-      const marker = L.marker([centre.lat, centre.lng], { icon:L.divIcon({ className:'centre-marker-wrapper', html:`<span class="centre-marker ${closed ? 'closed' : 'open'}">${closed ? '<svg width="12" height="12" viewBox="0 0 12 12"><path d="M3 3l6 6m0-6L3 9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>' : ''}</span>`, iconSize:[closed ? 25 : 14,closed ? 25 : 14], iconAnchor:[closed ? 12.5 : 7,closed ? 12.5 : 7] }), keyboard:true, title:`${centre.name}, ${closed ? 'scheduled closed' : 'no resolved closure'}` });
+      const marker = L.marker([centre.lat, centre.lng], { icon:L.divIcon({ className:'centre-marker-wrapper', html:`<span class="centre-marker ${closed ? 'closed' : 'open'}">${closed ? '<svg width="12" height="12" viewBox="0 0 12 12"><path d="M3 3l6 6m0-6L3 9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>' : ''}</span>`, iconSize:[closed ? 25 : 14,closed ? 25 : 14], iconAnchor:[closed ? 12.5 : 7,closed ? 12.5 : 7] }), keyboard:true, zIndexOffset:closed ? 1000 : 0, title:`${centre.name}, ${closed ? 'scheduled closed' : 'no resolved closure'}` });
       marker.bindTooltip(`${escapeHtml(centre.name)} · ${closed ? 'scheduled closed' : 'no resolved closure'}`).on('click', () => setSelection({ kind:'centre', value:centre })).addTo(layer);
     });
     sites.forEach((site,index) => {
-      L.marker([site.lat, site.lng], { icon:L.divIcon({ className:'site-marker-wrapper', html:`<span class="site-marker"><b>${index+1}</b></span>`, iconSize:[32,36], iconAnchor:[16,34] }), title:`Proposed collection locality ${index+1}: ${site.name}`, keyboard:true }).on('click', () => setSelection({ kind:'site', value:site })).addTo(layer);
+      L.marker([site.lat, site.lng], { icon:L.divIcon({ className:'site-marker-wrapper', html:`<span class="site-marker"><b>${index+1}</b></span>`, iconSize:[32,36], iconAnchor:[16,34] }), title:`Proposed collection locality ${index+1}: ${site.name}`, keyboard:true, zIndexOffset:2000 }).on('click', () => setSelection({ kind:'site', value:site })).addTo(layer);
     });
     if (selectedArea) {
       const points = analysis.zones.filter(x => x.planning_area === selectedArea).map(z => [z.lat,z.lng] as L.LatLngTuple);
