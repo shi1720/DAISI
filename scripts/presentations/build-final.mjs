@@ -91,12 +91,12 @@ function table(s,values,x,y,w,h,widths,fsz=23){
 {
  const s=slide('The coordinator’s working view',3);
  await image(s,'overview.png',60,137,840,500,'contain','Actual HawkerBridge overview from an executed browser test.');
- text(s,'Select a date',946,160,270,40,28,C.ink,true);
- text(s,'Compare nearby\nhawker coverage',946,209,275,85,26);
- text(s,'Inspect the assumptions',946,322,274,74,28,C.ink,true);
- text(s,'Census 2020\n800 m straight line\nSubzone points',946,411,275,110,25,C.muted);
- foot(s,'Actual local application. Exposure is an aggregate screening proxy. Other food outlets and individual needs remain unobserved.');
- note(s,'Screenshot provenance is recorded in scripts/presentations/assets/README.md. Product code: frontend/src/App.tsx and backend/hawkerbridge/engine.py. This is the working application, not a design mockup. For the dated 28 Sep 2026 model at 800 m, six populated subzones contain 91,180 census residents and 17,120 seniors whose representative points lose listed hawker coverage. These are not observed hungry residents. '+sourceNotes);
+ text(s,'Test cleaning changes',946,160,270,74,28,C.ink,true);
+ text(s,'Compare nearby\nhawker coverage\nbefore funding support.',946,255,275,110,26);
+ text(s,'Inspect the assumptions',946,390,274,74,28,C.ink,true);
+ text(s,'Census 2020\n800 m straight line\nSubzone points',946,487,275,110,25,C.muted);
+ foot(s,'Actual local application. Cleaning-date changes are hypothetical. Area exposure is a screening proxy.');
+ note(s,'Screenshot provenance is recorded in scripts/presentations/assets/README.md. Product code: frontend/src/App.tsx and backend/hawkerbridge/engine.py. This is the working application, not a design mockup. The cleaning counterfactual removes a chosen adjustable event from the selected day for comparison. It does not modify a published government closure schedule or choose an operationally valid replacement date. For the dated 28 Sep 2026 model at 800 m, six populated subzones contain 91,180 census residents and 17,120 seniors whose representative points lose listed hawker coverage. These are not observed hungry residents. The screen omits coffee shops, food courts, individual needs and accessible walking routes. '+sourceNotes);
 }
 // 4. Editable source inventory rather than an ornamental data pipeline graphic.
 {
