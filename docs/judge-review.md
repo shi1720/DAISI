@@ -2,9 +2,13 @@
 
 This is an internal heuristic assessment, not an official score, prediction of placing, or independent external validation. The reviewer also contributed platform artifacts earlier in the project. The purpose of this pass is to challenge the current submission and expose defects. Implementation was not edited during the review; several findings were fixed by the implementation agents after the first report and are recorded below.
 
+**Final backend integrity recheck:** the original code defects below have been repaired. Local API regressions now verify preserved plan provenance across a snapshot refresh, suppression of mismatched or unversioned evaluations, and reset of reviewed status after edits. The workspace identity and bounded-body tests also pass. Calendar repairs were inspected in source; this pass did not add frontend tests. Workspace sign-in and deployment are being handled separately; no cloud execution result is inferred from sign-in or from these local tests.
+
 Scope: the current React application, API and owner-scoped stores, planning engine, ingestion snapshot, Databricks bundle/notebook/pipeline, deployment bootstrap, and the three-page `output/pdf/hawkerbridge-round1-v2.pdf`. The PDF was text-extracted and all three pages were rendered and inspected. The rubric weights come from the [official participant guide](https://daisi.online/guide); eligibility and submission details are separately tracked in `docs/rules-and-eligibility.md`.
 
-## Verdict and scores
+## Original verdict and scores
+
+These scores are retained from the initial artifact review, before the repair recheck. They have not been re-scored or treated as an official evaluation. Read the repair statuses below for the current implementation evidence.
 
 **Round 1: credible, distinctive shortlist candidate; 84/100 on this internal scale.** The strongest idea is the workflow from a known closure to a constrained, reviewable response. The weak point is evidence that a coordinator needs this enough to adopt and pay for it. A strong-looking application does not answer that question.
 
@@ -16,7 +20,7 @@ Scope: the current React application, API and owner-scoped stores, planning engi
 | Clarity of submission | 12/15 | Three slides follow the requested structure and can be read without narration. The product is still mostly explained through paragraphs; one concrete decision example would make the difference easier to remember. |
 | **Total** | **84/100** | **Concept assessment; not a claim of eligibility or acceptance.** |
 
-**Round 2 today: 65/100, provisional and not submission-ready.** There is no verified workspace execution or judge-accessible Databricks demonstration. That is a gating weakness for a Databricks challenge regardless of a numerical score. The code earns feasibility credit, not credit for a cloud run that has not happened.
+**Round 2 at the initial review: 65/100, provisional and not submission-ready.** No verified workspace execution or judge-accessible Databricks demonstration was available in that review. That is a gating weakness for a Databricks challenge regardless of a numerical score. The code earns feasibility credit; actual cloud evidence must be assessed separately.
 
 | Round 2 criterion | Score | Reason |
 | --- | ---: | --- |
@@ -33,35 +37,51 @@ No points were deducted merely for using optimisation rather than an LLM. A natu
 
 The initial findings below preserve their reproduction and rationale. Subsequent platform repairs are explicitly recorded under the relevant item; the original score is a review snapshot and has not been silently inflated after repairs.
 
+| Finding | Current disposition | Verification boundary |
+| --- | --- | --- |
+| Engine version in cloud evaluation | Closed in code | Pipeline/store regressions plus API current/stale/unversioned tests pass; cloud publication still needs an actual run. |
+| Workspace authentication deployment guard | Closed in code | Runtime guard, missing identity, CSRF, forged local headers, forbidden local registration and owner-isolation tests pass against a mocked durable store; genuine platform proxy behaviour remains a deployment check. |
+| Calendar bounds and failed-update display | Repaired; source inspected | Manifest-derived bounds, fallback date, loading-only spinner and explicit stale notice exist; the dedicated out-of-year/failed-request frontend regression was not present in the files inspected in this pass. |
+| SQL food-centre density | Closed in code | Real query reconciles 120 food centres / 123 inventory records locally and excludes a synthetic zero-food market. |
+| Request-body limit | Closed in code | Declared-length rejection before read, streamed overflow early stop and accepted chunked replay tests pass. |
+| Saved-plan provenance | Closed in code | Restart with new inputs leaves the saved record, JSON, result fingerprint and brief bound to the original sources. |
+| Reviewed status after title/note edits | Closed in code | Both edits persist draft status and remove reviewer metadata; explicit re-review remains available. |
+
 ### P1 — Preserve the engine version in cloud evaluation and reject unversioned reports
 
 **Repair status:** addressed in the owned platform files after review. The pipeline now hashes imported `engine.py` before snapshot fingerprinting and persists it in the manifest, every scenario and MLflow artifacts/parameters. `load_evaluation` rejects missing, malformed or mixed engine hashes and embedded input mismatches, and returns the validated engine hash. Regression tests cover each rejection, the successful publication, and engine changes during publication. The API's running-code comparison remains the final check before calling a report current.
 
 The root agent also changed the API comparison to require a matching code hash, including reports where the field is absent.
 
-**Evidence:** `databricks/pipeline.py:evaluate` writes the input fingerprint and a constant model version into scenario results; `DatabricksStore.load_evaluation` returns no engine-code hash. `backend/hawkerbridge/api.py:evidence` checks `engine_code_sha256` only when it is present.
+**Recheck:** `test_evaluation_is_current_only_for_matching_inputs_and_engine` now verifies a valid report is returned, while changed data, changed engine and absent engine hash all produce `evaluation_status="stale"` with the report withheld. Store-level tests separately verify missing/mixed cloud scenario hashes.
 
-**Failure:** rerun or deploy a changed `engine.py` against an existing published snapshot without rerunning the pipeline. The app calculates plans using the changed engine but accepts the old cloud evaluation as `current`, because the data fingerprint still matches and an absent code hash does not count as stale. The local evaluation already has stronger version checking than the cloud report.
+**Original evidence:** `databricks/pipeline.py:evaluate` writes the input fingerprint and a constant model version into scenario results; `DatabricksStore.load_evaluation` returns no engine-code hash. `backend/hawkerbridge/api.py:evidence` checks `engine_code_sha256` only when it is present.
 
-**Fix:** hash the actual imported engine source during pipeline evaluation; record it in the published manifest, every scenario result and the MLflow artifact/parameters. Return one validated, consistent hash from `load_evaluation`. Require a matching hash in the API; missing historical hashes should produce an explicit unversioned/unavailable status. Do not change the published snapshot after computing its fingerprint.
+**Original failure:** rerun or deploy a changed `engine.py` against an existing published snapshot without rerunning the pipeline. The app calculates plans using the changed engine but accepts the old cloud evaluation as `current`, because the data fingerprint still matches and an absent code hash does not count as stale. The local evaluation already has stronger version checking than the cloud report.
+
+**Recommended repair:** hash the actual imported engine source during pipeline evaluation; record it in the published manifest, every scenario result and the MLflow artifact/parameters. Return one validated, consistent hash from `load_evaluation`. Require a matching hash in the API; missing historical hashes should produce an explicit unversioned/unavailable status. Do not change the published snapshot after computing its fingerprint.
 
 **Regression:** load a cloud report for identical data but another engine hash and assert that `/api/evidence` withholds it. Also reject mixed scenario hashes and an absent hash. Then test the valid matching report.
 
 ### P1 — Prove the Databricks authentication boundary and fail closed outside the supported runtime
 
-**Evidence:** `backend/hawkerbridge/api.py:platform_user` trusts `X-Forwarded-User` and `X-Forwarded-Email`. Those are the correct [Databricks Apps headers](https://docs.databricks.com/aws/en/dev-tools/databricks-apps/http-headers), but the trust boundary is the platform proxy. `Settings.validate` currently checks storage mode and warehouse presence, with no guard against starting this mode on a standalone server. The implementation contract says this mode is enabled only inside that runtime. Existing API tests exercise local identity; SDK store mocks do not prove this boundary.
+**Repair status:** closed at the code/test level. `Settings.validate` requires the managed Apps runtime variables before enabling workspace-header authentication. `tests/test_workspace_auth.py` verifies that absent runtime markers fail startup, local mode ignores forged workspace identities, missing workspace identity returns 401, local registration is disabled, CSRF binds to the authenticated identity, and a second identity cannot read the first identity's plans. Runtime variables are a misconfiguration guard, not cryptographic proof; actual proxy-only reachability remains a deployment check.
 
-**Failure:** a deployment operator runs the app on an ordinary reachable server with Databricks storage and auth enabled. A caller can supply the forwarded identity headers, receive that identity's CSRF token and access its owner-scoped records. This is a misdeployment risk, **not a demonstrated bypass of the genuine Databricks proxy**.
+**Original evidence:** `backend/hawkerbridge/api.py:platform_user` trusts `X-Forwarded-User` and `X-Forwarded-Email`. Those are the correct [Databricks Apps headers](https://docs.databricks.com/aws/en/dev-tools/databricks-apps/http-headers), but the trust boundary is the platform proxy. `Settings.validate` currently checks storage mode and warehouse presence, with no guard against starting this mode on a standalone server. The implementation contract says this mode is enabled only inside that runtime. Existing API tests exercise local identity; SDK store mocks do not prove this boundary.
 
-**Fix:** add a clear startup guard for the expected Databricks Apps runtime and document the proxy-only contract. Such a marker prevents accidental configuration; it does not cryptographically authenticate headers. Preserve the network boundary that makes the headers trustworthy. Add lifecycle tests for missing headers, valid platform identity, CSRF, forbidden local register/login routes and cross-owner plans with a mocked durable store. Confirm real proxy behaviour in the deployment checklist.
+**Original failure:** a deployment operator runs the app on an ordinary reachable server with Databricks storage and auth enabled. A caller can supply the forwarded identity headers, receive that identity's CSRF token and access its owner-scoped records. This is a misdeployment risk, **not a demonstrated bypass of the genuine Databricks proxy**.
+
+**Recommended repair:** add a clear startup guard for the expected Databricks Apps runtime and document the proxy-only contract. Such a marker prevents accidental configuration; it does not cryptographically authenticate headers. Preserve the network boundary that makes the headers trustworthy. Add lifecycle tests for missing headers, valid platform identity, CSRF, forbidden local register/login routes and cross-owner plans with a mocked durable store. Confirm real proxy behaviour in the deployment checklist.
 
 ### P2 — Bound the calendar by the published closure schedule and distinguish failure from loading
 
-**Evidence:** `frontend/src/App.tsx` initialises to today's date, permits `2020-01-01` through `2040-12-31`, and renders the `Updating access outlook…` pill whenever the displayed analysis date differs from the selected date. The backend correctly rejects a year outside `snapshot.manifest.closures_year`.
+**Repair status:** repaired and source-inspected. The date field now derives its bounds from the manifest, ignores invalid date edits and selects the schedule's first day when today falls outside the available year. A spinner is displayed only while loading; failed requests explicitly label the last successful result as potentially stale and prevent generation. The specific failure/year-boundary frontend regression remains a verification follow-up; this backend-only pass did not change frontend files.
 
-**Failure:** select a 2027 date against the delivered 2026 schedule. The API returns a clear error, but the old analysis remains under a perpetual updating indication even after the request is finished. Starting the application after the schedule year also begins with an unsupported default.
+**Original evidence:** `frontend/src/App.tsx` initialises to today's date, permits `2020-01-01` through `2040-12-31`, and renders the `Updating access outlook…` pill whenever the displayed analysis date differs from the selected date. The backend correctly rejects a year outside `snapshot.manifest.closures_year`.
 
-**Fix:** derive input bounds and an explicit archived-schedule fallback date from the manifest, while retaining the server check. Show loading only while a request is active; a failed analysis should be labelled stale or withheld. Include every analysis parameter in the freshness comparison, including planning area and rescheduled closures.
+**Original failure:** select a 2027 date against the delivered 2026 schedule. The API returns a clear error, but the old analysis remains under a perpetual updating indication even after the request is finished. Starting the application after the schedule year also begins with an unsupported default.
+
+**Recommended repair:** derive input bounds and an explicit archived-schedule fallback date from the manifest, while retaining the server check. Show loading only while a request is active; a failed analysis should be labelled stale or withheld. Include every analysis parameter in the freshness comparison, including planning area and rescheduled closures.
 
 **Regression:** select a date outside the supported year, simulate request failure and start with a clock outside the schedule year. Assert there is no permanent spinner and no old result presented as the current selection.
 
@@ -69,21 +89,23 @@ The root agent also changed the API comparison to require a matching code hash, 
 
 **Repair status:** addressed after review. Query 7 now exposes distinct `inventory_centres` and `food_centres` and uses only positive food-stall records in cooked-food density. A regression executes the actual query against the archived snapshot (123 inventory / 120 food centres) and adds a zero-food synthetic market to verify it cannot improve coverage. This local SQLite execution checks the portable calculation; it is not a claim of Databricks warehouse execution.
 
-**Evidence:** `databricks/sql/dashboard_queries.sql`, query 7, counts every row in `published_centres`. The engine now deliberately excludes the three official records with zero food stalls from cooked-food access; the source has 123 listed centres but 120 with food stalls.
+**Original evidence:** `databricks/sql/dashboard_queries.sql`, query 7, counts every row in `published_centres`. The engine now deliberately excludes the three official records with zero food stalls from cooked-food access; the source has 123 listed centres but 120 with food stalls.
 
-**Failure:** the BI density calculation calls all 123 records hawker coverage while the application calculates accessibility using 120. An evaluator comparing the governed SQL output with the app can reasonably challenge the conflicting supply definition.
+**Original failure:** the BI density calculation calls all 123 records hawker coverage while the application calculates accessibility using 120. An evaluator comparing the governed SQL output with the app can reasonably challenge the conflicting supply definition.
 
-**Fix:** count `food_stalls > 0` for the cooked-food coverage measure. If total centre inventory is useful, expose it separately with a distinct label. Name the density denominator and snapshot year clearly.
+**Recommended repair:** count `food_stalls > 0` for the cooked-food coverage measure. If total centre inventory is useful, expose it separately with a distinct label. Name the density denominator and snapshot year clearly.
 
 **Regression:** an all-Singapore aggregate should reconcile to 120 food centres and separately to 123 inventory records; a synthetic zero-food market must never increase cooked-food coverage.
 
 ### P2 — Enforce the request-size cap before buffering the entire request
 
-**Evidence:** API security middleware uses `len(await request.body()) > 65536`. That establishes a schema-size policy but reads the entire body into memory first.
+**Repair status:** closed at the code/test level. The outer ASGI `BodyLimitMiddleware` rejects an oversized declared length without reading the body, checks accumulated streamed bytes before buffering further chunks, and replays accepted bodies to the app. `tests/test_body_limit.py` verifies declared-length rejection, stopping before the unread remainder of an oversized stream and accepted chunked requests. This replaces the previous unbounded `request.body()` check.
 
-**Failure:** an oversized or chunked POST can allocate far more than 64 KB before returning 413. The endpoint need not pass authentication to reach this middleware. This is a resource-exhaustion hardening gap, not evidence of data disclosure.
+**Original evidence:** API security middleware uses `len(await request.body()) > 65536`. That establishes a schema-size policy but reads the entire body into memory first.
 
-**Fix:** reject an oversized declared content length early and also bound the streamed bytes so chunked or dishonest clients cannot bypass the cap. Preserve downstream request handling for accepted bodies. Verify both declared-length and streamed-overflow requests return 413 without invoking the route or buffering the remainder.
+**Original failure:** an oversized or chunked POST can allocate far more than 64 KB before returning 413. The endpoint need not pass authentication to reach this middleware. This is a resource-exhaustion hardening gap, not evidence of data disclosure.
+
+**Recommended repair:** reject an oversized declared content length early and also bound the streamed bytes so chunked or dishonest clients cannot bypass the cap. Preserve downstream request handling for accepted bodies. Verify both declared-length and streamed-overflow requests return 413 without invoking the route or buffering the remainder.
 
 ## Findings already repaired after the initial review report
 
@@ -91,7 +113,8 @@ The root agent also changed the API comparison to require a matching code hash, 
 | --- | --- | --- |
 | Advanced settings used setup-cost `min=1`, `step=50`, default `300`; native form validity was false because 300 is not 1 + 50n. Opening the panel blocked a default Generate action. | The field now uses `step=0.01`; `frontend/src/App.integration.test.tsx` asserts the expanded form is valid before generation. | Run the live API integration test and a browser pass with the panel open. |
 | Title and note controls allowed more characters than the API accepted (160 vs 140; 10,000 vs 4,000). | Create/edit forms now use 140/4,000, with integration assertions. | Keep limits aligned with the request schema when changing them later. |
-| Plans lacked an immutable source manifest; `/api/brief` returned the current snapshot's sources for a historical saved plan. JSON exports therefore did not contain the promised full provenance. | New plans now store `source_manifest` and `engine_code_sha256`; briefs use preserved plan sources and explicitly mark legacy plans with no manifest. | A refresh/restart regression should save under snapshot A, run the app against B, and confirm the saved plan, JSON and brief still refer to A. |
+| Plans lacked an immutable source manifest; `/api/brief` returned the current snapshot's sources for a historical saved plan. JSON exports therefore did not contain the promised full provenance. | New plans store `source_manifest` and `engine_code_sha256`; briefs use preserved sources and explicitly mark legacy plans without a manifest. `test_saved_provenance_survives_restart_with_new_published_inputs` saves under A, restarts with B and confirms the persisted record, JSON and brief remain bound to A. | The local regression passes. Confirm the same durable lifecycle after an actual cloud publication/restart. |
+| A title or note edit could leave a plan presented as already reviewed. | The API now resets such edits to draft and removes `reviewed_at`/`reviewed_by`. `test_editing_reviewed_plan_requires_fresh_review` checks title and note edits through the response, stored GET and JSON export, plus explicit re-review. | Regression passes; review status still represents a proposal review, never service dispatch. |
 
 ## Deployment review outcome
 
@@ -116,3 +139,5 @@ The highest-value next milestone is a verifiable source-to-plan Databricks run w
 - `uv run ruff check databricks backend/hawkerbridge/databricks_store.py tests/test_databricks_store.py` — passed.
 - Round 1 v2: text extracted; all three pages rendered and visually inspected; the 28 September infrastructure counts were checked against the real engine output.
 - No workspace deployment, production load test, external stakeholder interview or official judging occurred in this review.
+
+Final backend recheck: `uv run pytest -q tests/test_api.py tests/test_workspace_auth.py tests/test_body_limit.py` — **24 passed**. This includes seven newly added provenance, evaluation-freshness and review-lifecycle cases. Test fixtures use isolated local storage and clearly synthetic evaluation/source metadata; no committed source archive is altered. No new backend implementation defect requiring a change was found in this bounded pass.
