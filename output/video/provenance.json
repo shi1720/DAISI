@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "project": "HawkerBridge",
+  "participant": "Shivam Gupta",
+  "prepared_at_utc": "2026-09-22T05:46:56.776153+00:00",
+  "artifact": {
+    "file": "hawkerbridge-demo-silent.mp4",
+    "sha256": "1244f2729b714647868ce763ce3b36b7bbf16fc7c89525f77d5fb06e5a92ce71",
+    "bytes": 6772306,
+    "duration_seconds": 175.68,
+    "codec": "H.264",
+    "width": 1440,
+    "height": 1080,
+    "frames_per_second": 25,
+    "audio_tracks": 0,
+    "post_download_changes": "None. Exact CI-produced MP4 bytes; only the filename changed."
+  },
+  "timeline": {
+    "file": "recording-timeline.json",
+    "sha256": "a1309c1533008bec4a974928c5063f21101f69e3681c5fb7823aa92a3cfa9f22",
+    "bytes": 1814,
+    "time_origin": "Cue timestamps are relative to the automation recording clock. The encoded container also includes browser capture startup and teardown; use actual video frames for final narration timing."
+  },
+  "capture": {
+    "workflow_run": "https://github.com/shi1720/DAISI/actions/runs/35691366315",
+    "source_revision": "21c1f1fdbf7980b66fa80b06c1dc70191ffedccc",
+    "recording_test_result": "passed",
+    "workflow_result": "failure",
+    "workflow_failure_explanation": "The recording test and functional interactions passed. The expanded schedule warning audit found three text nodes below WCAG AA contrast: message/strong 4.34:1 and Reset link 4.49:1. The final source correction was verified in the separate successful run below.",
+    "method": "Automated Chromium interacts with the actual React application and FastAPI backend. Playwright recorded WebM; CI encoded the recording to H.264 MP4 using FFmpeg at CRF 23. No product results or UI scenes were fabricated.",
+    "execution_environment": "GitHub Actions Linux runner, locally served FastAPI application; this footage does not demonstrate execution inside Databricks.",
+    "identity": "Synthetic guest session; no real credentials or personal records are shown.",
+    "snapshot_file_sha256": "c18794e9fb8d35c2689f70ee45339abe83d611ca7f380aedf435ac4d6cd7ee8d"
+  },
+  "final_code_verification": {
+    "workflow_run": "https://github.com/shi1720/DAISI/actions/runs/35691832262",
+    "source_revision": "1ba692e321f7453973cae2543df674450778eec5",
+    "result": "success",
+    "browser_journeys_passed": 4,
+    "recording_test": "Skipped intentionally; the complete recording was already captured in the run above.",
+    "frontend_tests_passed": 12,
+    "frontend_tests_skipped": 1,
+    "frontend_skip_reason": "Optional live-API DOM integration test; browser journeys exercise the real API separately.",
+    "axe_findings": {
+      "overview": [],
+      "expanded_schedule_comparison": [],
+      "planner": [],
+      "evidence": []
+    },
+    "contrast_fix": "Expanded scenario warning text and Reset link changed to #765429 on #fff0d5. No data, model output, workflow logic, or recording pixels were altered."
+  },
+  "visual_review": {
+    "sampled_video_seconds": [
+      5,
+      45,
+      55,
+      85,
+      125,
+      153,
+      168
+    ],
+    "findings": [
+      "The schedule comparison and selected Bedok Reservoir Road Blk630 closure are visible together with the planning context.",
+      "The recorded scenario shows 91,180 to 54,030 historical residents in flagged subzones, then restores the published schedule.",
+      "The S$1,500 proposal visibly allocates 225 assumed meals; the S$3,000 proposal reaches the 450-meal capacity ceiling.",
+      "The saved proposal shows 450 planned meals, S$2,700 proposed cost and a real PDF export confirmation.",
+      "Evidence screens show source limitations and computational benchmark results."
+    ]
+  },
+  "recorded_assumptions": {
+    "date": "2026-09-28",
+    "planning_areas": [],
+    "radius_m": 800,
+    "senior_weight": 2,
+    "meal_uptake": 0.05,
+    "meal_cost_sgd": 4,
+    "locality_setup_sgd": 300,
+    "max_localities": 3,
+    "capacity_per_locality": 150,
+    "budgets_sgd": [
+      1500,
+      3000,
+      6000
+    ]
+  },
+  "review_state_note": "The proposal is marked Reviewed after acknowledging modelling assumptions and future operational checks. This is not confirmation of a venue, operator, validated meal demand or a booked service.",
+  "participant_next_step": "Record the supplied narration in Shivam Gupta’s own voice. The video finisher can add that audio, supplied captions and the execution-context footer while leaving this original silent capture unchanged."
+}
