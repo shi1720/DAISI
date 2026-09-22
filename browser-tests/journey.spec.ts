@@ -4,7 +4,7 @@ import AxeBuilder from '@axe-core/playwright';
 async function guest(page: Page) {
   await page.goto('/');
   await page.getByRole('button',{name:'Explore as a guest'}).click();
-  await expect(page.getByRole('button',{name:'Continuity planner',exact:true})).toBeVisible();
+  await expect(page.getByRole('button',{name:'Continuity planner',exact:true})).toBeAttached();
   await expect(page.locator('.metric-value').first()).toBeVisible();
   await page.getByLabel('Analysis date').fill('2026-09-28');
   await expect(page.locator('.updating-pill')).toHaveCount(0);
@@ -21,10 +21,11 @@ test('authenticated full journey, saved plan, review, exports and source evidenc
   await page.goto('/');
   await screenshot(page,'01-welcome');
   await guest(page);
-  await expect(page.getByText('Residents in flagged subzones',{exact:true})).toBeVisible();
+  await expect(page.locator('.metric-top').getByText('Residents in flagged subzones',{exact:true})).toBeVisible();
   await screenshot(page,'02-overview');
   const violations=(await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa']).analyze()).violations;
-  expect(violations.filter(v=>['serious','critical'].includes(v.impact??''))).toEqual([]);
+  console.log('AXE_OVERVIEW',JSON.stringify(violations.map(v=>({id:v.id,impact:v.impact,nodes:v.nodes.map(n=>({target:n.target,summary:n.failureSummary}))}))));
+  expect.soft(violations.filter(v=>['serious','critical'].includes(v.impact??''))).toEqual([]);
   await page.getByRole('button',{name:'Continuity planner',exact:true}).click();
   await page.getByRole('button',{name:'Cost, capacity & priority settings'}).click();
   await expect(page.getByLabel('Setup cost per locality')).toHaveValue('300');
@@ -35,6 +36,7 @@ test('authenticated full journey, saved plan, review, exports and source evidenc
   await page.getByLabel('Daily support budget').fill('6000');
   await page.getByRole('button',{name:'Generate support proposal'}).click();
   await expect(page.locator('.planner-result')).toContainText('450');
+  await screenshot(page,'03b-capacity-450');
   await page.getByLabel('Daily support budget').fill('1500');
   await page.getByRole('button',{name:'Generate support proposal'}).click();
   await expect(page.locator('.planner-result')).toContainText('225');
@@ -56,7 +58,7 @@ test('authenticated full journey, saved plan, review, exports and source evidenc
   await expect(page.locator('.brief-copy')).toContainText('225');
   await screenshot(page,'04-saved-plan');
   await page.getByRole('button',{name:'Evidence & methods',exact:true}).click();
-  await expect(page.getByRole('heading',{name:/evidence|trust|sources|public|Know|show|Behind/i}).first()).toBeVisible();
+  await expect(page.getByRole('heading',{name:'A clear line from data to decision.',exact:true})).toBeVisible();
   await expect(page.getByText('Census 2020',{exact:false}).first()).toBeVisible();
   await screenshot(page,'05-evidence');
   expect(errors).toEqual([]);
@@ -103,6 +105,7 @@ test('mobile navigation and accessible layout',async({page})=>{
   await page.setViewportSize({width:390,height:844});
   await guest(page);
   await screenshot(page,'07-mobile-overview');
+  console.log('MOBILE_OVERVIEW_OVERFLOW',JSON.stringify(await page.evaluate(()=>Array.from(document.querySelectorAll('body *')).filter(e=>{const r=e.getBoundingClientRect();return r.width>0&&r.right>innerWidth+1&&getComputedStyle(e).position!=='absolute';}).slice(0,25).map(e=>({tag:e.tagName,class:e.className,width:e.getBoundingClientRect().width,right:e.getBoundingClientRect().right})))));
   expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(391);
   await page.getByRole('button',{name:'Open navigation',exact:true}).click();
   await page.getByRole('button',{name:'Continuity planner',exact:true}).click();

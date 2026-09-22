@@ -30,8 +30,28 @@ jobs:
         working-directory: browser-tests
         env:
           HAWKERBRIDGE_DATABASE: /tmp/hawkerbridge-ci.db
+      - name: Preserve PNG evidence in logs
+        if: always()
+        run: |
+          python3 - <<'PY'
+          import base64, hashlib
+          from pathlib import Path
+          paths = [(p.name, p) for p in sorted(Path('output/screenshots').glob('*.png'))]
+          paths += [(f'failure-{p.parent.name}.png', p) for p in sorted(Path('output/browser-results').rglob('test-failed-*.png'))]
+          for name, path in paths[:16]:
+              raw = path.read_bytes()
+              if len(raw) > 4 * 1024 * 1024:
+                  print(f'HB_PNG_SKIPPED|{name}|too-large')
+                  continue
+              encoded = base64.b64encode(raw).decode('ascii')
+              print(f'HB_PNG_BEGIN|{name}|{hashlib.sha256(raw).hexdigest()}|{len(raw)}')
+              for i in range(0, len(encoded), 4096):
+                  print('HB_PNG_DATA|' + encoded[i:i+4096])
+              print('HB_PNG_END|' + name)
+          PY
       - name: Preserve browser evidence
         if: always()
+        continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: hawkerbridge-browser-evidence
