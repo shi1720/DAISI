@@ -20,6 +20,22 @@ describe('authentication',() => {
     fireEvent.click(screen.getByRole('button',{name:'Create account'}));
     await waitFor(() => expect(onSession).toHaveBeenCalledOnce());
   });
+  it('offers private password recovery on the hosted account service',async () => {
+    const onSession = vi.fn();const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify({message:'If an account uses that email, a password reset link will be sent.'}),{status:200}));
+    vi.stubGlobal('fetch',fetchMock);
+    render(<Auth session={{user:null,csrf_token:null,auth_mode:'firebase'}} onSession={onSession}/>);
+    fireEvent.click(screen.getByRole('button',{name:'Forgot your password?'}));
+    expect(screen.queryByLabelText('Password')).not.toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText('Email address'),{target:{value:'planner@example.test'}});
+    fireEvent.click(screen.getByRole('button',{name:'Send reset link'}));
+    expect(await screen.findByText('If an account uses that email, a password reset link will be sent.')).toBeInTheDocument();
+    expect(fetchMock.mock.calls[0][0]).toBe('/api/auth/reset-password');
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual({email:'planner@example.test'});
+    expect(onSession).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByRole('button',{name:'Sign in'}));
+    expect(screen.getByLabelText('Email address')).toHaveValue('planner@example.test');
+    expect(screen.getByLabelText('Password')).toHaveValue('');
+  });
   it('does not expose local signup or guest sessions when platform identity is required',() => {
     render(<Auth session={{user:null,csrf_token:null,auth_mode:'databricks'}} onSession={vi.fn()}/>);
     expect(screen.queryByRole('button',{name:'Explore as a guest'})).not.toBeInTheDocument();

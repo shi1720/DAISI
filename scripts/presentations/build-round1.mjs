@@ -39,25 +39,25 @@ NEA annual food-waste data supplies national context only, never local demand la
 
 What differs: Counterfactual cleaning-date comparisons and constrained allocation,
 with explicit costs, capacity, source provenance and uncertainty. Every allocation has an explicit objective and a comparison baseline.`,
-`Intended platform: Public APIs / Lakeflow Job / Bronze raw Delta / Silver validated
+`Working platform: Public APIs / Lakeflow Job / Bronze raw Delta / Silver validated
 closures and population / Gold access model and allocation / Databricks Apps.
 Unity Catalog governs tables. MLflow records the optimiser's baseline comparisons.
 
-Demo: An authenticated map, closure calendar, scope and budget controls, a saved
-plan with PDF export, plus a notebook run and a governed SQL evidence dashboard.
+Demo: hawkerbridge-sg.web.app offers private plans and PDF export. A live Databricks
+job passed 12 quality gates and recorded 9 MLflow scenarios, with a SQL dashboard.
 
 Impact to test: Fewer coordinator hours per closure and fewer residents reporting
 lost meal access. Pilot targets: reduce planning time by 30% and verify every proposed site.
 A funded pilot and organisation subscription are commercial hypotheses, not sales.
 
-Two-week sprint: Deploy the tested local pipeline to Free Edition, validate locations
-with a coordinator, benchmark allocations and rehearse. Paid hosting follows a pilot.`
+Next sprint: Validate locations with a coordinator, measure planning time and
+repeat use, then test a paid pilot. Current prices and impact targets are hypotheses.`
 ];
 const anchors=['sh/65g3298r','sh/a10jqpsj','sh/3ah8rqlg'];
 const notes=[
 'Sources: NEA Dates of Hawker Centre Closures, https://data.gov.sg/datasets/d_bda4baa634dd1cc7a6c7cad5f19e2d68/view . Counts recomputed from the 22 Sep 2026 snapshot for 28 Sep 2026. No claim of food insecurity is inferred. Town council scheduling role: https://www.nea.gov.sg/our-services/hawker-management/announcements . Team institution/course/year/email are required separately before submission.',
 'Sources: NEA closure dataset d_bda4baa634dd1cc7a6c7cad5f19e2d68; Census 2020 age and subzone population d_d95ae740c0f8961a0b10435836660ce0; URA planning areas d_4765db0e87b9c86336792efe8a1f7a66 and subzones d_8594ae9ff96d0c708bc2af633048edfb; NEA waste d_daf568968ab40dc81e7b08887a83c8fa. All data.gov.sg. Spatial model uses geographic representative points, not population centroids or walking routes. Closure discovery already exists in myENV and public products; the differentiation is coordinator planning.',
-'Architecture is implemented as a deployment package and locally tested but requires a verified Databricks workspace run before final submission. Free Edition is for non-commercial learning/prototyping: https://daisi.online/guide and https://docs.databricks.com/aws/en/getting-started/free-edition-limitations . Pilot targets and pricing are unvalidated. AI-assisted development is disclosed in the repository; project owner and presenter is Shivam Gupta.'
+'A real Databricks live run published governed tables after 12 quality checks and 9 MLflow scenarios. Three tabular sources were fetched live; two checksum-verified URA archives retained their original timestamps. See submission/deployment-status.json and data/processed/databricks-publication.json. The separate local robustness benchmark has 15 scenarios. Free Edition is for non-commercial learning/prototyping: https://daisi.online/guide and https://docs.databricks.com/aws/en/getting-started/free-edition-limitations . Pilot targets and pricing are unvalidated. AI-assisted development is disclosed in the repository; project owner and presenter is Shivam Gupta.'
 ];
 for(let i=0;i<3;i++){
  const sh=p.resolve(anchors[i]); const groups=bodies[i].split('\n\n'); if(i===0){const first=groups.shift().split('\n'); groups.unshift(...first);} sh.text=groups.map(group=>{const str=group.replaceAll('\n',' ');const idx=str.indexOf(':');return {runs:[{run:str.slice(0,idx+1),textStyle:{fontSize:'16pt',typeface:'Arial',color:'#132731',bold:true}},{run:str.slice(idx+1),textStyle:{fontSize:'16pt',typeface:'Arial',color:'#526773'}}],spaceAfter:1400,spaceBefore:0};});

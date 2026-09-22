@@ -47,6 +47,8 @@ def package_source(revision: str) -> None:
         "requirements.txt",
         "app.yaml",
         "databricks.yml",
+        "Dockerfile", ".dockerignore", ".gcloudignore", "cloudbuild.yaml",
+        "firebase.json", "firebase-data.json", "firestore.rules", "firestore.indexes.json",
     }
     names = [
         name
@@ -104,24 +106,22 @@ def main() -> None:
         ROOT / "output/pdf/example-continuity-plan.pdf",
         ROOT / "output/presentations/hawkerbridge-round1.pptx",
         ROOT / "output/presentations/hawkerbridge-final-pitch.pptx",
-        ROOT / "output/video/hawkerbridge-demo-silent.mp4",
-        ROOT / "output/video/recording-timeline.json",
-        ROOT / "output/video/provenance.json",
+        ROOT / "output/video/hawkerbridge-demo-narrated.mp4",
+        ROOT / "output/demo-footage/timeline.json",
+        ROOT / "output/video/narrated-provenance.json",
     ]
     for folder, patterns in {
         "docs": ["*.md"],
-        "output/pdf": ["*.pdf"],
-        "output/presentations": ["*.pptx"],
-        "docs/screenshots": ["*.png", "README.md", "provenance.json"],
+                "docs/screenshots": ["*.png", "README.md", "provenance.json"],
         "submission": ["*.md", "*.srt", "deployment-status.json", "team.json"],
         "submission/assets": ["*.png"],
-        "output": ["example-continuity-plan.csv", "example-continuity-plan.json"],
+        "output": ["example-continuity-plan.csv", "example-continuity-plan.json", "hosted-smoke.json", "hosted-restart-smoke.json"],
+        "data/processed": ["databricks-publication.json", "databricks-evaluation.json"],
         "output/video": [
-            "hawkerbridge-demo-silent.mp4",
-            "recording-timeline.json",
-            "provenance.json",
+            "hawkerbridge-demo-narrated.mp4",
+            "narrated-provenance.json",
         ],
-        "scripts": ["assemble_demo.py", "check_submission.py"],
+        "scripts": ["render_narrated_demo.py", "check_submission.py"],
     }.items():
         for pattern in patterns:
             paths.extend((ROOT / folder).glob(pattern))
@@ -153,7 +153,7 @@ def main() -> None:
     with zipfile.ZipFile(destination, "w", compression=zipfile.ZIP_DEFLATED) as archive:
         archive.writestr(
             "HawkerBridge/READ_THIS_FIRST.txt",
-            "This archive contains submission materials, screenshots, video assets and a separate source archive at output/HawkerBridge-source.zip. Extract that source archive into a separate directory and follow its README.md to run the app and checks. The source is also at https://github.com/shi1720/DAISI. Start with START_HERE.md. For the video, follow submission/recording-guide.md; the supplied footage is silent and needs your real voiceover. Cloud evidence and participant details remain separate submission gates.\n",
+            "This archive contains submission materials, screenshots, video assets and a separate source archive at output/HawkerBridge-source.zip. Extract that source archive into a separate directory and follow its README.md to run the app and checks. The source is also at https://github.com/shi1720/DAISI. Start with START_HERE.md. The final narrated hosted demo is output/video/hawkerbridge-demo-narrated.mp4. It has burned captions and disclosed generic AI narration. Cloud execution evidence is in data/processed/databricks-publication.json. Check submission/deployment-status.json for actual public links and verification. Participant eligibility details remain a separate submission gate.\n",
         )
         for path in paths:
             archive.write(path, "HawkerBridge/" + str(path.relative_to(ROOT)))
@@ -165,7 +165,9 @@ def main() -> None:
                 hashlib.sha256(archive.read("HawkerBridge/" + item["path"])).hexdigest()
                 == item["sha256"]
             )
-    print(f"Verified {len(paths)} files in {destination}")
+    if destination.stat().st_size > 35_000_000:
+        raise SystemExit("Submission archive exceeds Devpost 35 MB limit")
+    print(f"Verified {len(paths)} files in {destination} ({destination.stat().st_size:,} bytes)")
 
 
 if __name__ == "__main__":

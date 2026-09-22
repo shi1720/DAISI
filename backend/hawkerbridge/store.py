@@ -18,6 +18,8 @@ from pathlib import Path
 from argon2 import PasswordHasher
 from argon2.exceptions import InvalidHashError, VerificationError
 
+from .plan_errors import PlanConflictError, PlanNotFoundError
+
 HASHER = PasswordHasher(time_cost=3, memory_cost=32768, parallelism=2)
 DUMMY_HASH = HASHER.hash(secrets.token_urlsafe(32))
 
@@ -161,6 +163,21 @@ class LocalStore:
                 "DELETE FROM plans WHERE owner_id=? AND id=?", (owner_id, plan_id)
             )
             return cursor.rowcount > 0
+
+    def update_plan(self, owner_id: str, plan: dict, expected_updated_at: str):
+        with self.connect() as conn:
+            conn.execute("BEGIN IMMEDIATE")
+            cursor = conn.execute(
+                "UPDATE plans SET plan_json=?, updated_at=? WHERE owner_id=? AND id=? AND updated_at=?",
+                (json.dumps(plan), plan["updated_at"], owner_id, plan["id"], expected_updated_at),
+            )
+            if cursor.rowcount:
+                return
+            if not conn.execute(
+                "SELECT 1 FROM plans WHERE owner_id=? AND id=?", (owner_id, plan["id"])
+            ).fetchone():
+                raise PlanNotFoundError()
+            raise PlanConflictError()
 
     def delete_account(self, owner_id: str):
         with self.connect() as conn:

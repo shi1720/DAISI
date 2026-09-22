@@ -1,0 +1,24 @@
+{
+  "hosting": {
+    "site": "hawkerbridge-sg",
+    "public": "frontend/dist",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "headers": [
+      {"source": "**", "headers": [
+        {"key": "Cache-Control", "value": "no-cache"},
+        {"key": "X-Content-Type-Options", "value": "nosniff"},
+        {"key": "Referrer-Policy", "value": "strict-origin-when-cross-origin"},
+        {"key": "X-Frame-Options", "value": "DENY"},
+        {"key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()"},
+        {"key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.tile.openstreetmap.org; font-src 'self'; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"}
+      ]},
+      {"source": "/assets/**", "headers": [{"key": "Cache-Control", "value": "public,max-age=31536000,immutable"}]},
+      {"source": "/api/**", "headers": [{"key": "Cache-Control", "value": "private,no-store"}]},
+      {"source": "/index.html", "headers": [{"key": "Cache-Control", "value": "no-cache"}]}
+    ],
+    "rewrites": [
+      {"source": "/api/**", "run": {"serviceId": "hawkerbridge-api", "region": "asia-southeast1", "pinTag": true}},
+      {"source": "**", "destination": "/index.html"}
+    ]
+  }
+}

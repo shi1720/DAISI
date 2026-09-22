@@ -4,6 +4,7 @@ The official three-slide Round 1 PDF remains the primary entry. Render these fil
 with Poppler and inspect them whenever content or layout changes.
 """
 
+import json
 from pathlib import Path
 from xml.sax.saxutils import escape
 
@@ -78,7 +79,7 @@ def build_concept():
         ),
         (
             "Data and Databricks architecture",
-            "Five official datasets combine NEA closures and stall counts, Census 2020 subzone/age populations, URA planning-area and subzone boundaries, and national food-waste context. A Lakeflow Job archives Bronze payloads, validates Silver tables, evaluates Gold allocations and publishes only after checks pass. Unity Catalog governs access, MLflow records scenario comparisons, and a Databricks App serves the planning workflow. Cloud execution status is recorded separately from the implemented deployment package.",
+            "Five official datasets combine NEA closures and stall counts, Census 2020 subzone/age populations, URA planning-area and subzone boundaries, and national food-waste context. A Lakeflow Job archives Bronze payloads, validates Silver tables, evaluates Gold allocations and publishes only after checks pass. Unity Catalog governs access, MLflow records scenario comparisons, and a Databricks App serves the planning workflow. The verified workspace run passed 12 quality gates and recorded 9 MLflow scenarios. Firebase provides the public interface using the published snapshot.",
         ),
         (
             "Impact and a sustainable buyer",
@@ -111,49 +112,27 @@ def build_concept():
 
 
 def build_narration():
-    text = (ROOT / "submission/video-script.md").read_text()
-    main = text.split("## Narration and storyboard", 1)[1].split("## Optional replacement", 1)[0]
+    scenes = json.loads((ROOT / "submission/narration-scenes.json").read_text())
+    labels = ["Closure decision", "Access and cleaning scenario", "S$1,500 proposal", "Capacity ceiling", "Save and export a draft", "Databricks evidence and pilot"]
     parts = [
-        Paragraph("HAWKERBRIDGE / RECORDING COPY", style("label", 10, 13, ORANGE)),
+        Paragraph("HAWKERBRIDGE / VERBATIM SCRIPT", style("label", 10, 13, ORANGE)),
         Paragraph("Three-minute narration", style("narration-title", 27, 33, FOREST)),
-        Paragraph("Shivam Gupta", style("name", 12, 17, MUTED)),
-        Paragraph(
-            "Read the large text verbatim. The small timing labels are screen directions. This version describes verified local execution. Use the cloud replacement in the source script only after the real workspace run succeeds.",
-            style("directions", 10, 14, MUTED),
-        ),
+        Paragraph("Project owner: Shivam Gupta", style("name", 12, 17, MUTED)),
+        Paragraph("Read the large text verbatim. Timing labels are not spoken. The current hosted demo uses a disclosed generic synthetic narrator. This script can also be read by Shivam. It describes the verified Databricks publication and the Firebase interface.", style("directions", 10, 14, MUTED)),
         Spacer(1, 10),
     ]
-    buf = []
-
-    def flush():
-        if buf:
-            parts.append(Paragraph(escape(" ".join(buf)), style("spoken", 16, 23)))
-            parts.append(Spacer(1, 6))
-            buf.clear()
-
-    for line in main.splitlines():
-        if line.startswith("**0:") or line.startswith("**1:") or line.startswith("**2:"):
-            flush()
-            if line.startswith("**0:52") or line.startswith("**1:54"):
-                parts.append(PageBreak())
-            heading = line.split("**", 2)[1].replace("·", "/").replace("–", "-")
-            parts.append(
-                Paragraph(escape(heading), style("timing", 9, 12, ORANGE, keepWithNext=True))
-            )
-        elif line.startswith("> "):
-            buf.append(line[2:])
-        elif line.strip() == ">" or (not line.strip() and buf):
-            flush()
-    flush()
+    for index, scene in enumerate(scenes):
+        if index in (2, 4):
+            parts.append(PageBreak())
+        start, end = int(scene["start"]), int(scene["end"])
+        timing = f"{start // 60}:{start % 60:02} to {end // 60}:{end % 60:02} / {labels[index]}"
+        parts.append(Paragraph(escape(timing), style("timing", 9, 12, ORANGE, keepWithNext=True)))
+        parts.append(Paragraph(escape(scene["text"]), style("spoken", 16, 23)))
+        parts.append(Spacer(1, 16))
     SimpleDocTemplate(
-        str(OUTPUT / "hawkerbridge-video-narration.pdf"),
-        pagesize=A4,
-        topMargin=40,
-        bottomMargin=55,
-        leftMargin=51,
-        rightMargin=51,
-        title="HawkerBridge - Verbatim video narration",
-        author="Shivam Gupta",
+        str(OUTPUT / "hawkerbridge-video-narration.pdf"), pagesize=A4,
+        topMargin=40, bottomMargin=55, leftMargin=51, rightMargin=51,
+        title="HawkerBridge - Verbatim video narration", author="Shivam Gupta",
     ).build(parts, onFirstPage=footer, onLaterPages=footer)
 
 

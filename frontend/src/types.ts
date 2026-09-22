@@ -1,7 +1,7 @@
 import type { GeoJsonObject, Geometry } from 'geojson';
 
-export type User = { id: string; name: string; email: string; mode: 'guest' | 'local' | 'databricks' };
-export type Session = { user: User | null; csrf_token: string | null; auth_mode: 'local' | 'databricks' };
+export type User = { id: string; name: string; email: string; mode: 'guest' | 'local' | 'firebase' | 'databricks' };
+export type Session = { user: User | null; csrf_token: string | null; auth_mode: 'local' | 'firebase' | 'databricks' };
 export type Closure = { id: string; centre_id: string; start_date: string; end_date: string; kind: 'cleaning' | 'works'; source_text: string };
 export type Centre = { id: string; name: string; lat: number; lng: number; address: string; planning_area: string; food_stalls: number; market_stalls: number; food_access_eligible?: boolean };
 export type AnalysedCentre = Centre & { status: 'open' | 'closed'; active_closures: Closure[] };
@@ -29,4 +29,5 @@ export type Optimisation = {
   explanation: string; limitations: string[]; model_version: string; source_fingerprint: string;
 };
 export type Plan = { id: string; title: string; status: 'draft' | 'reviewed'; created_at: string; updated_at: string; date: string; summary?: Optimisation['summary']; parameters: OptimiseParams; result?: Optimisation; notes?: string };
-export type Evidence = { manifest: Manifest; methodology: Record<string, unknown>; evaluation?: Record<string, unknown>; evaluation_status?: 'current'|'stale'|'unavailable' };
+export type WorkspacePublication = {input_mode?:string;pipeline_result:string;mlflow_status:string;pipeline_run_url?:string;publication_id:string;verified_at:string;source_fingerprint:string;engine_code_sha256:string;mlflow_run_id:string;scenarios_evaluated:number;source_comparison?:{source:string;reused_at:string|null;matches_local_source:boolean}[];quality_checks?:{check_name:string;passed:string|boolean;observed_value:string|number}[]};
+export type Evidence = {workspace_execution?:WorkspacePublication|null;cloud_evaluation?:Record<string,unknown>|null;evaluation_execution?:'local'|'databricks'; manifest: Manifest; methodology: Record<string, unknown>; evaluation?: Record<string, unknown>; evaluation_status?: 'current'|'stale'|'unavailable' };

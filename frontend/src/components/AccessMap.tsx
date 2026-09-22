@@ -55,7 +55,7 @@ export default function AccessMap({ snapshot, analysis, sites = noSites, selecte
       const marker = L.circleMarker([zone.lat,zone.lng], { radius:Math.max(6,Math.min(17,Math.sqrt(zone.residents)/12)), color:'#d95436', weight:1.5, fillColor:'#e78866', fillOpacity:0.27 });
       marker.bindTooltip(`${escapeHtml(titleCase(zone.name))} · ${number(zone.residents)} residents in affected subzone`).on('click', () => setSelection({ kind:'zone', value:zone })).addTo(layer);
     });
-    analysis.centres.filter(c => (showOpen || c.status === 'closed') && (!selectedArea || c.planning_area === selectedArea)).forEach(centre => {
+    analysis.centres.filter(c => showOpen || c.status === 'closed').forEach(centre => {
       const closed = centre.status === 'closed';
       if (centre.food_access_eligible === false || centre.food_stalls === 0) return;
       const marker = L.marker([centre.lat, centre.lng], { icon:L.divIcon({ className:'centre-marker-wrapper', html:`<span class="centre-marker ${closed ? 'closed' : 'open'}">${closed ? '<svg width="12" height="12" viewBox="0 0 12 12"><path d="M3 3l6 6m0-6L3 9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>' : ''}</span>`, iconSize:[closed ? 25 : 14,closed ? 25 : 14], iconAnchor:[closed ? 12.5 : 7,closed ? 12.5 : 7] }), keyboard:true, zIndexOffset:closed ? 1000 : 0, title:`${centre.name}, ${closed ? 'scheduled closed' : 'no resolved closure'}` });

@@ -11,6 +11,7 @@ import sqlite3
 import threading
 import time
 import uuid
+from contextlib import asynccontextmanager
 from copy import deepcopy
 from datetime import UTC, datetime
 from pathlib import Path
@@ -22,8 +23,10 @@ from fastapi.staticfiles import StaticFiles
 
 from .config import ROOT, Settings
 from .engine import MODEL_VERSION, PlanningEngine
+from .execution_evidence import read_report, verified_execution
 from .exports import plan_csv, plan_pdf
 from .middleware import BodyLimitMiddleware
+from .plan_errors import PlanConflictError, PlanMutationError
 from .schemas import (
     AnalysisRequest,
     Credentials,
@@ -31,6 +34,7 @@ from .schemas import (
     PlanCreate,
     PlanPatch,
     Registration,
+    ResetPassword,
 )
 from .store import LocalStore
 
@@ -41,20 +45,63 @@ COOKIE = "hb_session"
 def create_app(settings: Settings | None = None) -> FastAPI:
     settings = settings or Settings()
     settings.validate()
+    identity = None
+    firebase_store = None
+    cookie_name = "__session" if settings.auth_mode == "firebase" else COOKIE
+
+    @asynccontextmanager
+    async def lifespan(app):
+        yield
+        if identity:
+            identity.close()
+
     app = FastAPI(
         title="HawkerBridge",
         version="1.0.0",
         docs_url="/api/docs",
         openapi_url="/api/openapi.json",
         redoc_url=None,
+        lifespan=lifespan,
     )
     app.add_middleware(GZipMiddleware, minimum_size=1000)
+
+    @app.exception_handler(PlanMutationError)
+    async def plan_conflict(request, error):
+        return JSONResponse({"detail": str(error)}, status_code=error.status_code)
+
     local = LocalStore(settings.database_path) if settings.storage == "local" else None
     if settings.storage == "databricks":
         from .databricks_store import DatabricksStore
 
         store = DatabricksStore(settings)
         snapshot = store.load_snapshot()
+    elif settings.storage == "firestore":
+        from google.api_core.exceptions import GoogleAPICallError
+
+        from .firebase_identity import FirebaseIdentity, FirebaseIdentityError, csrf_for_session
+        from .firestore_store import FirestoreStore, FirestoreStoreError
+
+        identity = FirebaseIdentity(settings)
+        firebase_store = FirestoreStore(settings, app=identity.app)
+        store = firebase_store
+        snapshot = json.loads(settings.data_path.read_text())
+
+        @app.exception_handler(FirebaseIdentityError)
+        @app.exception_handler(FirestoreStoreError)
+        async def managed_service_error(request, error):
+            headers = {"Retry-After": "60"} if error.status_code in {429, 503} else {}
+            return JSONResponse(
+                {"detail": str(error)}, status_code=error.status_code, headers=headers
+            )
+
+        @app.exception_handler(GoogleAPICallError)
+        async def database_unavailable(request, error):
+            logger.warning("Managed database unavailable: %s", type(error).__name__)
+            return JSONResponse(
+                {"detail": "Workspace storage is temporarily unavailable. Please retry."},
+                status_code=503,
+                headers={"Retry-After": "30"},
+            )
     else:
         store = local
         snapshot = json.loads(settings.data_path.read_text())
@@ -63,6 +110,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.state.store = store
     app.state.settings = settings
     solver_slots = threading.BoundedSemaphore(2)
+    export_slots = threading.BoundedSemaphore(2)
     # Only used to bind CSRF tokens to a trusted platform identity. A restart refreshes the token.
     csrf_key = secrets.token_bytes(32)
     throttle_lock = threading.Lock()
@@ -70,9 +118,30 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     def rate_limit(request: Request, key: str, limit: int = 12, seconds: int = 300):
         address = request.client.host if request.client else "unknown"
-        key = hashlib.sha256(f"{key}:{address}".encode()).hexdigest()
-        if local:
-            allowed = local.rate_allowed(key, limit, seconds)
+        principal = getattr(request.state, "firebase_uid", None) or address
+        scope = (
+            key
+            if key.startswith(("email:", "reset-email:", "signup-email:"))
+            else f"{key}:{principal}"
+        )
+        scoped_key = hashlib.sha256(scope.encode()).hexdigest()
+        if firebase_store:
+            public_quotas = {
+                "auth": (settings.auth_attempts_per_5_minutes, 300),
+                "guest": (settings.guest_sessions_per_hour, 3600),
+                "reset": (settings.password_resets_per_hour, 3600),
+            }
+            if key in public_quotas:
+                # Cloud Run's socket peer may be a shared proxy. These are explicit
+                # service-wide quotas, never a claimed per-visitor IP limit.
+                limit, seconds = public_quotas[key]
+                allowed = firebase_store.rate_allowed("global:" + key, limit, seconds)
+            else:
+                allowed = firebase_store.rate_allowed(scoped_key, limit, seconds)
+                if allowed and key in {"optimise", "save"}:
+                    allowed = firebase_store.rate_allowed("global:" + key, 300, seconds)
+        elif local:
+            allowed = local.rate_allowed(scoped_key, limit, seconds)
         else:
             now = time.monotonic()
             with throttle_lock:
@@ -80,11 +149,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                     for k in list(throttle):
                         if not throttle[k] or throttle[k][-1] < now - 3600:
                             del throttle[k]
-                entries = [t for t in throttle.get(key, []) if t > now - seconds]
+                entries = [t for t in throttle.get(scoped_key, []) if t > now - seconds]
                 allowed = len(entries) < limit
                 if allowed:
                     entries.append(now)
-                throttle[key] = entries
+                throttle[scoped_key] = entries
         if not allowed:
             raise HTTPException(
                 429,
@@ -107,7 +176,22 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         )
 
     def session_info(request: Request) -> dict:
-        if settings.auth_mode == "databricks":
+        cached = getattr(request.state, "session_info", None)
+        if cached is not None:
+            return cached
+        if identity:
+            token = request.cookies.get(cookie_name)
+            claims = identity.verify(token)
+            user = identity.user(claims) if claims else None
+            if user and (
+                firebase_store.session_revoked(token) or not firebase_store.user_active(user["id"])
+            ):
+                user = None
+            csrf = csrf_for_session(token) if user else None
+            if user:
+                request.state.firebase_uid = user["id"]
+                request.state.firebase_claims = claims
+        elif settings.auth_mode == "databricks":
             user = platform_user(request)
             csrf = (
                 hmac.new(csrf_key, user["id"].encode(), hashlib.sha256).hexdigest()
@@ -118,12 +202,16 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             found = local.session(request.cookies.get(COOKIE))
             csrf = found.pop("csrf") if found else None
             user = found
-        return dict(user=user, csrf_token=csrf, auth_mode=settings.auth_mode)
+        info = dict(user=user, csrf_token=csrf, auth_mode=settings.auth_mode)
+        request.state.session_info = info
+        return info
 
     def require_user(request: Request) -> dict:
         info = session_info(request)
         if not info["user"]:
             raise HTTPException(401, "Sign in to your workspace to continue.")
+        if firebase_store:
+            rate_limit(request, "workspace", limit=240, seconds=60)
         if request.method in {"POST", "PATCH", "DELETE", "PUT"}:
             supplied = request.headers.get("x-csrf-token", "")
             if not info["csrf_token"] or not hmac.compare_digest(supplied, info["csrf_token"]):
@@ -147,6 +235,40 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             path="/",
         )
         return dict(user=user, csrf_token=csrf, auth_mode=settings.auth_mode)
+
+    def firebase_login(request: Request, response: Response, result, *, new_account=False):
+        token, user, claims = result
+        try:
+            firebase_store.ensure_user(user)
+        except Exception:
+            if new_account:
+                try:
+                    identity.delete_user(user["id"])
+                except Exception:
+                    logger.warning("Could not remove an incomplete managed registration")
+            raise
+        previous = request.cookies.get(cookie_name)
+        if previous:
+            old_claims = identity.verify(previous)
+            if old_claims:
+                firebase_store.revoke_session(previous, old_claims["exp"])
+        response.set_cookie(
+            cookie_name,
+            token,
+            httponly=True,
+            secure=True,
+            samesite="lax",
+            max_age=settings.session_hours * 3600,
+            path="/",
+        )
+        return dict(user=user, csrf_token=csrf_for_session(token), auth_mode="firebase")
+
+    def delete_firebase_workspace(owner: str):
+        firebase_store.begin_deletion(owner)
+        identity.disable_user(owner)
+        firebase_store.delete_user_plans(owner)
+        identity.delete_user(owner)
+        firebase_store.finish_deletion(owner)
 
     def validate_year(parameters: dict):
         calendar_year = snapshot.get("manifest", {}).get("closures_year")
@@ -177,7 +299,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             solver_slots.release()
 
     def owned_plan(user: dict, plan_id: str):
-        plan = store.get_plan(user["id"], plan_id)
+        try:
+            plan = store.get_plan(user["id"], plan_id)
+        except ValueError as error:
+            raise HTTPException(404, "Plan not found in this workspace.") from error
         if not plan:
             raise HTTPException(404, "Plan not found in this workspace.")
         return plan
@@ -185,6 +310,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @app.middleware("http")
     async def security(request: Request, call_next):
         request_id = str(uuid.uuid4())
+        response = None
         if request.url.path.startswith("/api/") and request.method in {
             "POST",
             "PUT",
@@ -194,21 +320,23 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             # JSON plus origin checking blocks login CSRF before any session exists.
             origin = request.headers.get("origin")
             allowed = set(settings.allowed_origins)
-            allowed.add(f"{request.url.scheme}://{request.url.netloc}")
+            if settings.auth_mode != "firebase":
+                allowed.add(f"{request.url.scheme}://{request.url.netloc}")
             if settings.auth_mode == "databricks":
                 forwarded = request.headers.get("x-forwarded-host", "")
                 if forwarded and "/" not in forwarded and "," not in forwarded:
                     allowed.add("https://" + forwarded)
-            if origin and origin not in allowed:
-                return JSONResponse(
+            if (origin and origin not in allowed) or (identity and not origin):
+                response = JSONResponse(
                     {"detail": "This request came from an untrusted origin."}, status_code=403
                 )
             if request.headers.get("sec-fetch-site") == "cross-site":
-                return JSONResponse(
+                response = JSONResponse(
                     {"detail": "Cross-site requests are not allowed."}, status_code=403
                 )
         try:
-            response = await call_next(request)
+            if response is None:
+                response = await call_next(request)
         except Exception:
             logger.exception("Request failed id=%s path=%s", request_id, request.url.path)
             response = JSONResponse(
@@ -245,6 +373,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @app.post("/api/auth/demo")
     def demo(request: Request, response: Response):
+        if identity:
+            rate_limit(request, "guest", limit=20, seconds=3600)
+            return firebase_login(request, response, identity.guest(), new_account=True)
         assert_local_auth()
         rate_limit(request, "auth", limit=20)
         user = local.register("Demo planner", f"guest-{uuid.uuid4()}@demo.local", None, "guest")
@@ -252,6 +383,15 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @app.post("/api/auth/register", status_code=201)
     def register(body: Registration, request: Request, response: Response):
+        if identity:
+            rate_limit(request, "auth")
+            rate_limit(request, "signup-email:" + body.email, limit=5, seconds=3600)
+            return firebase_login(
+                request,
+                response,
+                identity.register(body.name, body.email, body.password),
+                new_account=True,
+            )
         assert_local_auth()
         rate_limit(request, "auth")
         try:
@@ -264,6 +404,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @app.post("/api/auth/login")
     def login(body: Credentials, request: Request, response: Response):
+        if identity:
+            rate_limit(request, "auth")
+            rate_limit(request, "email:" + body.email, limit=10)
+            return firebase_login(request, response, identity.login(body.email, body.password))
         assert_local_auth()
         rate_limit(request, "auth")
         user = local.authenticate(body.email, body.password)
@@ -273,15 +417,38 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @app.post("/api/auth/logout", status_code=204)
     def logout(request: Request, response: Response, user: dict = Depends(require_user)):
-        if local:
+        if identity:
+            if user["mode"] == "guest":
+                delete_firebase_workspace(user["id"])
+            else:
+                firebase_store.revoke_session(
+                    request.cookies[cookie_name], request.state.firebase_claims["exp"]
+                )
+        elif local:
             local.revoke(request.cookies.get(COOKIE))
-        response.delete_cookie(COOKIE, path="/")
+        response.delete_cookie(
+            cookie_name, path="/", secure=settings.secure_cookies, httponly=True, samesite="lax"
+        )
 
     @app.delete("/api/auth/account", status_code=204)
     def delete_account(response: Response, user: dict = Depends(require_user)):
-        assert_local_auth()
-        local.delete_account(user["id"])
-        response.delete_cookie(COOKIE, path="/")
+        if identity:
+            delete_firebase_workspace(user["id"])
+        else:
+            assert_local_auth()
+            local.delete_account(user["id"])
+        response.delete_cookie(
+            cookie_name, path="/", secure=settings.secure_cookies, httponly=True, samesite="lax"
+        )
+
+    @app.post("/api/auth/reset-password")
+    def reset_password(body: ResetPassword, request: Request):
+        if not identity:
+            raise HTTPException(404, "Password recovery is available on the hosted service.")
+        rate_limit(request, "reset", limit=5, seconds=3600)
+        rate_limit(request, "reset-email:" + body.email, limit=3, seconds=3600)
+        identity.reset_password(body.email)
+        return {"message": "If an account uses that email, a password reset link will be sent."}
 
     @app.get("/api/snapshot")
     def get_snapshot(user: dict = Depends(require_user)):
@@ -310,7 +477,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @app.post("/api/plans", status_code=201)
     def save_plan(body: PlanCreate, request: Request, user: dict = Depends(require_user)):
         rate_limit(request, "save", limit=30, seconds=60)
-        if len(store.list_plans(user["id"])) >= 200:
+        if not firebase_store and len(store.list_plans(user["id"])) >= 200:
             raise HTTPException(
                 409, "This workspace has 200 plans. Remove an old plan before adding another."
             )
@@ -342,7 +509,9 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @app.patch("/api/plans/{plan_id}")
     def update_plan(plan_id: str, body: PlanPatch, user: dict = Depends(require_user)):
         plan = owned_plan(user, plan_id)
-        patch = body.model_dump(exclude_none=True)
+        if plan["updated_at"] != body.expected_updated_at:
+            raise PlanConflictError()
+        patch = body.model_dump(exclude_none=True, exclude={"expected_updated_at"})
         plan.update(patch)
         plan["updated_at"] = datetime.now(UTC).isoformat()
         if ("title" in patch or "notes" in patch) and "status" not in patch:
@@ -355,19 +524,30 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         elif patch.get("status") == "draft":
             plan.pop("reviewed_at", None)
             plan.pop("reviewed_by", None)
-        store.save_plan(user["id"], plan)
+        store.update_plan(user["id"], plan, body.expected_updated_at)
         return plan
 
     @app.delete("/api/plans/{plan_id}", status_code=204)
     def delete_plan(plan_id: str, user: dict = Depends(require_user)):
+        owned_plan(user, plan_id)
         if not store.delete_plan(user["id"], plan_id):
             raise HTTPException(404, "Plan not found in this workspace.")
 
     @app.get("/api/plans/{plan_id}/export")
-    def export(plan_id: str, format: str = "pdf", user: dict = Depends(require_user)):
+    def export(
+        plan_id: str, request: Request, format: str = "pdf", user: dict = Depends(require_user)
+    ):
+        rate_limit(request, "export", limit=30, seconds=60)
         plan = owned_plan(user, plan_id)
         if format == "pdf":
-            payload, mime = plan_pdf(plan), "application/pdf"
+            if not export_slots.acquire(blocking=False):
+                raise HTTPException(
+                    429, "The export service is busy. Please retry.", headers={"Retry-After": "5"}
+                )
+            try:
+                payload, mime = plan_pdf(plan), "application/pdf"
+            finally:
+                export_slots.release()
         elif format == "csv":
             payload, mime = plan_csv(plan), "text/csv; charset=utf-8"
         elif format == "json":
@@ -400,6 +580,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @app.get("/api/evidence")
     def evidence(user: dict = Depends(require_user)):
         evaluation_status = "unavailable"
+        code_hash = hashlib.sha256(Path(__file__).with_name("engine.py").read_bytes()).hexdigest()
         if settings.storage == "databricks":
             from .databricks_store import DatabricksStoreError
 
@@ -409,23 +590,38 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 logger.warning("No complete Databricks evaluation for active snapshot")
                 evaluation = None
         else:
-            eval_path = ROOT / "data/processed/evaluation.json"
-            evaluation = json.loads(eval_path.read_text()) if eval_path.exists() else None
+            eval_path = settings.evaluation_path or ROOT / "data/processed/evaluation.json"
+            evaluation = read_report(eval_path)
         if evaluation:
-            code_hash = hashlib.sha256(
-                Path(__file__).with_name("engine.py").read_bytes()
-            ).hexdigest()
             stale = evaluation.get("source_fingerprint") != engine.fingerprint
             stale |= bool(evaluation.get("engine_code_sha256") != code_hash)
             evaluation_status = "stale" if stale else "current"
             if stale:
                 evaluation = None
+        execution_path = (
+            settings.databricks_publication_path
+            or ROOT / "data/processed/databricks-publication.json"
+        )
+        cloud_path = (
+            settings.databricks_evaluation_path
+            or ROOT / "data/processed/databricks-evaluation.json"
+        )
+        workspace_execution, cloud_evaluation = verified_execution(
+            snapshot,
+            engine.fingerprint,
+            code_hash,
+            read_report(execution_path),
+            evaluation if settings.storage == "databricks" else read_report(cloud_path),
+        )
         return dict(
             manifest=snapshot["manifest"],
             quarantine=snapshot.get("quarantine", []),
             food_waste=snapshot.get("food_waste", []),
             evaluation=evaluation,
             evaluation_status=evaluation_status,
+            evaluation_execution="databricks" if settings.storage == "databricks" else "local",
+            workspace_execution=workspace_execution,
+            cloud_evaluation=cloud_evaluation,
             methodology=dict(
                 version=MODEL_VERSION,
                 spatial_unit="Census 2020 subzones",

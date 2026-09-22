@@ -35,4 +35,7 @@ data/raw/20260922T042307-aed765/
 .chart-data-*/
 output/ci-*/
 output/ci-*.log
+firebase-debug.log
+.firebase/
+output/video/narration/
 output/*.zip

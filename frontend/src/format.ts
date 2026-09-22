@@ -1,9 +1,9 @@
 export const number = (value: number | null | undefined) => new Intl.NumberFormat('en-SG', { maximumFractionDigits: 0 }).format(value ?? 0);
-export const money = (value: number) => `S$${number(value)}`;
+export const money = (value: number) => `S$${new Intl.NumberFormat('en-SG', { minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(value)}`;
 export const percent = (value: number) => `${new Intl.NumberFormat('en-SG', { maximumFractionDigits: 1 }).format(value)}%`;
 export const day = (value: string, options: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short', year: 'numeric' }) => {
-  const parsed = new Date(value.length === 10 ? `${value}T12:00:00` : value);
-  return Number.isNaN(parsed.getTime()) ? value : parsed.toLocaleDateString('en-SG', options);
+  const parsed = new Date(value.length === 10 ? `${value}T12:00:00+08:00` : value);
+  return Number.isNaN(parsed.getTime()) ? value : parsed.toLocaleDateString('en-SG', { ...options, timeZone:'Asia/Singapore' });
 };
 export const titleCase = (value: string) => value.toLowerCase().replace(/\b\w/g, x => x.toUpperCase());
 export const distance = (value: number | null) => value === null ? 'Unavailable' : value >= 1000 ? `${(value / 1000).toFixed(1)} km` : `${number(value)} m`;

@@ -10,14 +10,17 @@ class StrictModel(BaseModel):
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True, allow_inf_nan=False)
 
 
-class Credentials(StrictModel):
+class ResetPassword(StrictModel):
     email: str = Field(min_length=5, max_length=254, pattern=r"^[^\s@]+@[^\s@]+\.[^\s@]+$")
-    password: str = Field(min_length=1, max_length=256)
 
     @field_validator("email")
     @classmethod
     def lowercase(cls, value):
         return value.lower()
+
+
+class Credentials(ResetPassword):
+    password: str = Field(min_length=1, max_length=256)
 
 
 class Registration(Credentials):
@@ -63,6 +66,7 @@ class PlanCreate(StrictModel):
 
 
 class PlanPatch(StrictModel):
+    expected_updated_at: str = Field(min_length=10, max_length=64)
     title: str | None = Field(default=None, min_length=1, max_length=140)
     notes: str | None = Field(default=None, max_length=4000)
     status: Literal["draft", "reviewed"] | None = None

@@ -34,12 +34,13 @@ resources:
       environments:
         - environment_key: hawkerbridge
           spec:
-            environment_version: "2"
+            environment_version: "6"
             dependencies:
-              - "numpy==2.4.6 ; python_full_version < '3.12'"
-              - "numpy==2.5.3 ; python_full_version >= '3.12'"
-              - "scipy==1.17.1 ; python_full_version < '3.12'"
-              - "scipy==1.18.1 ; python_full_version >= '3.12'"
+              # Environment 6 supplies Python 3.12 and NumPy-2-compatible Pandas
+              # and Arrow. Keep PyPI pins plain: bundle uploads treat PEP 508
+              # markers as paths. Match the app's Python 3.12 numerical stack.
+              - "numpy==2.5.3"
+              - "scipy==1.18.1"
               - "shapely==2.1.2"
               - "mlflow==3.16.1"
               - "databricks-sdk==0.140.0"

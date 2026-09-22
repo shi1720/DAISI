@@ -5,6 +5,7 @@ trusted platform identity, never a request payload. This store uses the app's SD
 automatic credentials; it never falls back to local data or accepts SQL identifiers
 from requests. Unity Catalog permissions are provisioned before the app starts.
 """
+
 from __future__ import annotations
 
 import json
@@ -20,11 +21,17 @@ from databricks.sdk.service.sql import (
     StatementParameterListItem,
 )
 
+from .plan_errors import PlanConflictError, PlanNotFoundError
+
 _IDENTIFIER = re.compile(r"[A-Za-z_][A-Za-z0-9_]{0,127}\Z")
 
 
 class DatabricksStoreError(RuntimeError):
     """Workspace storage is unavailable or returned incomplete/untrusted results."""
+
+
+class DatabricksWriteConflictError(DatabricksStoreError):
+    """Delta rejected concurrent writes before either could overwrite a revision."""
 
 
 def _get(value: Any, name: str, default: Any = None) -> Any:
@@ -58,9 +65,13 @@ class DatabricksStore:
         schema = getattr(config, "schema", None)
         if not isinstance(warehouse, str) or not warehouse.strip():
             raise ValueError("DATABRICKS_WAREHOUSE_ID must be configured for Databricks storage")
-        if any(not isinstance(value, str) or not _IDENTIFIER.fullmatch(value)
-               for value in (catalog, schema)):
-            raise ValueError("HAWKERBRIDGE_CATALOG and HAWKERBRIDGE_SCHEMA must be simple SQL identifiers")
+        if any(
+            not isinstance(value, str) or not _IDENTIFIER.fullmatch(value)
+            for value in (catalog, schema)
+        ):
+            raise ValueError(
+                "HAWKERBRIDGE_CATALOG and HAWKERBRIDGE_SCHEMA must be simple SQL identifiers"
+            )
         if timeout_seconds <= 0 or poll_interval_seconds < 0:
             raise ValueError("SQL timeout must be positive and poll interval non-negative")
         self.warehouse_id = warehouse
@@ -75,8 +86,10 @@ class DatabricksStore:
         response = api.execute_statement(
             warehouse_id=self.warehouse_id,
             statement=statement,
-            parameters=[StatementParameterListItem(name=name, value=value, type="STRING")
-                        for name, value in (parameters or {}).items()],
+            parameters=[
+                StatementParameterListItem(name=name, value=value, type="STRING")
+                for name, value in (parameters or {}).items()
+            ],
             wait_timeout="0s",
             on_wait_timeout=ExecuteStatementRequestOnWaitTimeout.CONTINUE,
             disposition=Disposition.INLINE,
@@ -94,13 +107,21 @@ class DatabricksStore:
                 except Exception:
                     # Cancellation is best effort, but timeout is never reported as success.
                     pass
-                raise DatabricksStoreError("Databricks SQL timed out; retry after checking the warehouse")
+                raise DatabricksStoreError(
+                    "Databricks SQL timed out; retry after checking the warehouse"
+                )
             time.sleep(min(self.poll_interval_seconds, remaining))
             response = api.get_statement(statement_id=statement_id)
         state = _state(response)
         if state != "SUCCEEDED":
+            error = _get(_get(response, "status"), "error")
+            message = _get(error, "message", "") or ""
+            if state == "FAILED" and re.match(r"\[DELTA_CONCURRENT_[A-Z_.]+\]", message):
+                raise DatabricksWriteConflictError("Databricks rejected a concurrent write")
             # Do not return the SQL text, parameter values or raw server exception to a browser.
-            raise DatabricksStoreError(f"Databricks statement did not succeed ({state or 'missing status'})")
+            raise DatabricksStoreError(
+                f"Databricks statement did not succeed ({state or 'missing status'})"
+            )
         manifest = _get(response, "manifest")
         if _get(manifest, "truncated", False):
             raise DatabricksStoreError("Databricks result was truncated; refusing partial data")
@@ -129,7 +150,9 @@ class DatabricksStore:
                     raise DatabricksStoreError("Databricks result row does not match its schema")
                 rows.append(dict(zip(names, row, strict=True)))
                 if len(rows) > 10000:
-                    raise DatabricksStoreError("Databricks result exceeded the application row limit")
+                    raise DatabricksStoreError(
+                        "Databricks result exceeded the application row limit"
+                    )
             next_index = _get(chunk, "next_chunk_index")
             if next_index is None:
                 break
@@ -161,7 +184,9 @@ class DatabricksStore:
             "ORDER BY created_at DESC, publication_id DESC LIMIT 1"
         )
         if not rows:
-            raise DatabricksStoreError("No published Databricks snapshot; run hawkerbridge_pipeline first")
+            raise DatabricksStoreError(
+                "No published Databricks snapshot; run hawkerbridge_pipeline first"
+            )
         snapshot = self._json_object(rows[0].get("snapshot_json"), "snapshot")
         if not all(key in snapshot for key in ("manifest", "centres", "closures", "demand_zones")):
             raise DatabricksStoreError("Published Databricks snapshot is missing required fields")
@@ -170,19 +195,34 @@ class DatabricksStore:
     def list_plans(self, owner_id: str) -> list[dict]:
         # Project metadata in SQL; returning every embedded map/result for 200 plans
         # would waste quota and exceed the INLINE result limit.
-        names = ("id", "title", "status", "created_at", "updated_at", "date", "notes",
-                 "reviewed_at", "reviewed_by")
-        projection = ", ".join(f"get_json_object(plan_json, '$.{name}') AS `{name}`" for name in names)
+        names = (
+            "id",
+            "title",
+            "status",
+            "created_at",
+            "updated_at",
+            "date",
+            "notes",
+            "reviewed_at",
+            "reviewed_by",
+        )
+        projection = ", ".join(
+            f"get_json_object(plan_json, '$.{name}') AS `{name}`" for name in names
+        )
         rows = self._execute(
             f"SELECT {projection}, get_json_object(plan_json, '$.parameters') AS parameters_json, "
             f"get_json_object(plan_json, '$.result.summary') AS summary_json FROM {self.namespace}.application_plans "
             "WHERE owner_id = :owner_id ORDER BY updated_at DESC, plan_id",
             {"owner_id": _identity(owner_id, "owner")},
         )
-        return [{**{name: row.get(name) for name in names if row.get(name) is not None},
-                 "parameters": self._json_object(row.get("parameters_json"), "plan parameters"),
-                 "result": {"summary": self._json_object(row.get("summary_json"), "plan summary")}}
-                for row in rows]
+        return [
+            {
+                **{name: row.get(name) for name in names if row.get(name) is not None},
+                "parameters": self._json_object(row.get("parameters_json"), "plan parameters"),
+                "result": {"summary": self._json_object(row.get("summary_json"), "plan summary")},
+            }
+            for row in rows
+        ]
 
     def load_evaluation(self, source_fingerprint: str | None = None) -> dict:
         """Retrieve actual cloud evaluation for the app's loaded snapshot version.
@@ -203,7 +243,8 @@ class DatabricksStore:
             "SELECT e.result_json, e.source_fingerprint, p.source_fingerprint AS snapshot_fingerprint, "
             "p.publication_id, p.created_at, p.input_mode, p.expected_scenarios, p.expected_engine_hash "
             f"FROM {self.namespace}.gold_evaluations e JOIN chosen p ON e.publication_id = p.publication_id "
-            "ORDER BY e.evaluation_date, e.budget", parameters,
+            "ORDER BY e.evaluation_date, e.budget",
+            parameters,
         )
         if not rows:
             raise DatabricksStoreError("No cloud evaluation exists for this published snapshot")
@@ -222,13 +263,20 @@ class DatabricksStore:
         ):
             raise DatabricksStoreError("Cloud evaluation engine code fingerprints are inconsistent")
         if any(result.get("source_fingerprint") != fingerprint for result in results):
-            raise DatabricksStoreError("Cloud evaluation result fingerprint does not match its snapshot")
-        return {"method": "Predeclared geospatial allocation scenarios versus largest-demand-first baseline",
-                "source_fingerprint": fingerprint, "publication_id": rows[0]["publication_id"],
-                "engine_code_sha256": code_hash,
-                "generated_at": rows[0]["created_at"], "input_mode": rows[0]["input_mode"],
-                "scenarios_evaluated": len(results), "results": results,
-                "scope": "Modelled objectives under stated assumptions, not observed demand or social impact"}
+            raise DatabricksStoreError(
+                "Cloud evaluation result fingerprint does not match its snapshot"
+            )
+        return {
+            "method": "Predeclared geospatial allocation scenarios versus largest-demand-first baseline",
+            "source_fingerprint": fingerprint,
+            "publication_id": rows[0]["publication_id"],
+            "engine_code_sha256": code_hash,
+            "generated_at": rows[0]["created_at"],
+            "input_mode": rows[0]["input_mode"],
+            "scenarios_evaluated": len(results),
+            "results": results,
+            "scope": "Modelled objectives under stated assumptions, not observed demand or social impact",
+        }
 
     def get_plan(self, owner_id: str, plan_id: str) -> dict | None:
         rows = self._execute(
@@ -251,7 +299,12 @@ class DatabricksStore:
             "WHEN MATCHED THEN UPDATE SET plan_json = source.plan_json, updated_at = source.updated_at "
             "WHEN NOT MATCHED THEN INSERT (owner_id, plan_id, plan_json, updated_at) "
             "VALUES (source.owner_id, source.plan_id, source.plan_json, source.updated_at)",
-            {"owner_id": owner_id, "plan_id": plan_id, "plan_json": plan_json, "updated_at": updated_at},
+            {
+                "owner_id": owner_id,
+                "plan_id": plan_id,
+                "plan_json": plan_json,
+                "updated_at": updated_at,
+            },
         )
 
     def delete_plan(self, owner_id: str, plan_id: str) -> bool:
@@ -267,3 +320,40 @@ class DatabricksStore:
         if rows and "num_affected_rows" in rows[0]:
             return int(rows[0]["num_affected_rows"] or 0) > 0
         return True
+
+    def update_plan(self, owner_id: str, plan: dict, expected_updated_at: str) -> None:
+        owner_id = _identity(owner_id, "owner")
+        plan_id = _identity(plan.get("id"), "plan ID")
+        try:
+            rows = self._execute(
+                f"UPDATE {self.namespace}.application_plans SET plan_json = :plan_json, "
+                "updated_at = CAST(:updated_at AS TIMESTAMP) "
+                "WHERE owner_id = :owner_id AND plan_id = :plan_id "
+                "AND get_json_object(plan_json, '$.updated_at') = :expected_updated_at",
+                {
+                    "owner_id": owner_id,
+                    "plan_id": plan_id,
+                    "plan_json": json.dumps(
+                        plan, ensure_ascii=False, allow_nan=False, separators=(",", ":")
+                    ),
+                    "updated_at": _identity(plan.get("updated_at"), "update timestamp"),
+                    "expected_updated_at": _identity(
+                        expected_updated_at, "expected update timestamp"
+                    ),
+                },
+            )
+        except DatabricksWriteConflictError as exc:
+            # Delta can reject simultaneous statements before the revision
+            # predicate observes the winner. Surface the same refresh-required
+            # conflict; never retry this write without the original revision.
+            raise PlanConflictError() from exc
+        if rows and "num_affected_rows" in rows[0] and int(rows[0]["num_affected_rows"] or 0) > 0:
+            return
+        current = self.get_plan(owner_id, plan_id)
+        if current is None:
+            raise PlanNotFoundError()
+        # Some warehouses omit affected-row metadata. Confirm the exact proposed
+        # revision; ambiguity fails closed and never retries with an INSERT.
+        if not rows and current == plan:
+            return
+        raise PlanConflictError()

@@ -1,0 +1,8 @@
+{
+  "indexes": [],
+  "fieldOverrides": [
+    {"collectionGroup": "plans", "fieldPath": "payload", "indexes": []},
+    {"collectionGroup": "plans", "fieldPath": "metadata", "indexes": []},
+    {"collectionGroup": "plans", "fieldPath": "summary", "indexes": []}
+  ]
+}

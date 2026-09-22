@@ -5,9 +5,16 @@ on:
   workflow_dispatch:
     inputs:
       record_demo:
-        description: Record the real 173-second silent demo for voiceover
+        description: Record the real 173-second walkthrough for narration
         type: boolean
         default: false
+      base_url:
+        description: App under browser test (leave blank for an isolated local app)
+        type: choice
+        options:
+          - ''
+          - https://hawkerbridge-sg.web.app
+        default: ''
 permissions:
   contents: read
 jobs:
@@ -44,6 +51,7 @@ jobs:
         env:
           HAWKERBRIDGE_DATABASE: /tmp/hawkerbridge-ci.db
           HAWKERBRIDGE_RECORD_DEMO: ${{ github.event.inputs.record_demo == 'true' && '1' || '' }}
+          HAWKERBRIDGE_BASE_URL: ${{ github.event.inputs.base_url }}
       - name: Compress real walkthrough for portable delivery
         if: always() && github.event.inputs.record_demo == 'true'
         run: |
@@ -54,7 +62,7 @@ jobs:
             fi
             ffmpeg -hide_banner -loglevel warning -y -i output/demo-footage/hawkerbridge-silent-walkthrough.webm -c:v libx264 -preset medium -crf 23 -pix_fmt yuv420p -an -movflags +faststart output/demo-footage/hawkerbridge-silent-walkthrough.mp4
             if [ "$(stat -c%s output/demo-footage/hawkerbridge-silent-walkthrough.mp4)" -gt 11534336 ]; then
-              ffmpeg -hide_banner -loglevel warning -y -i output/demo-footage/hawkerbridge-silent-walkthrough.webm -vf fps=15,scale=1280:960 -c:v libx264 -preset slow -crf 25 -maxrate 450k -bufsize 900k -pix_fmt yuv420p -an -movflags +faststart output/demo-footage/hawkerbridge-silent-walkthrough.mp4
+              ffmpeg -hide_banner -loglevel warning -y -i output/demo-footage/hawkerbridge-silent-walkthrough.webm -vf fps=15,scale=1280:-2 -c:v libx264 -preset slow -crf 25 -maxrate 450k -bufsize 900k -pix_fmt yuv420p -an -movflags +faststart output/demo-footage/hawkerbridge-silent-walkthrough.mp4
             fi
             ffprobe -v error -show_entries format=duration,size:stream=width,height,codec_name -of json output/demo-footage/hawkerbridge-silent-walkthrough.mp4
           fi

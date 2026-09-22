@@ -1,0 +1,169 @@
+{
+  "verified_at": "2026-09-22T06:14:03.421882+00:00",
+  "workspace_host": "https://dbc-6fea141d-04eb.cloud.databricks.com",
+  "pipeline_run_id": 1046237288082887,
+  "pipeline_run_url": "https://dbc-6fea141d-04eb.cloud.databricks.com/?o=7474659582484876#job/929729986607018/run/1046237288082887",
+  "pipeline_result": "SUCCESS",
+  "publication_id": "69cbf18aae9c4f1883b629ab0de25843",
+  "input_mode": "live",
+  "source_fingerprint": "a3b84df2577a59a9d1cf6ccaf8cb45b47a0caffa4429122e1f409a29de274c4f",
+  "engine_code_sha256": "9833154988fb5f35063982802db4884694ec2e3a5971f641cde3088942abfdcd",
+  "local_snapshot_fingerprint": "dd1bdfc7d889f25faef2091cc269e91322a526efc608b6fdfbc396d339f1b6d6",
+  "source_comparison": [
+    {
+      "source": "closures",
+      "sha256": "065304e22607f12f2a61bfa4eaf7f34f465f12bde278fbdfc38c8f41b15663ee",
+      "matches_local_source": true,
+      "fetched_at": "2026-09-22T06:12:12.286116Z",
+      "reused_at": null,
+      "mirror": false
+    },
+    {
+      "source": "population2020",
+      "sha256": "869d3f6fb48e37bb370bcc1946c8fbeb17e9a695c78985e5bae43c8b906e8c5d",
+      "matches_local_source": true,
+      "fetched_at": "2026-09-22T06:12:12.286116Z",
+      "reused_at": null,
+      "mirror": false
+    },
+    {
+      "source": "planning_areas",
+      "sha256": "f23856251b467089f788d0fff72ef5a38e753f21aa69b4352401d7ed50d380cc",
+      "matches_local_source": true,
+      "fetched_at": "2026-09-22T04:25:32.462291Z",
+      "reused_at": "2026-09-22T06:12:12.286116Z",
+      "mirror": false
+    },
+    {
+      "source": "subzones",
+      "sha256": "77e30aa02b1784b649d9b6f23e3b2ebb825af787de554f3a3fb76bbee3013c42",
+      "matches_local_source": true,
+      "fetched_at": "2026-09-22T04:25:32.462291Z",
+      "reused_at": "2026-09-22T06:12:12.286116Z",
+      "mirror": false
+    },
+    {
+      "source": "waste",
+      "sha256": "ad283e68401a948b5598e056434a712e9be61de27fb6d8340aa26417a1a458c1",
+      "matches_local_source": true,
+      "fetched_at": "2026-09-22T06:12:12.286116Z",
+      "reused_at": null,
+      "mirror": false
+    }
+  ],
+  "published_counts": {
+    "centres": "123",
+    "food_centres": "120"
+  },
+  "scenarios_evaluated": 9,
+  "quality_checks": [
+    {
+      "check_name": "centres",
+      "passed": "true",
+      "observed_value": "123.0"
+    },
+    {
+      "check_name": "resolved_closure_intervals",
+      "passed": "true",
+      "observed_value": "507.0"
+    },
+    {
+      "check_name": "quarantined_closure_intervals",
+      "passed": "true",
+      "observed_value": "32.0"
+    },
+    {
+      "check_name": "demand_zones",
+      "passed": "true",
+      "observed_value": "332.0"
+    },
+    {
+      "check_name": "populated_demand_zones",
+      "passed": "true",
+      "observed_value": "286.0"
+    },
+    {
+      "check_name": "planning_areas",
+      "passed": "true",
+      "observed_value": "55.0"
+    },
+    {
+      "check_name": "unassigned_centres",
+      "passed": "true",
+      "observed_value": "0.0"
+    },
+    {
+      "check_name": "population_join_coverage_percent",
+      "passed": "true",
+      "observed_value": "100.0"
+    },
+    {
+      "check_name": "resident_sum_subzones",
+      "passed": "true",
+      "observed_value": "4044340.0"
+    },
+    {
+      "check_name": "senior_sum_subzones",
+      "passed": "true",
+      "observed_value": "614900.0"
+    },
+    {
+      "check_name": "budget_violations",
+      "passed": "true",
+      "observed_value": "0.0"
+    },
+    {
+      "check_name": "below_baseline_cases",
+      "passed": "true",
+      "observed_value": "0.0"
+    }
+  ],
+  "dashboard_queries": [
+    {
+      "name": "closures_on_demo_date",
+      "row_count": 1,
+      "columns": [
+        "closure_date",
+        "closed_centres",
+        "food_stalls_closed"
+      ]
+    },
+    {
+      "name": "evaluated_budget_comparison",
+      "row_count": 6,
+      "columns": [
+        "daily_budget_sgd",
+        "strategy",
+        "weighted_meal_benefit"
+      ]
+    },
+    {
+      "name": "published_source_provenance",
+      "row_count": 5,
+      "columns": [
+        "source_key",
+        "source_fetched_at",
+        "reuse_status",
+        "source_route",
+        "sha256",
+        "source_url"
+      ]
+    },
+    {
+      "name": "unresolved_interval_review",
+      "row_count": 32,
+      "columns": [
+        "centre",
+        "closure_kind",
+        "reported_start",
+        "reported_end",
+        "reason",
+        "source_text"
+      ]
+    }
+  ],
+  "mlflow_run_id": "6b80647b3eea44d5bf9af59c315eec66",
+  "mlflow_experiment_id": "2274018642838106",
+  "mlflow_status": "FINISHED",
+  "scope": "Actual Databricks processing and query evidence. No browser or field-impact verification."
+}

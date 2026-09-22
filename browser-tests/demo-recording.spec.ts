@@ -2,13 +2,14 @@ import { test, expect } from '@playwright/test';
 import { mkdir, copyFile, writeFile } from 'node:fs/promises';
 
 // Run only through the explicitly enabled remote CI workflow. This is a real,
-// silent product walkthrough for Shivam's voiceover, not simulated UI footage.
+// silent product walkthrough for a clearly disclosed synthetic narrator and captions.
 test('record the community-continuity walkthrough',async({browser})=>{
   test.skip(process.env.HAWKERBRIDGE_RECORD_DEMO !== '1','Enable record_demo in workflow_dispatch to capture narrated-demo source footage.');
   test.setTimeout(220000);
-  const context=await browser.newContext({baseURL:'http://127.0.0.1:8000',viewport:{width:1440,height:1080},recordVideo:{dir:'../output/demo-footage/raw',size:{width:1440,height:1080}},reducedMotion:'reduce'});
+  const baseURL=process.env.HAWKERBRIDGE_BASE_URL || 'http://127.0.0.1:8000';
+  const context=await browser.newContext({baseURL,viewport:{width:1600,height:900},recordVideo:{dir:'../output/demo-footage/raw',size:{width:1600,height:900}},reducedMotion:'reduce'});
   context.setDefaultTimeout(12000);
-  const authentication=await context.request.post('/api/auth/demo',{data:{}});
+  const authentication=await context.request.post('/api/auth/demo',{data:{},headers:{Origin:baseURL}});
   expect(authentication.ok()).toBe(true);
   const session=await authentication.json();
   const page=await context.newPage();
@@ -19,6 +20,9 @@ test('record the community-continuity walkthrough',async({browser})=>{
     if(delay>0)await page.waitForTimeout(delay);
     cues.push({seconds:Number(((Date.now()-recordingStart)/1000).toFixed(1)),scene});
   };
+  let savedPlanId:string|null=null;
+  const video=page.video();
+  try {
   await page.goto('/');
   await expect(page.locator('.metric-value').first()).toBeVisible();
   await page.getByLabel('Analysis date').fill('2026-09-28');
@@ -65,11 +69,13 @@ test('record the community-continuity walkthrough',async({browser})=>{
   const savedResponse=page.waitForResponse(response=>response.url().endsWith('/api/plans')&&response.request().method()==='POST');
   await page.getByRole('button',{name:'Save draft',exact:true}).click();
   const saved=await(await savedResponse).json();
+  savedPlanId=saved.id;
   await expect(page.getByRole('heading',{name:'28 September community continuity',exact:true})).toBeVisible();
   await cue(121,'Review the proposal and export the coordination PDF');
   await page.getByRole('button',{name:'Mark as reviewed',exact:true}).click();
-  for(const checkbox of await page.getByRole('dialog').getByRole('checkbox').all())await checkbox.check();
-  await page.getByRole('button',{name:'Mark reviewed',exact:true}).click();
+  await cue(124,'Keep the proposal in draft until real operational review');
+  await page.getByRole('dialog').getByRole('button',{name:'Cancel',exact:true}).click();
+  await expect(page.getByText('Draft proposal',{exact:true})).toBeVisible();
   const downloadPromise=page.waitForEvent('download');
   await page.getByRole('button',{name:'Export PDF',exact:true}).click();
   await(await downloadPromise).saveAs('../output/demo-footage/recorded-demo-plan.pdf');
@@ -83,11 +89,18 @@ test('record the community-continuity walkthrough',async({browser})=>{
   await cue(163,'Close with the real community access overview');
   await page.getByRole('button',{name:'Overview',exact:true}).click();
   await cue(173,'End of source footage');
-  // Remove the synthetic test record without changing the final visible scene.
-  await context.request.delete(`/api/plans/${saved.id}`,{headers:{'X-CSRF-Token':session.csrf_token}});
-  const video=page.video();
-  await context.close();
+  // Stop the footage before cleanup so network latency cannot extend the demo.
+  } finally {
+    if(!page.isClosed())await page.close();
+    const headers={'X-CSRF-Token':session.csrf_token,Origin:baseURL};
+    try {
+      if(savedPlanId)expect((await context.request.delete(`/api/plans/${savedPlanId}`,{headers})).ok()).toBe(true);
+    } finally {
+      try {expect((await context.request.post('/api/auth/logout',{headers,data:{}})).ok()).toBe(true);}
+      finally {await context.close();}
+    }
+  }
   await mkdir('../output/demo-footage',{recursive:true});
   await copyFile(await video!.path(),'../output/demo-footage/hawkerbridge-silent-walkthrough.webm');
-  await writeFile('../output/demo-footage/timeline.json',JSON.stringify({format:'Silent, real application recording; add Shivam Gupta voiceover.',cues},null,2));
+  await writeFile('../output/demo-footage/timeline.json',JSON.stringify({format:'Silent, real application recording for synthetic narration and captions.',base_url:baseURL,viewport:{width:1600,height:900},proposal_status:'draft',cues},null,2));
 });

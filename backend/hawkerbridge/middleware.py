@@ -2,6 +2,8 @@
 
 from starlette.responses import JSONResponse
 
+_ERROR_HEADERS = {"Cache-Control": "no-store", "X-Content-Type-Options": "nosniff"}
+
 
 class BodyLimitMiddleware:
     def __init__(self, app, limit=65536):
@@ -21,16 +23,18 @@ class BodyLimitMiddleware:
             try:
                 declared = int(content_length)
             except ValueError:
-                return await JSONResponse({"detail": "Invalid Content-Length"}, status_code=400)(
-                    scope, receive, send
-                )
+                return await JSONResponse(
+                    {"detail": "Invalid Content-Length"}, status_code=400, headers=_ERROR_HEADERS
+                )(scope, receive, send)
             if declared < 0:
-                return await JSONResponse({"detail": "Invalid Content-Length"}, status_code=400)(
-                    scope, receive, send
-                )
+                return await JSONResponse(
+                    {"detail": "Invalid Content-Length"}, status_code=400, headers=_ERROR_HEADERS
+                )(scope, receive, send)
             if declared > self.limit:
                 return await JSONResponse(
-                    {"detail": "Request body exceeds 64 KB."}, status_code=413
+                    {"detail": "Request body exceeds 64 KB."},
+                    status_code=413,
+                    headers=_ERROR_HEADERS,
                 )(scope, receive, send)
         chunks = []
         size = 0
@@ -42,7 +46,9 @@ class BodyLimitMiddleware:
             size += len(body)
             if size > self.limit:
                 return await JSONResponse(
-                    {"detail": "Request body exceeds 64 KB."}, status_code=413
+                    {"detail": "Request body exceeds 64 KB."},
+                    status_code=413,
+                    headers=_ERROR_HEADERS,
                 )(scope, receive, send)
             chunks.append(body)
             if not message.get("more_body", False):

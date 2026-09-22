@@ -5,16 +5,21 @@ import type { Session } from '../types';
 import { Brand, ErrorNotice, Spinner } from './UI';
 
 export default function Auth({ session, onSession }: { session: Session; onSession: (session: Session) => void }) {
-  const [mode, setMode] = useState<'login'|'register'>('login');
+  const [mode, setMode] = useState<'login'|'register'|'reset'>('login');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [busy, setBusy] = useState<string|null>(null);
   const [error, setError] = useState('');
-  async function authenticate(method: 'demo'|'login'|'register') {
-    setBusy(method); setError('');
+  const [resetNotice,setResetNotice] = useState('');
+  async function authenticate(method: 'demo'|'login'|'register'|'reset') {
+    setBusy(method); setError('');setResetNotice('');
     try {
+      if (method === 'reset') {
+        const result = await post<{message:string}>('/auth/reset-password',{email});
+        setResetNotice(result.message);return;
+      }
       const next = await post<Session>(`/auth/${method}`, method === 'demo' ? {} : { email, password, ...(method === 'register' ? { name } : {}) });
       useSessionToken(next); onSession(next);
     } catch (e) { setError(errorMessage(e)); } finally { setBusy(null); }
@@ -29,21 +34,23 @@ export default function Auth({ session, onSession }: { session: Session; onSessi
     </section>
     <section className="auth-form-section">
       <div className="auth-top"><span>A continuity desk for community teams</span><span className="tag green">DAISI 2026</span></div>
-      <div className="auth-form-wrap"><div className="eyebrow">A SMALL PLAN. A MEANINGFUL DIFFERENCE.</div><h2>{mode === 'login' ? 'Welcome to the desk.' : 'Make room for your team.'}</h2><p className="muted">{mode === 'login' ? 'Explore Singapore’s hawker access, compare support options, and keep your plans in one place.' : 'Create an account to keep your community continuity plans across visits.'}</p>
+      <div className="auth-form-wrap"><div className="eyebrow">A SMALL PLAN. A MEANINGFUL DIFFERENCE.</div><h2>{mode === 'reset' ? 'Get back to the desk.' : mode === 'login' ? 'Welcome to the desk.' : 'Make room for your team.'}</h2><p className="muted">{mode === 'reset' ? 'Enter the email you used for your account. We will send password recovery instructions if an account uses that address.' : mode === 'login' ? 'Explore Singapore’s hawker access, compare support options, and keep your plans in one place.' : 'Create an account to keep your community continuity plans across visits.'}</p>
       {error && <ErrorNotice message={error}/>}
+      {resetNotice && <div className="notice note" role="status"><ShieldCheck size={18}/><div>{resetNotice}</div></div>}
       {session.auth_mode === 'databricks' ? <div className="notice note"><ShieldCheck/><p>Sign in through your Databricks workspace to access this application. Your workspace identity secures your plans.</p></div> : <>
-        <button className="button primary full demo-button" onClick={() => authenticate('demo')} disabled={!!busy}>{busy === 'demo' ? <Spinner small label="Opening your desk…"/> : <>Explore as a guest <ArrowRight size={18}/></>}</button>
+        {mode !== 'reset' && <><button className="button primary full demo-button" onClick={() => authenticate('demo')} disabled={!!busy}>{busy === 'demo' ? <Spinner small label="Opening your desk…"/> : <>Explore as a guest <ArrowRight size={18}/></>}</button>
         <p className="guest-hint"><Check size={13}/> Real public data. No account needed. Your own guest workspace.</p>
-        <div className="divider-label"><span/>or {mode === 'login' ? 'sign in to your account' : 'create an account'}<span/></div>
+        <div className="divider-label"><span/>or {mode === 'login' ? 'sign in to your account' : 'create an account'}<span/></div></>}
         <form onSubmit={event => { event.preventDefault(); void authenticate(mode); }}>
           {mode === 'register' && <label className="field">Full name<input value={name} onChange={e => setName(e.target.value)} autoComplete="name" required minLength={2} maxLength={80} placeholder="Your name"/></label>}
-          <label className="field">Email address<input type="email" value={email} onChange={e => setEmail(e.target.value)} autoComplete="email" required minLength={5} maxLength={254} placeholder="you@example.com"/></label>
-          <label className="field">Password<div className="password-input"><input type={showPassword ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} autoComplete={mode === 'login' ? 'current-password' : 'new-password'} required minLength={mode === 'register' ? 12 : 1} maxLength={256} placeholder={mode === 'register' ? 'At least 12 characters' : 'Enter your password'}/><button type="button" aria-label={showPassword ? 'Hide password' : 'Show password'} onClick={() => setShowPassword(x => !x)}>{showPassword ? <EyeOff size={17}/> : <Eye size={17}/>}</button></div></label>
-          <button className="button secondary full" type="submit" disabled={!!busy}>{busy && busy !== 'demo' ? <Spinner small label="Please wait…"/> : <>{mode === 'login' ? 'Sign in' : 'Create account'}<ArrowUpRight size={17}/></>}</button>
+          <label className="field">Email address<input type="email" value={email} onChange={e => {setEmail(e.target.value);setResetNotice('');}} autoComplete="email" required minLength={5} maxLength={254} placeholder="you@example.com"/></label>
+          {mode !== 'reset' && <label className="field">Password<div className="password-input"><input type={showPassword ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} autoComplete={mode === 'login' ? 'current-password' : 'new-password'} required minLength={mode === 'register' ? 12 : 1} maxLength={256} placeholder={mode === 'register' ? 'At least 12 characters' : 'Enter your password'}/><button type="button" aria-label={showPassword ? 'Hide password' : 'Show password'} onClick={() => setShowPassword(x => !x)}>{showPassword ? <EyeOff size={17}/> : <Eye size={17}/>}</button></div></label>}
+          <button className="button secondary full" type="submit" disabled={!!busy}>{busy && busy !== 'demo' ? <Spinner small label="Please wait…"/> : <>{mode === 'reset' ? 'Send reset link' : mode === 'login' ? 'Sign in' : 'Create account'}<ArrowUpRight size={17}/></>}</button>
         </form>
-        <p className="auth-switch">{mode === 'login' ? 'New to HawkerBridge?' : 'Already have an account?'} <button onClick={() => { setMode(mode === 'login' ? 'register' : 'login'); setError(''); }}>{mode === 'login' ? 'Create an account' : 'Sign in'}</button></p>
+        {session.auth_mode === 'firebase' && mode === 'login' && <button type="button" className="text-button auth-recovery" disabled={!!busy} onClick={() => {setMode('reset');setPassword('');setShowPassword(false);setError('');setResetNotice('');}}>Forgot your password?</button>}
+        <p className="auth-switch">{mode === 'reset' ? 'Ready to sign in?' : mode === 'login' ? 'New to HawkerBridge?' : 'Already have an account?'} <button disabled={!!busy} onClick={() => { setMode(mode === 'login' ? 'register' : 'login'); setError('');setResetNotice('');setPassword('');setShowPassword(false); }}>{mode === 'login' ? 'Create an account' : 'Sign in'}</button></p>
       </>}
-      <div className="auth-trust"><ShieldCheck size={20}/><p>Plans are private to your session or account. Guest access ends when your session expires. No personal resident data is collected.</p></div>
+      <div className="auth-trust"><ShieldCheck size={20}/>{session.auth_mode === 'databricks' ? <p>Access follows your Databricks workspace identity. Resident data is aggregated, with no individual resident records. Contact your workspace administrator for account and data management.</p> : <p>Plans are private to your session or account. {session.auth_mode === 'firebase' ? 'Guest workspaces expire after 7 days and are deleted when you sign out. ' : 'Guest plans are temporary. '}Account name and email support sign-in. You can delete your account and plans in Account settings. Resident data is aggregated, with no individual resident records.</p>}</div>
       </div><footer className="auth-footer">Community decision support · Singapore national open data</footer>
     </section>
   </main>;

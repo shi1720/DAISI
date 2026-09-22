@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import App from './App';
 import type { Analysis, AnalysisParams, Snapshot } from './types';
 
@@ -47,5 +47,53 @@ describe('date provenance and failed-refresh safeguards',()=>{
     expect(screen.queryByText('Updating access outlook…')).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole('button',{name:'Continuity planner'}));
     expect(screen.getByRole('button',{name:'Generate support proposal'})).toBeDisabled();
+  });
+});
+
+
+describe('mobile navigation and request ordering',()=>{
+  it('removes closed navigation from the accessibility tree and traps focus while open',async()=>{
+    vi.stubGlobal('matchMedia',vi.fn().mockReturnValue({matches:true,addEventListener:vi.fn(),removeEventListener:vi.fn()}));
+    responses();render(<App/>);
+    await screen.findByText('Residents in flagged subzones',{selector:'span'});
+    expect(screen.queryByRole('navigation',{name:'Main navigation'})).not.toBeInTheDocument();
+    const trigger=screen.getByRole('button',{name:'Open navigation'});trigger.focus();fireEvent.click(trigger);
+    expect(screen.getByRole('button',{name:'Overview'})).toHaveFocus();
+    expect(document.body.style.overflow).toBe('hidden');
+    screen.getByRole('button',{name:'Sign out'}).focus();
+    fireEvent.keyDown(document,{key:'Tab'});
+    expect(screen.getByRole('button',{name:'Close menu'})).toHaveFocus();
+    fireEvent.keyDown(document,{key:'Escape'});
+    expect(screen.queryByRole('navigation',{name:'Main navigation'})).not.toBeInTheDocument();
+    expect(trigger).toHaveFocus();expect(document.body.style.overflow).toBe('');
+  });
+  it('ignores an aborted response that arrives after a newer area request',async()=>{
+    const pending:Record<string,(response:Response)=>void>={};
+    const scopedSnapshot={...snapshot,demand_zones:['Bedok','Clementi'].map((planning_area,i)=>({id:String(i),name:planning_area,planning_area,lat:1.3,lng:103.8,residents:100,seniors:20}))};
+    vi.spyOn(window,'scrollTo').mockImplementation(()=>undefined);
+    vi.stubGlobal('fetch',vi.fn(async(url:string,options?:RequestInit)=>{
+      let payload:unknown;
+      if(url==='/api/auth/session')payload={user:{id:'race-test',name:'Guest',email:'',mode:'guest'},csrf_token:'test',auth_mode:'local'};
+      else if(url==='/api/snapshot')payload=scopedSnapshot;
+      else if(url==='/api/analyse'){
+        const parameters=JSON.parse(String(options?.body)) as AnalysisParams;
+        const area=parameters.planning_areas[0];
+        if(area)return new Promise<Response>(resolve=>{pending[area]=resolve;});
+        payload=analysis(parameters);
+      }else throw new Error(`Unexpected request ${url}`);
+      return new Response(JSON.stringify(payload),{status:200});
+    }));
+    render(<App/>);await screen.findByText('Residents in flagged subzones',{selector:'span'});
+    fireEvent.click(screen.getByRole('button',{name:'Continuity planner'}));
+    fireEvent.change(screen.getByLabelText('Planning area scope'),{target:{value:'Clementi'}});
+    expect(screen.getByRole('button',{name:'Generate support proposal'})).toBeDisabled();
+    fireEvent.change(screen.getByLabelText('Planning area scope'),{target:{value:'Bedok'}});
+    const parameters:AnalysisParams={date:'2026-01-01',radius_m:800,senior_weight:2,rescheduled_closure_ids:[],planning_areas:['Bedok']};
+    await act(async()=>pending.Bedok(new Response(JSON.stringify({...analysis(parameters),planning_areas:['Bedok']}),{status:200})));
+    await waitFor(()=>expect(screen.getByRole('button',{name:'Generate support proposal'})).toBeEnabled());
+    await act(async()=>pending.Clementi(new Response(JSON.stringify({...analysis({...parameters,planning_areas:['Clementi']}),planning_areas:['Clementi']}),{status:200})));
+    expect(screen.getByRole('button',{name:'Generate support proposal'})).toBeEnabled();
+    expect(screen.getByLabelText('Planning area scope')).toHaveValue('Bedok');
+    expect(screen.queryByText('Updating access outlook…')).not.toBeInTheDocument();
   });
 });

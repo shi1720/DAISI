@@ -1,0 +1,14 @@
+**
+!Dockerfile
+!requirements.txt
+!backend/
+!backend/**
+!scripts/
+!scripts/start_app.py
+!data/
+!data/processed/
+!data/processed/**
+!frontend/
+!frontend/dist/
+!frontend/dist/**
+**/__pycache__/**

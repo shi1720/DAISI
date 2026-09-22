@@ -130,7 +130,9 @@ def test_complete_plan_workflow_and_exports(client):
     assert plan["result"]["summary"]["spent"] <= 1500
     assert client.get("/api/plans").json()["plans"][0]["id"] == pid
     assert client.get(f"/api/plans/{pid}").json()["parameters"]["date"] == "2026-09-22"
-    r = client.patch(f"/api/plans/{pid}", json={"status": "reviewed"})
+    r = client.patch(
+        f"/api/plans/{pid}", json={"status": "reviewed", "expected_updated_at": plan["updated_at"]}
+    )
     assert r.json()["reviewed_by"] == "Demo planner"
     assert client.get(f"/api/brief?plan_id={pid}").json()["method"].startswith("Deterministic")
     exported = client.get(f"/api/plans/{pid}/export?format=json")
@@ -159,7 +161,13 @@ def test_cross_account_plan_isolation(client):
     assert client.get("/api/plans").json()["plans"] == []
     assert client.get(f"/api/plans/{pid}").status_code == 404
     assert client.get(f"/api/plans/{pid}/export?format=json").status_code == 404
-    assert client.patch(f"/api/plans/{pid}", json={"status": "reviewed"}).status_code == 404
+    assert (
+        client.patch(
+            f"/api/plans/{pid}",
+            json={"status": "reviewed", "expected_updated_at": plan["updated_at"]},
+        ).status_code
+        == 404
+    )
     assert client.delete(f"/api/plans/{pid}").status_code == 404
     assert client.get(f"/api/brief?plan_id={pid}").status_code == 404
 
@@ -298,10 +306,14 @@ def test_editing_reviewed_plan_requires_fresh_review(client, field):
     assert created.status_code == 201
     saved = created.json()
     url = f"/api/plans/{saved['id']}"
-    reviewed = client.patch(url, json={"status": "reviewed"}).json()
+    reviewed = client.patch(
+        url, json={"status": "reviewed", "expected_updated_at": saved["updated_at"]}
+    ).json()
     assert reviewed["status"] == "reviewed"
     assert reviewed["reviewed_by"] == "Demo planner" and reviewed["reviewed_at"]
-    changed = client.patch(url, json={field: "Changed after review"})
+    changed = client.patch(
+        url, json={field: "Changed after review", "expected_updated_at": reviewed["updated_at"]}
+    )
     assert changed.status_code == 200
     for plan in (
         changed.json(),
@@ -313,6 +325,48 @@ def test_editing_reviewed_plan_requires_fresh_review(client, field):
         assert plan[field] == "Changed after review"
         assert plan["result"] == saved["result"]
         assert plan["source_manifest"] == saved["source_manifest"]
-    rereviewed = client.patch(url, json={"status": "reviewed"}).json()
+    rereviewed = client.patch(
+        url, json={"status": "reviewed", "expected_updated_at": changed.json()["updated_at"]}
+    ).json()
     assert rereviewed["status"] == "reviewed"
     assert rereviewed["reviewed_by"] == "Demo planner"
+
+
+def test_local_stale_tab_cannot_erase_notes_or_review_newer_content(client):
+    guest(client)
+    saved = client.post(
+        "/api/plans", json={"title": "Two tabs", "parameters": {"date": "2026-09-28"}}
+    ).json()
+    url = f"/api/plans/{saved['id']}"
+    first = client.patch(
+        url, json={"notes": "New operational details", "expected_updated_at": saved["updated_at"]}
+    )
+    assert first.status_code == 200
+    stale = client.patch(
+        url, json={"status": "reviewed", "expected_updated_at": saved["updated_at"]}
+    )
+    assert stale.status_code == 409
+    current = client.get(url).json()
+    assert current["notes"] == "New operational details" and current["status"] == "draft"
+    assert client.patch(url, json={"status": "reviewed"}).status_code == 422
+    assert client.delete(url).status_code == 204
+    assert (
+        client.patch(
+            url, json={"title": "Resurrect", "expected_updated_at": current["updated_at"]}
+        ).status_code
+        == 404
+    )
+
+
+def test_local_store_conditional_update_rejects_delete_during_inflight_patch(client):
+    from hawkerbridge.plan_errors import PlanNotFoundError
+
+    owner = guest(client)["user"]["id"]
+    saved = client.post(
+        "/api/plans", json={"title": "Inflight", "parameters": {"date": "2026-09-28"}}
+    ).json()
+    store = client.app.state.store
+    assert store.delete_plan(owner, saved["id"])
+    with pytest.raises(PlanNotFoundError):
+        store.update_plan(owner, saved, saved["updated_at"])
+    assert store.get_plan(owner, saved["id"]) is None
