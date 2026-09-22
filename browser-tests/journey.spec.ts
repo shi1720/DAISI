@@ -59,8 +59,9 @@ test.afterEach(async({page,baseURL})=>{
 
 test('authenticated full journey, saved plan, review, exports and source evidence', async ({page})=>{
   const errors:string[]=[];
-  page.on('pageerror',e=>errors.push(e.message));
+  page.on('pageerror',e=>errors.push(e.stack || e.message));
   await page.goto('/');
+  await expect(page.getByRole('button',{name:'Explore as a guest',exact:true})).toBeVisible();
   await screenshot(page,'01-welcome');
   expect(await page.title()).not.toContain('\u2014');
   await checkAccessibility(page,'AUTH');
@@ -77,6 +78,16 @@ test('authenticated full journey, saved plan, review, exports and source evidenc
   await expect(page.locator('.map-area-chip')).toBeVisible();
   await expect(page.locator('.map-panel .centre-marker.open')).toHaveCount(alternatives);
   await page.getByRole('button',{name:'Show all of Singapore',exact:true}).click();
+  // Exercise removal immediately after changing map bounds. Leaflet previously
+  // left a zoom-transition timer running against the detached map pane.
+  for(let cycle=0;cycle<3;cycle++){
+    await page.locator('.closure-row').first().click();
+    await page.getByRole('button',{name:'Show all of Singapore',exact:true}).click();
+    await page.getByRole('button',{name:'Evidence & methods',exact:true}).click();
+    await expect(page.getByRole('heading',{name:'A clear line from data to decision.',exact:true})).toBeVisible();
+    await page.getByRole('button',{name:'Overview',exact:true}).click();
+    await expect(page.locator('.map-panel .centre-marker.closed').first()).toBeVisible();
+  }
   await page.getByRole('button',{name:'Continuity planner',exact:true}).click();
   await page.getByRole('button',{name:/What if cleaning moved/}).click();
   await page.getByRole('checkbox',{name:/Bedok Reservoir Road Blk\s*630/i}).check();

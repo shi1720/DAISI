@@ -22,15 +22,20 @@ export default function AccessMap({ snapshot, analysis, sites = noSites, selecte
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
-    const map = L.map(containerRef.current, { zoomControl:false, attributionControl:false, scrollWheelZoom:false, minZoom:10, maxZoom:15, zoomSnap:0.25, zoomDelta:0.5 });
-    map.fitBounds(singaporeBounds, { padding:[12,12] });
+    // Leaflet's CSS zoom completion timer can outlive a map removed during
+    // navigation. This schematic map uses immediate transitions so switching
+    // views never leaves a zoom callback pointing at detached map panes.
+    const map = L.map(containerRef.current, { zoomControl:false, attributionControl:false, scrollWheelZoom:false, minZoom:10, maxZoom:15, zoomSnap:0.25, zoomDelta:0.5, zoomAnimation:false, markerZoomAnimation:false, fadeAnimation:false });
+    map.fitBounds(singaporeBounds, { padding:[12,12], animate:false });
     mapRef.current = map;
     L.control.zoom({ position:'bottomright' }).addTo(map);
     L.control.attribution({ position:'bottomleft', prefix:false }).addAttribution('Singapore public data · schematic access map').addTo(map);
     L.control.scale({ imperial:false, position:'bottomleft' }).addTo(map);
-    const resize = new ResizeObserver(() => map.invalidateSize());
+    const resize = new ResizeObserver(() => {
+      if (mapRef.current === map) map.invalidateSize({ animate:false });
+    });
     resize.observe(containerRef.current);
-    return () => { resize.disconnect(); map.remove(); mapRef.current = null; };
+    return () => { resize.disconnect(); mapRef.current = null; map.stop(); map.remove(); };
   }, []);
 
   useEffect(() => {
@@ -66,14 +71,14 @@ export default function AccessMap({ snapshot, analysis, sites = noSites, selecte
     });
     if (selectedArea) {
       const points = analysis.zones.filter(x => x.planning_area === selectedArea).map(z => [z.lat,z.lng] as L.LatLngTuple);
-      if (points.length > 0) map.fitBounds(L.latLngBounds(points).pad(0.2), { maxZoom:13, padding:[35,35] });
-    } else map.fitBounds(singaporeBounds, { padding:[12,12] });
+      if (points.length > 0) map.fitBounds(L.latLngBounds(points).pad(0.2), { maxZoom:13, padding:[35,35], animate:false });
+    } else map.fitBounds(singaporeBounds, { padding:[12,12], animate:false });
   }, [analysis, sites, showOpen, showZones, selectedArea]);
 
   return <div className="map-shell">
     <div ref={containerRef} className="access-map" role="region" aria-label="Singapore hawker access map. Centre markers are keyboard accessible. Affected areas also appear in the table below."/>
     <div className="map-top-left"><span className="map-label"><span className="status-dot"/>SINGAPORE</span>{selectedArea && <button className="map-area-chip" onClick={onAreaClear}>{titleCase(selectedArea)} <X size={13}/></button>}</div>
-    <button className="map-reset icon-button" onClick={() => { mapRef.current?.fitBounds(singaporeBounds); onAreaClear?.(); }} aria-label="Show all of Singapore"><LocateFixed size={18}/></button>
+    <button className="map-reset icon-button" onClick={() => { mapRef.current?.fitBounds(singaporeBounds, { animate:false }); onAreaClear?.(); }} aria-label="Show all of Singapore"><LocateFixed size={18}/></button>
     <div className="map-legend"><span><i className="legend-dot closed"/>Closed centre</span><button className={!showOpen ? 'disabled-layer' : ''} onClick={() => setShowOpen(!showOpen)} aria-pressed={showOpen}><i className="legend-dot open"/>No resolved closure</button><button className={!showZones ? 'disabled-layer' : ''} onClick={() => setShowZones(!showZones)} aria-pressed={showZones}><i className="legend-area"/>Flagged subzone</button>{sites.length > 0 && <span><i className="legend-dot site"/>Proposed locality</span>}<Layers size={14}/></div>
     {selection && <div className="map-detail" aria-live="polite"><button className="icon-button close-detail" onClick={() => setSelection(null)} aria-label="Close map detail"><X size={16}/></button><div className="eyebrow">{selection.kind === 'centre' ? 'HAWKER CENTRE' : selection.kind === 'zone' ? 'SUBZONE FLAGGED FOR REVIEW' : 'PROPOSED COLLECTION LOCALITY'}</div><h3>{titleCase(selection.value.name)}</h3>{selection.kind === 'centre' ? <><Tag tone={selection.value.status === 'closed' ? 'orange' : 'green'}>{selection.value.status === 'closed' ? 'Scheduled closure' : 'No resolved closure'}</Tag><p>{selection.value.address}</p><div className="map-detail-facts"><span>{number(selection.value.food_stalls)} food stalls</span><span>{titleCase(selection.value.planning_area)}</span></div>{selection.value.active_closures.map(c => <p className="caption" key={c.id}>{c.kind === 'cleaning' ? 'Cleaning' : 'Works'} · {c.start_date} – {c.end_date}</p>)}</> : selection.kind === 'zone' ? <><p>{number(selection.value.residents)} census residents · {number(selection.value.seniors)} aged 65+</p><div className="map-detail-facts"><span>Before: {distance(selection.value.baseline_distance_m)}</span><span>Now: {distance(selection.value.current_distance_m)}</span></div><p className="caption">Distance from subzone representative point. Area totals are a screening proxy, not a count of people lacking food access.</p></> : <><p><MapPin size={13}/> {number(selection.value.meals)} planned meals · {number(selection.value.estimated_demand)} assumed demand</p><p className="caption">Subzone representative point. A suitable venue and operator must be verified.</p></>}</div>}
   </div>;
