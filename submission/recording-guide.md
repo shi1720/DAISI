@@ -8,8 +8,8 @@ The supplied screen footage records the real local application. It is silent so 
 4. Combine the supplied footage and your actual audio:
 
    ```sh
-   uv run python scripts/assemble_demo.py \
-     --footage output/video/hawkerbridge-demo-silent.webm \
+   python3 scripts/assemble_demo.py \
+     --footage output/video/hawkerbridge-demo-silent.mp4 \
      --voiceover tmp/voiceover.m4a \
      --output output/video/hawkerbridge-demo-with-voice.mp4
    ```

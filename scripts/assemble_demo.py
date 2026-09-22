@@ -27,7 +27,7 @@ def duration(path: Path) -> float:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--footage", type=Path, default=ROOT / "output/video/hawkerbridge-demo-silent.webm"
+        "--footage", type=Path, default=ROOT / "output/video/hawkerbridge-demo-silent.mp4"
     )
     parser.add_argument(
         "--voiceover",

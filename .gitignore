@@ -35,3 +35,4 @@ data/raw/20260922T042307-aed765/
 .chart-data-*/
 output/ci-*/
 output/ci-*.log
+output/*.zip
