@@ -107,13 +107,14 @@ npm --prefix frontend run build
 npm --prefix frontend audit --audit-level=high
 ```
 
-The GitHub Actions workflow runs backend, frontend and Chromium browser checks, then saves screenshots, traces, video and exported-plan evidence as an artifact. Browser tests live in `browser-tests/`. They cover account creation, authenticated planning, advanced-form validity, scope, saving, review, download, independent accounts and mobile overflow.
+The GitHub Actions workflow runs backend, frontend and Chromium browser checks, then attempts to save screenshots, traces, video and exported-plan evidence as an artifact. Selected evidence also has a checksum-verified CI-log fallback when GitHub artifact storage is full. Browser tests live in `browser-tests/`. They cover account creation, authenticated planning, advanced-form validity, scope, saving, review, download, independent accounts and mobile overflow.
 
 ## Submission pack
 
 - **Round 1:** `output/pdf/hawkerbridge-round1.pdf`, based on the official three-slide template.
 - **Round 2:** `output/pdf/hawkerbridge-final-pitch.pdf` and its editable presentation, plus product screenshots.
-- **Narration and storyboard:** [video script](submission/video-script.md).
+- **Narration and storyboard:** [video script](submission/video-script.md) and [printable narration](output/pdf/hawkerbridge-video-narration.pdf).
+- **Supplementary one-page note:** [concept note](output/pdf/hawkerbridge-concept-note.pdf).
 - **Ready-to-adapt copy:** [Devpost description](submission/devpost-description.md), [judge Q&A](submission/judge-qa.md), [what’s next](submission/whats-next.md).
 - **Participant details:** fill `submission/team.json`, then run `uv run python scripts/check_submission.py --round 1`.
 

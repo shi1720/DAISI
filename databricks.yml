@@ -38,7 +38,13 @@ sync:
     - state/**
     - output/**
     - research/**
-    - frontend/node_modules/**
+    - "**/node_modules/**"
+    - .tools/**
+    - tmp/**
+    - browser-tests/**
+    - databricks/dashboard/*.lvdash.json
+    - "Hack Away Hunger/**"
+    - data/raw/20260922T042307-aed765/**
     - frontend/test-results/**
     - frontend/playwright-report/**
     - '**/__pycache__/**'
