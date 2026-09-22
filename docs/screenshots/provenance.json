@@ -1,0 +1,80 @@
+{
+  "kind": "real_application_browser_capture",
+  "captured_on": "2026-09-22",
+  "source_commit": "94b96cf7994093bc77a23eac1171c9a2624a784e",
+  "ci_run": "https://github.com/shi1720/DAISI/actions/runs/35689097551",
+  "browser": "Playwright Chromium on GitHub Actions Ubuntu",
+  "data_snapshot_fetched_at": "2026-09-22T04:25:32.462291Z",
+  "data_content_sha256": "5b7aaf83b6cdc25fb4262eaa99ee116925d4c5ab8a634647f46f35d21acde783",
+  "scenario": {
+    "date": "2026-09-28",
+    "radius_m": 800,
+    "planning_areas": []
+  },
+  "privacy": "Isolated guest workspace and synthetic test records only. No private resident records.",
+  "postprocessing": "None. These PNGs are byte-for-byte verified CI captures; viewport and full-page captures are separately named.",
+  "verification": {
+    "browser_journeys_passed": 4,
+    "overview_axe_wcag2a_wcag2aa_violations": 0,
+    "mobile_width_px": 390,
+    "recording_test": "Opt-in; skipped in this run."
+  },
+  "files": [
+    {
+      "file": "welcome.png",
+      "original_capture": "01-welcome.png",
+      "width": 1440,
+      "height": 1040,
+      "sha256": "f2b2fa4309dcc2ee84e7ad3e5358ad87906365258b87972a2ea9c5dd61a5a5d2"
+    },
+    {
+      "file": "overview.png",
+      "original_capture": "02-overview-hero.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "0e40eade00bb1cada1045de296ccb1e29216690a82194fccfa5c2d790bdeae3b"
+    },
+    {
+      "file": "planner.png",
+      "original_capture": "03-continuity-planner-hero.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "bc22fde84515d99afd9259cd3155c2c125a6817f53634b2969a8f2fb8b4b23a3"
+    },
+    {
+      "file": "capacity-comparison.png",
+      "original_capture": "03b-capacity-450-hero.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "5a99ed31a75159d3c7eb91230f2fd534f4683ca75cbfc910c8858988f1b1aadc"
+    },
+    {
+      "file": "saved-plan.png",
+      "original_capture": "04-saved-plan.png",
+      "width": 1440,
+      "height": 1531,
+      "sha256": "153b4ecf7725f6de6204a803ed83330c566b1f5a51ba4c1dae34ec2211434435"
+    },
+    {
+      "file": "evidence.png",
+      "original_capture": "05-evidence.png",
+      "width": 1440,
+      "height": 3208,
+      "sha256": "e264ebe7f7a7187c0de740da6d08eeb48593bd7ee8a0bd71846a6890dd59ab78"
+    },
+    {
+      "file": "mobile-overview.png",
+      "original_capture": "07-mobile-overview.png",
+      "width": 390,
+      "height": 2613,
+      "sha256": "d16810152cef0a8fc5f1fefccd5ac981bddcd53cffab184145420f5e951a78c3"
+    },
+    {
+      "file": "mobile-planner.png",
+      "original_capture": "08-mobile-planner.png",
+      "width": 390,
+      "height": 3399,
+      "sha256": "2b8bf2f31873bb8fc74bd83c8578c37d171e08c65f75c91cbd1a5132b1f5f531"
+    }
+  ]
+}
