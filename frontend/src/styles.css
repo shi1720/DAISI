@@ -39,7 +39,7 @@
 @media(max-width:720px){.mobile-only{display:inline-flex}}
 
 /* Readable text on planner assumptions and evidence surfaces (WCAG AA). */
-.planner-steps,.budget-presets button,.input-with-prefix>span,.budget-field .input-with-prefix>span:first-child,.participation-field>span>strong,.site-number,.site-meals strong,.site-cost strong,.comparison-table>div,.comparison-table>div:first-child,.comparison-table .highlight,.method-details summary,.pipeline-number,.source-metadata code,.quality-grid>div>strong,.reviewed-label{color:#536b40}
+.planner-steps,.budget-presets button,.input-with-prefix>span,.budget-field .input-with-prefix>span:first-child,.participation-field>span>strong,.site-number,.site-meals strong,.site-cost strong,.comparison-table>div,.comparison-table>div:first-child,.comparison-table .highlight,.method-details summary,.pipeline-number,.source-metadata code,.quality-grid>div>strong,.reviewed-label,.source-link{color:#536b40}
 .metric.positive .metric-note,.notice.note{color:#58694f}
 .evidence-hero dt{color:#b6cba7}
 .limitations-list{color:#796743}
