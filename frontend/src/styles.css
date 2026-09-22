@@ -78,3 +78,5 @@ button.top-avatar:hover{background:#d8e4cc}
 
 /* Measured contrast corrections from remote WCAG AA checks. */
 .auth-flow span,.auth-story-footer{color:#a8c0aa}.auth-switch>button{color:#466237}
+.budget-presets{flex-wrap:wrap}
+@media(max-width:380px){.budget-presets{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.budget-presets button{min-height:44px}}

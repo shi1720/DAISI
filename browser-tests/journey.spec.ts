@@ -166,6 +166,7 @@ test('authenticated full journey, saved plan, review, exports and source evidenc
     await expect(page.getByRole('heading',{name:'Verified Databricks publication',exact:true})).toBeVisible();
     await expect(page.locator('.publication-panel .metric-value')).toHaveText(['9','12 / 12','5']);
     await expect(page.locator('.benchmark-panel .metric-value').first()).toHaveText('15');
+    await expect(page.locator('.toast')).toHaveCount(0);
     await page.locator('.publication-panel').scrollIntoViewIfNeeded();
     await screenshot(page,'05b-databricks-publication',false);
   }
@@ -237,5 +238,12 @@ test('mobile navigation and accessible layout',async({page})=>{
   await page.setViewportSize({width:320,height:720});
   await expect(page.getByLabel('Planning area scope')).toBeVisible();
   expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(321);
+  expect(await page.locator('.budget-presets').evaluate(container=>{
+    const bounds=container.getBoundingClientRect();
+    return Array.from(container.children).every(button=>{
+      const rect=button.getBoundingClientRect();
+      return rect.left>=bounds.left-1&&rect.right<=bounds.right+1;
+    });
+  })).toBe(true);
   await screenshot(page,'09-small-mobile-planner');
 });
