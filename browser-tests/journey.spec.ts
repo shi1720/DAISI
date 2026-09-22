@@ -44,6 +44,12 @@ test('authenticated full journey, saved plan, review, exports and source evidenc
   await expect(page.locator('.map-detail')).toContainText('Scheduled closure');
   await page.getByRole('button',{name:'Close map detail',exact:true}).click();
   await page.getByRole('button',{name:'Continuity planner',exact:true}).click();
+  await page.getByRole('button',{name:/What if cleaning moved/}).click();
+  await page.getByRole('checkbox',{name:/Bedok Reservoir Road Blk\s*630/i}).check();
+  await expect(page.locator('.scenario-comparison')).toContainText('54,030');
+  await checkAccessibility(page,'SCHEDULE_COMPARISON');
+  await page.getByRole('button',{name:/Reset scenario/}).click();
+  await page.getByRole('button',{name:/What if cleaning moved/}).click();
   await page.getByRole('button',{name:'Cost, capacity & priority settings'}).click();
   await expect(page.getByLabel('Setup cost per locality')).toHaveValue('300');
   expect(await page.locator('form.assumptions-form').evaluate((f:HTMLFormElement)=>f.checkValidity())).toBe(true);

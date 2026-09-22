@@ -24,6 +24,7 @@ test('record the community-continuity walkthrough',async({browser})=>{
   await page.getByLabel('Analysis date').fill('2026-09-28');
   await page.waitForLoadState('networkidle');
   await page.evaluate(()=>document.fonts.ready);
+  await page.getByLabel('Analysis date').blur();
   await cue(5,'Overview: resolved closures and subzones flagged for review');
   await cue(18,'Map: select a scheduled closure from the accessible centre list');
   await page.locator('.closure-row').first().click();
@@ -42,6 +43,7 @@ test('record the community-continuity walkthrough',async({browser})=>{
   await cue(52,'Generate the S$1,500 support proposal');
   await page.getByRole('button',{name:'Generate support proposal'}).click();
   await expect(page.locator('.proposal-banner')).toContainText('225');
+  await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
   await cue(69,'Explain unverified collection localities and allocation trade-offs');
   await page.locator('.comparison-panel').scrollIntoViewIfNeeded();
   await cue(82,'Increase budget to S$3,000: planned capacity reaches 450 meals');

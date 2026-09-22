@@ -43,3 +43,8 @@
 .metric.positive .metric-note,.notice.note{color:#58694f}
 .evidence-hero dt{color:#b6cba7}
 .limitations-list{color:#796743}
+
+/* Keep schedule coordination and its result together before meal budgeting. */
+.closure-options{max-height:250px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#9aaf8e #f2f4e9;padding-right:9px;margin-top:12px;border-top:1px solid #e2e8d8}
+.scenario-comparison>span,.scenario-comparison>small{color:#536b40}
+.scenario-comparison strong{color:#805c37}
