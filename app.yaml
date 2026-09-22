@@ -1,0 +1,18 @@
+# Manual Apps deployments use these defaults. The bundle sets catalog/schema from variables.
+# Databricks supplies app OAuth credentials automatically; never paste them here.
+command:
+  - python
+  - scripts/start_app.py
+env:
+  - name: HAWKERBRIDGE_AUTH_MODE
+    value: databricks
+  - name: HAWKERBRIDGE_STORAGE
+    value: databricks
+  - name: HAWKERBRIDGE_SECURE_COOKIES
+    value: "true"
+  - name: DATABRICKS_WAREHOUSE_ID
+    valueFrom: sql-warehouse
+  - name: HAWKERBRIDGE_CATALOG
+    value: workspace
+  - name: HAWKERBRIDGE_SCHEMA
+    value: hawkerbridge

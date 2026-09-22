@@ -1,0 +1,72 @@
+resources:
+  experiments:
+    planning_evaluation:
+      name: ${workspace.root_path}/planning-evaluation
+
+  jobs:
+    hawkerbridge_pipeline:
+      name: HawkerBridge — ingest, validate, evaluate and publish
+      description: One serverless task; validated open data to governed Delta tables and reproducible planning evaluation.
+      max_concurrent_runs: 1
+      timeout_seconds: 1800
+      parameters:
+        - name: catalog
+          default: ${var.catalog}
+        - name: schema
+          default: ${var.schema}
+        - name: app_name
+          default: ${resources.apps.hawkerbridge_app.name}
+        - name: input_mode
+          default: ${var.input_mode}
+        - name: reuse_archived_geometry
+          default: ${var.reuse_archived_geometry}
+        - name: experiment_id
+          default: ${resources.experiments.planning_evaluation.id}
+      tasks:
+        - task_key: ingest_validate_evaluate_publish
+          environment_key: hawkerbridge
+          timeout_seconds: 1500
+          max_retries: 0
+          notebook_task:
+            notebook_path: ../databricks/notebooks/01_pipeline.py
+            base_parameters:
+              repo_root: ${workspace.file_path}
+      environments:
+        - environment_key: hawkerbridge
+          spec:
+            environment_version: "2"
+            dependencies:
+              - "numpy==2.4.6 ; python_full_version < '3.12'"
+              - "numpy==2.5.3 ; python_full_version >= '3.12'"
+              - "scipy==1.17.1 ; python_full_version < '3.12'"
+              - "scipy==1.18.1 ; python_full_version >= '3.12'"
+              - "shapely==2.1.2"
+              - "mlflow==3.16.1"
+              - "databricks-sdk==0.140.0"
+
+  apps:
+    hawkerbridge_app:
+      name: ${var.app_name}
+      description: Hawker closure continuity planning with explicit uncertainty and owner-scoped proposals.
+      source_code_path: ..
+      resources:
+        - name: sql-warehouse
+          description: Reuses the existing Free Edition SQL warehouse; no additional warehouse is created.
+          sql_warehouse:
+            id: ${var.warehouse_id}
+            permission: CAN_USE
+      config:
+        command: [python, scripts/start_app.py]
+        env:
+          - name: HAWKERBRIDGE_AUTH_MODE
+            value: databricks
+          - name: HAWKERBRIDGE_STORAGE
+            value: databricks
+          - name: HAWKERBRIDGE_SECURE_COOKIES
+            value: "true"
+          - name: DATABRICKS_WAREHOUSE_ID
+            value_from: sql-warehouse
+          - name: HAWKERBRIDGE_CATALOG
+            value: ${var.catalog}
+          - name: HAWKERBRIDGE_SCHEMA
+            value: ${var.schema}

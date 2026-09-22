@@ -1,0 +1,43 @@
+name: Verify HawkerBridge
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.17"
+          enable-cache: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: |
+            frontend/package-lock.json
+            browser-tests/package-lock.json
+      - run: uv sync --frozen --extra dev --python 3.12
+      - run: .venv/bin/ruff check backend tests scripts databricks
+      - run: .venv/bin/pytest --cov=hawkerbridge --cov-report=term-missing --cov-report=xml -q
+      - run: npm ci && npm test && npm run build && npm audit --audit-level=high
+        working-directory: frontend
+      - run: npm ci && npx playwright install --with-deps chromium
+        working-directory: browser-tests
+      - run: npm test
+        working-directory: browser-tests
+        env:
+          HAWKERBRIDGE_DATABASE: /tmp/hawkerbridge-ci.db
+      - name: Preserve browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hawkerbridge-browser-evidence
+          path: |
+            output/screenshots
+            output/browser-report
+            output/browser-results
+            coverage.xml
+          retention-days: 14

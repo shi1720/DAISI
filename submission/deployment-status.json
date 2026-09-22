@@ -1,0 +1,9 @@
+{
+  "local_app_tested": true,
+  "databricks_workspace_execution_verified": false,
+  "databricks_app_url": null,
+  "successful_pipeline_run_url": null,
+  "mlflow_run_url": null,
+  "public_or_unlisted_video_url": null,
+  "note": "This records actual evidence, not intended architecture. Populate cloud links only after successful workspace execution."
+}

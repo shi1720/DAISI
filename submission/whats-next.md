@@ -1,0 +1,15 @@
+# What comes next
+
+HawkerBridge currently offers a locally tested source-to-proposal workflow. The next milestone is verified Databricks execution, followed by a small operator pilot. More features are secondary to establishing whether the decision is useful.
+
+**Complete the platform evidence.** Deploy into the participant's authorised Databricks workspace, run ingestion and quality checks, inspect the governed tables and MLflow evaluations, and exercise sign-in, owner-scoped saving and exports in the running App. Record the actual run links and source fingerprint. If restricted outbound access requires the checksummed archived replay mode, label that mode explicitly. Keep the last good published snapshot available when a later run fails.
+
+**Validate one real workflow over four to six weeks.** With one consenting estate or community operator, observe its existing process for one planned closure. Verify the closure, alternative food supply and candidate collection venues together. Agree on an operator-approved capacity, cost and need-assessment process; keep beneficiary identities out of HawkerBridge. Compare preparation time and completeness using the existing process and the same closure in HawkerBridge. Any real meal provision remains the responsibility of an authorised operator.
+
+**Use measurable pilot gates.** Proposed targets are at least 30% less preparation time, no increase in critical factual omissions, every proposed operational venue verified before use, and a repeat paid-use commitment that covers support and paid hosting. These are prospective targets, not achieved results. Record corrections, rejected recommendations, staff support time, actual participation and operator costs. A small pilot is evidence about that workflow, not national impact.
+
+**Improve the weakest inputs first.** Seek newer compatible small-area demographics, better within-subzone population locations, verified alternative food outlets, accessible walking routes and operator-confirmed capacities. Preserve the meaning and date of each source. If operational demand history becomes available with suitable consent and governance, evaluate a forecast against simple baselines and held-out future periods; do not manufacture training labels from today's exposure score.
+
+**Test a sustainable commercial arrangement.** Offer a scoped paid pilot before building a marketplace. The initial pricing hypothesis is S$1,000 for one closure-planning engagement, creditable toward a S$250–500 monthly organisation subscription. Validate frequency of use, procurement and actual savings before offering annual contracts. Production use needs paid infrastructure: Databricks Free Edition is for noncommercial learning and exploration, not the hosting plan for a paid customer service.
+
+Only after repeat use should the product expand to multi-operator coordination or other neighbourhood service disruptions. Public data is not defensibility; trustworthy corrections, verified operational capacity and a workflow that operators choose to reuse might become defensible over time.
