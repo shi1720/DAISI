@@ -47,7 +47,9 @@
       "planner": [],
       "evidence": []
     },
-    "contrast_fix": "Expanded scenario warning text and Reset link changed to #765429 on #fff0d5. No data, model output, workflow logic, or recording pixels were altered."
+    "contrast_fix": "Expanded scenario warning text and Reset link changed to #765429 on #fff0d5. No data, model output, workflow logic, or recording pixels were altered.",
+    "backend_tests_passed": 101,
+    "backend_statement_coverage_percent": 89
   },
   "visual_review": {
     "sampled_video_seconds": [
@@ -55,6 +57,7 @@
       45,
       55,
       85,
+      99,
       125,
       153,
       168
@@ -64,7 +67,8 @@
       "The recorded scenario shows 91,180 to 54,030 historical residents in flagged subzones, then restores the published schedule.",
       "The S$1,500 proposal visibly allocates 225 assumed meals; the S$3,000 proposal reaches the 450-meal capacity ceiling.",
       "The saved proposal shows 450 planned meals, S$2,700 proposed cost and a real PDF export confirmation.",
-      "Evidence screens show source limitations and computational benchmark results."
+      "Evidence screens show source limitations and computational benchmark results.",
+      "At 99 seconds the S$6,000 budget still shows 450 planned meals and S$2,700 proposed cost, confirming the recorded capacity comparison."
     ]
   },
   "recorded_assumptions": {
@@ -84,5 +88,5 @@
     ]
   },
   "review_state_note": "The proposal is marked Reviewed after acknowledging modelling assumptions and future operational checks. This is not confirmation of a venue, operator, validated meal demand or a booked service.",
-  "participant_next_step": "Record the supplied narration in Shivam Gupta’s own voice. The video finisher can add that audio, supplied captions and the execution-context footer while leaving this original silent capture unchanged."
+  "participant_next_step": "Record the supplied narration in Shivam Gupta’s own voice. The video finisher adds that audio and the execution-context footer while leaving this original silent capture unchanged. Align and upload the separate editable SRT captions as described in submission/recording-guide.md."
 }

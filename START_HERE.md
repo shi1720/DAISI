@@ -38,7 +38,7 @@ No eligibility or personal academic details have been invented, and no entry has
 
 The local application is working and tested. The Databricks source includes the actual serverless pipeline, governed tables, MLflow evaluations, durable application store and native AI/BI dashboard definition. **A cloud deployment is complete only after the workspace run and hosted app are verified.** Current evidence lives in [deployment-status.json](submission/deployment-status.json); code and local tests do not substitute for a cloud run.
 
-The [completed verification run](https://github.com/shi1720/DAISI/actions/runs/35690578006) passed backend and frontend checks plus all five browser tests, including the actual recording. A clean installation from the source ZIP also created and exported the expected 225-meal proposal with all five source records preserved.
+The [completed verification run](https://github.com/shi1720/DAISI/actions/runs/35691832262) passed backend and frontend checks plus all four functional browser journeys, including expanded-state accessibility checks. The separately captured walkthrough has its own recording provenance. A clean installation from the source ZIP also created and exported the expected 225-meal proposal with all five source records preserved.
 
 The [Databricks deployment runbook](docs/databricks-deployment.md) covers authentication and verification. The official CLI requires workspace authorization before it can deploy. Never paste a token into a chat, notebook, source file or commit.
 
