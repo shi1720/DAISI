@@ -1,12 +1,14 @@
 import fs from 'node:fs/promises';
 import crypto from 'node:crypto';
 import {execFileSync} from 'node:child_process';
-import {FileBlob,PresentationFile} from '@oai/artifact-tool';
 import path from 'node:path';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
-const skill=process.env.PRESENTATIONS_SKILL_DIR;
-if(!skill || !process.env.RUNTIME_PYTHON) throw new Error('Set PRESENTATIONS_SKILL_DIR and RUNTIME_PYTHON to the bundled presentation runtime.');
+const runtime=process.env.CODEX_PRESENTATION_RUNTIME || '/Users/shivamgupta/.cache/codex-runtimes/codex-primary-runtime/dependencies';
+const skill=process.env.PRESENTATIONS_SKILL_DIR || '/Users/shivamgupta/.codex/plugins/cache/openai-primary-runtime/presentations/26.904.11930/skills/presentations';
+process.env.RUNTIME_NODE_MODULES=path.join(runtime,'node/node_modules');
+const python=process.env.RUNTIME_PYTHON || path.join(runtime,'python/bin/python3');
+const {FileBlob,PresentationFile}=await import(pathToFileURL(path.join(runtime,'node/node_modules/@oai/artifact-tool/dist/artifact_tool.mjs')).href);
 const {finalizePresentation}=await import(pathToFileURL(path.join(skill,'container_tools/artifact_tool_utils.mjs')).href);
 await fs.mkdir(root+'/tmp/presentation',{recursive:true});
 await fs.mkdir(root+'/output/presentations',{recursive:true});
@@ -71,7 +73,7 @@ execFileSync(root+'/.venv/bin/python',[root+'/scripts/preserve_presentation_temp
 const sha=crypto.createHash('sha256').update(await fs.readFile(source)).digest('hex');
 await finalizePresentation({workspaceDir:root,candidatePath:candidate,finalPath:root+`/output/presentations/hawkerbridge-round1-${revision}.pptx`,
  explicitTotalSlideCount:3,sourceTemplatePath:source,requiredTemplateReferenceSlides:[1,2,3],minimumTemplateCoverageRatio:1,requireExactTemplateDimensions:true,
- pythonExecutable:process.env.RUNTIME_PYTHON,
+ pythonExecutable:python,
  integrityValidatorPath:skill+'/container_tools/inspect_presentation_package_integrity.py',
  layoutValidatorPath:skill+'/container_tools/inspect_presentation_layout_geometry.py',
  layoutArgs:['--expected-slide-size-emu','12191695,6858000','--validate-heading-fit'],

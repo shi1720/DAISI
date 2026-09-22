@@ -37,3 +37,21 @@ def test_dry_run_requires_existing_job_without_provisioning(monkeypatch):
     with pytest.raises(SystemExit) as error:
         module.main()
     assert error.value.code == 2
+
+
+def test_existing_schedule_uses_update_headers(monkeypatch):
+    import json
+    module = retention_module()
+    calls = []
+    monkeypatch.setattr("sys.argv", ["retention", "--project", "test-project"])
+    monkeypatch.setattr(module, "exists", lambda _: True)
+    monkeypatch.setattr(module, "call", calls.append)
+    service = {"spec": {"template": {"spec": {
+        "serviceAccountName": "runtime@test-project.iam.gserviceaccount.com",
+        "containers": [{"image": "test-image", "env": [{"name": "MODE", "value": "test"}]}],
+    }}}}
+    monkeypatch.setattr(module.subprocess, "check_output", lambda *_args, **_kwargs: json.dumps(service))
+    module.main()
+    update = next(call for call in calls if call[:4] == ["gcloud", "scheduler", "jobs", "update"])
+    assert "--update-headers" in update and "--headers" not in update
+    assert any("--args=-m,hawkerbridge.firebase_cleanup,--limit,1000,--execute" in call for call in calls)

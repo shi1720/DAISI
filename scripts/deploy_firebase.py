@@ -40,6 +40,9 @@ def main() -> None:
     for executable in ("gcloud", "npm", args.firebase_cli):
         if not shutil.which(executable):
             parser.error(f"Missing executable: {executable}")
+    hosting = json.loads((ROOT / "firebase.json").read_text())
+    if hosting["hosting"]["site"] != args.site or hosting["hosting"]["rewrites"][0]["run"]["region"] != args.region:
+        parser.error("firebase.json site and region must match the requested deployment")
     service = "hawkerbridge-api"
     account = f"hawkerbridge-runtime@{args.project}.iam.gserviceaccount.com"
     cli = args.firebase_cli
@@ -75,9 +78,6 @@ def main() -> None:
              "--env-vars-file", str(env_path), "--port", "8080", "--memory", "1Gi",
              "--cpu", "1", "--concurrency", "8", "--min-instances", "0",
              "--max-instances", "2", "--timeout", "60", "--allow-unauthenticated", "--quiet"])
-    hosting = json.loads((ROOT / "firebase.json").read_text())
-    if hosting["hosting"]["site"] != args.site or hosting["hosting"]["rewrites"][0]["run"]["region"] != args.region:
-        parser.error("firebase.json site and region must match the requested deployment")
     run([cli, "deploy", "--only", "hosting", "--project", args.project, "--non-interactive"])
     print(f"Deployed https://{args.site}.web.app. Run scripts/smoke_hosted.py before announcing verification.")
 

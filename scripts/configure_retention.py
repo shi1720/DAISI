@@ -59,6 +59,10 @@ def main() -> None:
         call(command)
     call(["gcloud", "run", "jobs", "execute", job, *common, "--wait", "--quiet"])
     scheduler = f"hawkerbridge-scheduler@{args.project}.iam.gserviceaccount.com"
+    if not exists(["gcloud", "iam", "service-accounts", "describe", scheduler,
+                   "--project", args.project, "--format=value(email)"]):
+        call(["gcloud", "iam", "service-accounts", "create", "hawkerbridge-scheduler",
+              "--project", args.project, "--display-name", "HawkerBridge retention scheduler", "--quiet"])
     call(["gcloud", "run", "jobs", "add-iam-policy-binding", job, *common,
           "--member", "serviceAccount:" + scheduler, "--role", "roles/run.invoker", "--quiet", "--format=value(etag)"])
     scheduled = exists(["gcloud", "scheduler", "jobs", "describe", job, "--project", args.project,
@@ -68,7 +72,7 @@ def main() -> None:
           "--schedule", "15 * * * *", "--time-zone", "Asia/Singapore",
           "--uri", f"https://run.googleapis.com/v2/projects/{args.project}/locations/{args.region}/jobs/{job}:run",
           "--http-method", "POST", "--oauth-service-account-email", scheduler,
-          "--headers", "Content-Type=application/json", "--message-body", "{}", "--quiet"])
+          "--update-headers" if scheduled else "--headers", "Content-Type=application/json", "--message-body", "{}", "--quiet"])
 
 
 if __name__ == "__main__":

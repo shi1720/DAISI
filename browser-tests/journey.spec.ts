@@ -142,7 +142,7 @@ test('authenticated full journey, saved plan, review, exports and source evidenc
   await screenshot(page,'04-saved-plan');
   await page.getByRole('button',{name:'Evidence & methods',exact:true}).click();
   await expect(page.getByRole('heading',{name:'A clear line from data to decision.',exact:true})).toBeVisible();
-  await expect(page.getByText('Census 2020',{exact:false}).first()).toBeVisible();
+  await expect(page.locator('.evidence-hero').getByText('2020',{exact:true})).toBeVisible();
   await screenshot(page,'05-evidence');
   if(process.env.HAWKERBRIDGE_BASE_URL){
     const record=await(await page.request.get('/api/evidence')).json();

@@ -8,6 +8,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import subprocess
 import textwrap
 import wave
@@ -21,6 +22,10 @@ ROOT = Path(__file__).resolve().parents[1]
 def timestamp(value: float) -> str:
     ms = round(value * 1000)
     return f"{ms // 3600000:02}:{ms // 60000 % 60:02}:{ms // 1000 % 60:02},{ms % 1000:03}"
+
+
+def normal_word(value: str) -> str:
+    return re.sub(r"\W", "", value).casefold()
 
 
 def main() -> None:
@@ -47,10 +52,17 @@ def main() -> None:
             assert start + len(raw) <= round(scene["end"] * rate) * 2
             samples[start:start + len(raw)] = raw
         transcript = json.loads((args.narration / f"scene-{n:02}-words.json").read_text())
+        # Whisper's word records omit punctuation. Restore it only when the
+        # transcript tokens align exactly, retaining the actual word timings.
+        tokens = re.findall(r"\w+(?:['’]\w+)*[.,;:!?]*", transcript.get("text", ""))
+        words = transcript["words"]
+        if len(tokens) == len(words) and all(normal_word(token) == normal_word(word["word"]) for token, word in zip(tokens, words, strict=True)):
+            words = [word | {"word": token} for token, word in zip(tokens, words, strict=True)]
         group = []
-        for word in transcript["words"]:
+        for word in words:
             proposed = " ".join(w["word"].strip() for w in [*group, word])
-            if group and (len(proposed) > 87 or word["end"] - group[0]["start"] > 5.5):
+            if group and (len(proposed) > 87 or len(textwrap.wrap(proposed, width=47)) > 2
+                          or word["end"] - group[0]["start"] > 5.5):
                 cues.append({"start": scene["start"] + group[0]["start"], "end": scene["start"] + group[-1]["end"], "text": " ".join(w["word"].strip() for w in group)})
                 group = []
             group.append(word)
