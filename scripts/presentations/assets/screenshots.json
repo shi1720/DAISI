@@ -1,7 +1,7 @@
 [
   {
     "file": "overview.png",
-    "original_file": "output/ci-35689097551/02-overview-hero.png",
+    "original_file": "output/ci-hosted-second/02-overview-hero.png",
     "original_size": [
       1440,
       1000
@@ -12,20 +12,20 @@
       1415,
       990
     ],
-    "original_sha256": "0e40eade00bb1cada1045de296ccb1e29216690a82194fccfa5c2d790bdeae3b",
-    "cropped_sha256": "4794a97b7faf6c1ba9f9363c6e02a6563d1eeac9cf5f744182dae033b5df012a",
-    "ci_run_url": "https://github.com/shi1720/DAISI/actions/runs/35689097551",
+    "original_sha256": "39c4df849ee218c177ba297b1e5b11dad28b1ba5f6cb61c15760850ee0549d93",
+    "cropped_sha256": "c622e9ed58087abeaf5abbe4a55421df995ee00a9bac2fce5711cd2410b9eecc",
+    "ci_run_url": "https://github.com/shi1720/DAISI/actions/runs/35695869659",
     "scenario": {
       "date": "2026-09-28",
       "radius_m": 800,
       "scope": "All Singapore",
       "budget_sgd": null
     },
-    "description": "Actual executed browser-test screen. Crop only; no edited or reconstructed UI."
+    "description": "Actual hosted Chromium capture. Crop only. All functional assertions passed; the containing run separately found a Leaflet teardown error, fixed after this capture. See final hosted acceptance evidence."
   },
   {
     "file": "saved-plan.png",
-    "original_file": "output/ci-35689097551/04-saved-plan.png",
+    "original_file": "output/ci-hosted-second/04-saved-plan.png",
     "original_size": [
       1440,
       1531
@@ -36,15 +36,15 @@
       1420,
       1030
     ],
-    "original_sha256": "153b4ecf7725f6de6204a803ed83330c566b1f5a51ba4c1dae34ec2211434435",
-    "cropped_sha256": "b3a4420c3a25efba28a81d79bea06a64de6072471b0406fceaf9b3b315a91e51",
-    "ci_run_url": "https://github.com/shi1720/DAISI/actions/runs/35689097551",
+    "original_sha256": "0a936685f42f9dfc4b338cce37b4e48dcbca787e39cadb7d5e176be8704b7bf7",
+    "cropped_sha256": "e88914b6787e19277deadd423945d9fb9485e1c4692c3c9e1e730a2d393d654a",
+    "ci_run_url": "https://github.com/shi1720/DAISI/actions/runs/35695869659",
     "scenario": {
       "date": "2026-09-28",
       "radius_m": 800,
       "scope": "All Singapore",
       "budget_sgd": 1500
     },
-    "description": "Actual executed browser-test screen. Crop only; no edited or reconstructed UI."
+    "description": "Actual hosted Chromium capture. Crop only. All functional assertions passed; the containing run separately found a Leaflet teardown error, fixed after this capture. See final hosted acceptance evidence."
   }
 ]

@@ -6,11 +6,15 @@ A closure calendar answers *when*. HawkerBridge helps a coordinator decide *wher
 
 Built for **DAISI Singapore 2026, C3: KopilamAI**. Project owner: **Shivam Gupta**.
 
-[Submission and demo guide](START_HERE.md) · [Verified screenshots](docs/screenshots/README.md)
+[Try HawkerBridge](https://hawkerbridge-sg.web.app) · [Submission and demo guide](START_HERE.md) · [Verified screenshots](docs/screenshots/README.md)
 
 ![HawkerBridge overview from the verified browser journey](docs/screenshots/overview.png)
 
-> **Execution status:** the application, ingestion, allocation engine, authentication and exports run locally. The Databricks deployment package is implemented and tested with adapters; an authenticated workspace run must still be verified. This repository does not claim a completed cloud deployment or measured social impact.
+> **Execution status:** the real Databricks pipeline completed successfully, passed 12 data checks and recorded nine cloud scenarios in MLflow. The public Firebase app uses that verified publication. Three tabular sources were fetched live; two checksummed URA geometry archives were reused. The separate local benchmark contains 15 scenarios. [Execution evidence](data/processed/databricks-publication.json) and [release status](submission/deployment-status.json) record what ran. No measured social impact is claimed.
+
+## Try the hosted app
+
+Open **https://hawkerbridge-sg.web.app**. Choose **Explore as a guest** for an isolated trial, or create an email/password account to revisit your saved plans. Managed Firebase Authentication handles hosted accounts, and Firestore preserves plans across container updates. Guest work expires after seven days and is removed on guest logout. Account settings support deletion. Guest plans are not transferred when you sign in to a named account. [Judge testing instructions](submission/testing-instructions.md).
 
 ## Run in three commands
 
@@ -53,14 +57,15 @@ These outputs are scenario calculations. A candidate locality is a subzone repre
 | Optimisation | Integer meal allocation with geographic reach, no double-counting, budget, setup costs, site capacity and maximum sites |
 | Evaluation | Largest-demand-first baseline, independently audited constraints, exhaustive tiny-instance tests, fixed scenario grid and sensitivity |
 | Product | Responsive React interface, offline map geometry, calendar, scenario comparison, saved plans, review, briefs and PDF/CSV/JSON |
-| Security | Argon2id passwords locally, opaque HttpOnly sessions, CSRF/origin checks, throttling, owner-scoped plans and escaped exports |
+| Security | Managed Firebase identity in public hosting; Argon2id locally; HttpOnly sessions, CSRF/origin checks, shared throttling, owner-scoped plans, optimistic edit conflicts and escaped exports |
+| Public hosting | Firebase Hosting, Cloud Run in Singapore, private Firestore plans, managed sessions and hourly bounded guest cleanup |
 | Databricks | One serverless job, Bronze/Silver/Gold Delta tables, Unity Catalog grants, MLflow experiments, native AI/BI evidence dashboard, SQL queries and Databricks Apps configuration |
 
 The optimiser uses **SciPy/HiGHS mixed-integer programming**, not a prediction trained on invented demand labels. Within the predeclared nine primary benchmark scenarios, it improves the chosen policy-weighted allocation objective by **0.3–9.2%** over the baseline (median 8.8%). All 15 unique primary/sensitivity scenarios pass independent feasibility checks. [Protocol and full results](docs/evaluation.md).
 
 ## Databricks deployment
 
-Use the [deployment runbook](docs/databricks-deployment.md). With an authenticated Databricks CLI profile and the Free Edition SQL warehouse ID:
+Use the [Databricks deployment runbook](docs/databricks-deployment.md) and the separate [Firebase release runbook](docs/firebase-deployment.md). With an authenticated Databricks CLI profile and the Free Edition SQL warehouse ID:
 
 ```sh
 uv run python databricks/bootstrap.py --profile YOUR_PROFILE --warehouse-id YOUR_WAREHOUSE_ID
@@ -76,6 +81,9 @@ flowchart LR
   D --> E[Gold access and allocation]
   E --> F[Databricks Apps]
   E --> G[AI/BI evidence dashboard]
+  E --> K[Verified publication export]
+  K --> L[Firebase Hosting and Cloud Run]
+  L --> M[Firebase Auth and private Firestore plans]
   B --> H[MLflow comparisons]
   I[Unity Catalog] -. governs .-> C
   I -. governs .-> D
@@ -117,8 +125,7 @@ The GitHub Actions workflow runs backend, frontend and Chromium browser checks, 
 
 - **Round 1:** `output/pdf/hawkerbridge-round1.pdf`, based on the official three-slide template.
 - **Round 2:** `output/pdf/hawkerbridge-final-pitch.pdf` and its editable presentation, plus product screenshots.
-- **Finish the video:** [recording guide](submission/recording-guide.md) and [editable captions](submission/hawkerbridge-captions.srt).
-- **Actual screen recording:** [silent walkthrough](output/video/hawkerbridge-demo-silent.mp4), ready for Shivam's voiceover; [provenance](output/video/provenance.json).
+- **Narrated demo:** [175-second video](output/video/hawkerbridge-demo-narrated.mp4), [caption track](submission/hawkerbridge-captions.srt) and [recording guide](submission/recording-guide.md). The public hosted workflow is recorded directly; the generic AI narrator is disclosed.
 - **Narration and storyboard:** [video script](submission/video-script.md) and [printable narration](output/pdf/hawkerbridge-video-narration.pdf).
 - **Supplementary one-page note:** [concept note](output/pdf/hawkerbridge-concept-note.pdf).
 - **Ready-to-adapt copy:** [Devpost description](submission/devpost-description.md), [judge Q&A](submission/judge-qa.md), [what’s next](submission/whats-next.md).
@@ -128,6 +135,6 @@ The participant must confirm Singapore IHL eligibility and institution/course/ye
 
 ## Ownership and attribution
 
-Shivam Gupta initiated the brief, defined the product goals and owns the project. Research, implementation, testing and artifact preparation used AI coding assistance. The repository documents actual work and evidence without inventing personal coding contributions, customer interviews, sales or measured outcomes. Shivam is the intended presenter and makes the final submission decisions.
+Shivam Gupta initiated the brief, defined the product goals and owns the project. Research, implementation, testing and artifact preparation used AI coding assistance. The repository documents actual work and evidence without inventing personal coding contributions, customer interviews, sales or measured outcomes. Shivam makes the final submission decisions. The supplied demo uses a disclosed generic AI narrator, not an imitation of his voice.
 
 Code is MIT licensed. Government datasets retain the **Singapore Open Data Licence** and source attribution. The official Round 1 template belongs to the DAISI organisers. Third-party software retains its own licenses. [Attributions](NOTICE.md).

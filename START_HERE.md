@@ -1,47 +1,44 @@
 # HawkerBridge: start here
 
-**Project owner and presenter: Shivam Gupta**  
+**Project owner: Shivam Gupta**
+
 **DAISI Singapore 2026, C3: KopilamAI**
 
-HawkerBridge helps a community coordinator prepare for a scheduled hawker-centre closure. Its distinguishing decision is concrete: compare cleaning dates and allocate a reviewable meal-support proposal under budget and capacity limits. On the demonstration date, doubling the budget from S$3,000 to S$6,000 adds no meals because three localities at 150 meals each already reach capacity.
-
-The local handoff includes a [submission-materials ZIP](output/HawkerBridge-submission-pack.zip), which also contains the separate [source-code ZIP](output/HawkerBridge-source.zip). Both contain SHA256 manifests. The source archive includes the data snapshot, tests and deployment code; it installs and runs independently of the private GitHub repository. ZIPs are generated locally rather than checked into GitHub. To regenerate both archives from the current checkout and committed source, run `uv run python scripts/build_submission_pack.py`.
+HawkerBridge helps a community coordinator prepare for a scheduled hawker-centre closure. Compare cleaning dates, identify areas to investigate, and allocate a reviewable meal-support proposal under budget and capacity limits. In the demonstration, doubling the budget from S$3,000 to S$6,000 adds no meals because three localities at 150 meals each already reach capacity.
 
 ## Try the product
 
-[Open the running local app](http://127.0.0.1:8000) and choose **Explore as a guest**. If the app is stopped, follow the three commands in [README.md](README.md). Set **28 September 2026**, **All Singapore**, **800 m access**. In the planner compare budgets **1,500**, **3,000** and **6,000**. Expected proposals: **225 / 450 / 450 planned meals**. Save a proposal, review the assumptions and export it.
+Open **[hawkerbridge-sg.web.app](https://hawkerbridge-sg.web.app)** and choose **Explore as a guest**. Set **28 September 2026**, **All Singapore**, **800 m access**. In the planner compare budgets **1,500**, **3,000** and **6,000**. Expected proposals: **225 / 450 / 450 planned meals**. Save a draft, inspect its review checklist and export PDF, CSV or JSON. [Full testing instructions](submission/testing-instructions.md).
 
-[Product screenshots](docs/screenshots/README.md) come from the executed browser journey, with recorded checksums and the GitHub Actions run. They are not interface mockups.
+A named email/password account retains access across visits. Firebase Authentication manages identity; Firestore preserves private plans across deployments. Each guest has an isolated workspace, limited to seven days and deleted on guest logout. Account settings allow deletion. Guest plans do not transfer to a named account.
 
-## Round 1 entry
+[Product screenshots](docs/screenshots/README.md) come from actual browser journeys, with checksums and capture provenance. They are not interface mockups.
 
-Use the **[official three-slide concept PDF](output/pdf/hawkerbridge-round1.pdf)**. An [editable PowerPoint](output/presentations/hawkerbridge-round1.pptx) and [supplementary one-page concept note](output/pdf/hawkerbridge-concept-note.pdf) are also supplied.
+## What ran on Databricks
 
-The official guide gives the deadline as **6 October 2026, 11:59 PM Singapore time**. The entry still needs your institution, course, year, submission email and confirmation of current Singapore IHL enrolment. Fill [team.json](submission/team.json), then run:
+The real serverless pipeline successfully published governed Bronze, Silver and Gold tables, passed **12 quality checks**, and recorded **nine cloud scenario comparisons in MLflow**. The native Databricks App and AI/BI dashboard use this publication. The public Firebase app serves an explicitly verified export of the same data for judges without workspace access.
 
-```sh
-uv run python scripts/check_submission.py --round 1
-```
+Three tabular sources were fetched live; two checksummed URA geometry archives were reused. The separate local robustness benchmark contains **15 scenarios**. Its dates and budget grid differ from the nine cloud scenarios. [Workspace evidence](data/processed/databricks-publication.json), [evaluation protocol](docs/evaluation.md) and [deployment status](submission/deployment-status.json) preserve the distinction.
 
-No eligibility or personal academic details have been invented, and no entry has been submitted on your behalf yet.
+## Submission materials
 
-## Round 2 materials
+- **Round 1:** [official three-slide concept PDF](output/pdf/hawkerbridge-round1.pdf), [editable PowerPoint](output/presentations/hawkerbridge-round1.pptx) and [one-page concept note](output/pdf/hawkerbridge-concept-note.pdf).
+- **Round 2:** [nine-slide pitch PDF](output/pdf/hawkerbridge-final-pitch.pdf) and [editable PowerPoint](output/presentations/hawkerbridge-final-pitch.pptx).
+- **Demo:** [narrated hosted walkthrough](output/video/hawkerbridge-demo-narrated.mp4), [verbatim script](submission/video-script.md), [printable narration](output/pdf/hawkerbridge-video-narration.pdf), [captions](submission/hawkerbridge-captions.srt) and [recording provenance guide](submission/recording-guide.md). The generic synthetic narrator is disclosed.
+- **Submission copy:** [Devpost story](submission/devpost-description.md), [YouTube title and description](submission/youtube-metadata.md), [judge Q&A](submission/judge-qa.md) and [what comes next](submission/whats-next.md).
+- **Example output:** [exported plan PDF](output/pdf/example-continuity-plan.pdf), [CSV](output/example-continuity-plan.csv) and [JSON with preserved provenance](output/example-continuity-plan.json).
+- **Commercial case:** [operator pilot, pricing hypotheses and cost sensitivity](docs/business-case.md). No customers, measured impact or revenue are claimed.
 
-- [Nine-slide pitch PDF](output/pdf/hawkerbridge-final-pitch.pdf) and [editable PowerPoint](output/presentations/hawkerbridge-final-pitch.pptx).
-- [Actual silent product walkthrough](output/video/hawkerbridge-demo-silent.mp4), with [recording provenance](output/video/provenance.json) and [scene timings](output/video/recording-timeline.json). Add your voiceover using the recording guide below.
-- [Word-for-word narration and storyboard](submission/video-script.md), [printable narration](output/pdf/hawkerbridge-video-narration.pdf), [editable captions](submission/hawkerbridge-captions.srt) and [video finishing instructions](submission/recording-guide.md).
-- [Devpost description](submission/devpost-description.md), [judge questions](submission/judge-qa.md) and [what comes next](submission/whats-next.md).
-- [Example exported plan](output/pdf/example-continuity-plan.pdf), with [CSV](output/example-continuity-plan.csv) and [JSON including preserved provenance](output/example-continuity-plan.json).
-- [Commercial case](docs/business-case.md), including an operator pilot, pricing hypotheses and cost sensitivity. No customers, measured impact or revenue are claimed.
+The [submission ZIP](output/HawkerBridge-submission-pack.zip) includes a separate [source ZIP](output/HawkerBridge-source.zip). Both have verified SHA256 manifests. The source installs independently of GitHub. ZIPs are generated locally from committed source with `uv run python scripts/build_submission_pack.py`.
 
-## Deployment and submission gates
+## Reproduce and deploy
 
-The local application is working and tested. The Databricks source includes the actual serverless pipeline, governed tables, MLflow evaluations, durable application store and native AI/BI dashboard definition. **A cloud deployment is complete only after the workspace run and hosted app are verified.** Current evidence lives in [deployment-status.json](submission/deployment-status.json); code and local tests do not substitute for a cloud run.
+Follow [README.md](README.md) for the three-command local installation and test suite. No OpenAI key is needed for the application. The [Databricks runbook](docs/databricks-deployment.md) covers its governed pipeline and workspace app; the [Firebase runbook](docs/firebase-deployment.md) covers public releases, persistence checks, retention and rollback.
 
-The [completed verification run](https://github.com/shi1720/DAISI/actions/runs/35691832262) passed backend and frontend checks plus all four functional browser journeys, including expanded-state accessibility checks. The separately captured walkthrough has its own recording provenance. A clean installation from the source ZIP also created and exported the expected 225-meal proposal with all five source records preserved.
+The GitHub Actions workflow runs backend, frontend and real Chromium journeys. Its manual `base_url` option tests the public Firebase site; `record_demo=true` captures the actual hosted walkthrough. Current verification links and fingerprints belong in [deployment-status.json](submission/deployment-status.json), rather than being inferred from a successful build.
 
-The [Databricks deployment runbook](docs/databricks-deployment.md) covers authentication and verification. The official CLI requires workspace authorization before it can deploy. Never paste a token into a chat, notebook, source file or commit.
+## Participant and submission gates
 
-The supplied video narration accurately describes the recorded execution mode. Finish the actual voiceover and public/unlisted upload, record the real video URL, then run the Round 2 checker. It deliberately rejects missing cloud evidence, video links or participant details.
+The official guide gives the Round 1 deadline as **6 October 2026, 11:59 PM Singapore time**. The entry needs Shivam's current Singapore IHL, course, year, team email and any teammates. These facts have not been invented. Fill [team.json](submission/team.json), then run `uv run python scripts/check_submission.py --round 1`. Round 2 additionally checks the verified cloud execution and real video URL.
 
-These are planning calculations based on public area data and explicit assumptions. They do not count people fed, identify vulnerable individuals or confirm operational venues. Field validation and a paid production environment remain prerequisites for a commercial service.
+These are planning calculations based on public area data and explicit assumptions. They do not count people fed, identify vulnerable individuals or confirm venues. Field validation and a suitable paid production environment remain prerequisites for a commercial service.

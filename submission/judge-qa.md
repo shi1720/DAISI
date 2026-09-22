@@ -36,9 +36,9 @@ It is a visible, adjustable policy parameter, not a learned vulnerability label.
 
 Raw bytes and checksums are retained. The parser preserves source text, validates dates and joins, and quarantines TBC dates and ambiguous block-specific closures instead of inventing dates. Publication occurs after validation, and failed refreshes retain the last good snapshot. Data age and uncertainty remain visible. No system can infer that an unresolved centre is definitely open; the operator should confirm high-consequence closures with the relevant authority.
 
-**10. Is this genuinely running on Databricks?**
+**10. Is this running on Databricks?**
 
-The integrated application has been exercised locally. The repository includes the deployable Databricks Job, Bronze/Silver/Gold Delta pipeline, Unity Catalog objects, MLflow scenario logging and App integration with platform identity and persisted plans. A successful workspace run and live cloud App have not yet been verified in the recorded deployment status. We will claim them only with actual run and application links. This is an outstanding final-round requirement, not evidence that local execution is equivalent to Databricks deployment.
+Yes. The real serverless job completed successfully, published Bronze/Silver/Gold Delta tables and passed 12 quality checks. Its nine cloud scenarios were recorded in MLflow. Three tabular datasets were fetched live and two checksummed URA geometry archives were reused. The native Databricks App passes authenticated health, planning and evidence checks; anonymous access is denied. Its Delta store passed actual owner-isolation and concurrent-edit tests. The public Firebase application serves a verified export of the same publication so judges can try it without a workspace account. See the actual run, app and dashboard links in deployment-status.json and docs/databricks-verification.json. The 15-scenario local robustness benchmark is a separate protocol, not 15 claimed cloud runs.
 
 **11. Who pays, and can this be commercially viable on free infrastructure?**
 

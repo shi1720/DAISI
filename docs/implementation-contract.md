@@ -1,52 +1,79 @@
 # HawkerBridge implementation contract
 
-Root owns FastAPI API, model/optimisation engine, auth/local persistence, integration/tests/docs.
-Data agent owns backend/hawkerbridge/ingest.py, scripts/refresh_data.py, tests/test_ingest.py, data/*.
-Frontend agent owns frontend/*, frontend UI tests. Platform agent owns databricks/*, resources/*, databricks.yml, app.yaml, backend/hawkerbridge/databricks_store.py and platform docs/tests.
+Current interface contract for the September 2026 release. The executable request schemas are in `backend/hawkerbridge/schemas.py`; `/api/openapi.json` describes their exact constraints. Response structures below summarise the fields used by the product. A scenario is a planning proposal requiring venue and operator verification, not dispatched assistance.
 
-Brand: **HawkerBridge**. A closure continuity desk for Singapore. Warm ivory, forest teal, vermilion signal. Editorial refined, big readable type, polished SVG/Leaflet map, restrained purposeful cards. No chat wrapper. Main workflow: select a date, inspect who loses nearby hawker access, compare a budgeted support plan, save/export. Saved scenario is a planning proposal requiring site and operator verification, not actual dispatched help.
+## Runtime and identity
 
-## JSON API
-All /api endpoints same origin. Errors JSON {detail:string}. GET /api/health public. Auth GET /api/auth/session -> {user:null|{id,name,email,mode:'guest'|'local'|'databricks'},csrf_token:string|null,auth_mode:'local'|'databricks'}. POST /api/auth/demo {} creates isolated guest session. POST /api/auth/register {name,email,password}, POST /api/auth/login {email,password}, POST /api/auth/logout {}. Successful auth returns same session envelope. Use HttpOnly cookie (fetch credentials same-origin) and send X-CSRF-Token on all mutations after auth. Guests may save their own plans. Real account registration is local deployment only; Databricks uses platform sign-in. Do not hardcode credentials.
+| Mode | Identity | Persistence | Boundary |
+| --- | --- | --- | --- |
+| Public Firebase | Firebase email/password or anonymous guest, verified by the Admin SDK | Cloud Firestore | Exact HTTPS origins, secure `__session` cookie, CSRF and verified owner ID |
+| Local | Local accounts or isolated guests | SQLite | Loopback evaluation environment, opaque `hb_session` cookie and CSRF |
+| Databricks | Managed workspace identity | Governed Delta plan table through SQL warehouse | Trusted Databricks Apps proxy only; never enable its identity headers behind another public proxy |
 
-GET /api/snapshot (authenticated) returns top-level manifest,centres,closures,demand_zones,boundaries (GeoJSON).
-centres = {id,name,lat,lng,address,planning_area,food_stalls,market_stalls}
-closures = {id,centre_id,start_date,end_date,kind:'cleaning'|'works',source_text}
-demand_zones = {id,name,planning_area,lat,lng,residents,seniors,geometry?:GeoJSON}
-manifest contains fetched_at,sources,quality,limitations, population_year, closures_year. UI adapt optional fields.
+The snapshot is immutable for the life of an API process. Local and Firebase modes load the bundled snapshot; Databricks mode reads the published warehouse snapshot and fails closed if unavailable. Restart or roll out the application to adopt a newly verified publication. Firebase never falls back to local authentication or ephemeral plan storage.
 
-POST /api/analyse {date:'YYYY-MM-DD',radius_m:800,senior_weight:2,rescheduled_closure_ids:[]} ->
+All application endpoints use `/api` on the same origin. Fetch with credentials and send `X-CSRF-Token` for authenticated mutations. Hosted mutations also require an exact configured `Origin`, including login and account creation before a session exists. Errors use JSON `detail`; it is a string for application errors and may be a validation-error array for rejected schemas. Public health is `GET /api/health`; private data endpoints require identity.
+
+## Authentication
+
+`GET /api/auth/session` and successful sign-in responses return:
+
+```json
 {
- date, radius_m, data_as_of, model_version,
- summary:{total_centres,closed_centres,total_residents,total_seniors,baseline_covered_residents,remaining_covered_residents,newly_exposed_residents,newly_exposed_seniors,affected_zones,food_stalls_closed},
- centres:[...centre,status:'open'|'closed',active_closures:[...]],
- zones:[...demand_zone,baseline_distance_m,current_distance_m,baseline_centre_id,current_centre_id,baseline_covered:boolean,current_covered:boolean,newly_exposed:boolean,priority_score:number],
- area_ranking:[{planning_area,residents,seniors,newly_exposed_residents,newly_exposed_seniors,coverage_pct,centres,closed_centres}],
- calendar:[{date,closed_centres,food_stalls_closed}],
- limitations:[string],source_fingerprint:string
+  "user": {"id": "opaque-owner-id", "name": "Display name", "email": "", "mode": "guest"},
+  "csrf_token": "session-bound-token",
+  "auth_mode": "firebase"
 }
-Use null distances if unavailable. Data coverage and proxy caveats prominently visible.
+```
 
-POST /api/optimise {...analysis params,budget:1500,site_cost:300,meal_cost:4,meals_per_site:150,max_sites:3,participation_rate:0.05} ->
-{
- analysis:<same analysis>,
- assumptions:{budget,site_cost,meal_cost,meals_per_site,max_sites,participation_rate,...},
- sites:[{zone_id,name,planning_area,lat,lng,meals,estimated_demand,cost,covered_zone_ids:[string],priority_weighted_meals:number}],
- summary:{budget,spent,unspent,total_meals,estimated_demand,unmet_demand,sites_selected,weighted_benefit,baseline_weighted_benefit,improvement_pct,solver_status},
- baseline:{name:'Largest demand first',total_meals,weighted_benefit,spent},
- sensitivity:[{participation_rate,estimated_demand,planned_meals,unmet_demand}],
- explanation:string,limitations:[string],model_version:string,source_fingerprint:string
-}
-All meal figures are ASSUMED participation of newly exposed residents, never observed demand or people actually helped. Costs in SGD per day. Candidate sites = proposed collection locality represented by subzone point, no claim a booked/available venue. Optimisation decision is one day.
+`user` and `csrf_token` are null when signed out. `auth_mode` is `local`, `firebase` or `databricks`; user mode may additionally be `guest`. Request bodies never choose an owner.
 
-GET /api/plans -> {plans:[{id,title,status:'draft'|'reviewed',created_at,updated_at,date,summary,...}]}
-POST /api/plans {title:string,parameters:<optimise inputs>,notes:string} -> plan with result computed SERVER-side.
-GET /api/plans/{id} -> plan (includes parameters,result,notes)
-PATCH /api/plans/{id} {title?:string,notes?:string,status?:'draft'|'reviewed'} -> plan
-DELETE /api/plans/{id} -> 204
-GET /api/plans/{id}/export?format=json|csv|pdf -> download (auth owner only)
-GET /api/evidence -> {manifest,methodology:{...},evaluation?:{...}}
-GET /api/brief?plan_id=id -> deterministic sourced prose within saved plan, no LLM keys.
+- `POST /api/auth/demo {}` creates an isolated guest in local or Firebase mode.
+- `POST /api/auth/register {name,email,password}` creates a local or Firebase account. Registration password length is 12–256 characters.
+- `POST /api/auth/login {email,password}` signs into that runtime's account store.
+- `POST /api/auth/reset-password {email}` is Firebase-only and returns a generic `message` without confirming account existence.
+- `POST /api/auth/logout` revokes the session. Firebase guest logout also removes its workspace.
+- `DELETE /api/auth/account` removes the authenticated local or Firebase account and its plans; workspace identities remain managed by Databricks.
 
-## Platform persistence interface
-DatabricksStore(config): load_snapshot()->dict; list_plans(owner_id)->list[dict]; get_plan(owner_id,plan_id)->dict|None; save_plan(owner_id,plan:dict)->None; delete_plan(owner_id,plan_id)->bool. Plan object id,title,status,created_at,updated_at,date,parameters,result,notes. SQL bind parameters. SDK statement execution. Tables gold_snapshots(snapshot_json,created_at), application_plans(owner_id,plan_id,plan_json,updated_at). Fail closed on missing warehouse/config; no implicit demo fallback. Owner comes ONLY from platform identity in Databricks mode. Pipeline writes snapshot table with model inputs and gold entity tables; registers data quality and optimiser evaluation via MLflow. Auth mode enabled explicitly only within Databricks runtime.
+Firebase uses an HttpOnly, Secure, SameSite=Lax `__session` cookie because Hosting forwards only that cookie. The CSRF token is bound to the verified cookie and works across API instances. Firebase normal logout revokes that session without deleting saved plans. Guests expire after seven days; hourly cleanup removes abandoned records and resumes partial account deletion. Signing into a named account does not migrate guest plans. No passwords or administrator credentials are seeded in the browser.
+
+## Data and analysis
+
+`GET /api/snapshot` returns `manifest`, `centres`, `closures`, `demand_zones`, planning-area population, boundaries, food-waste context and quarantined intervals. Source provenance includes dates, hashes, retrieval/reuse details, Census year and closure-calendar year.
+
+- Centres include ID, name, coordinates, address, planning area and food/market stall counts. Zero-food-stall facilities remain in inventory but are excluded as food-access alternatives.
+- Closures include ID, centre ID, start/end dates, `cleaning` or `works`, and original source text. Unknown or ambiguous dates are quarantined.
+- Demand zones contain subzone ID, planning area, representative coordinates, Census residents/seniors and display geometry. They are aggregate observations, not identified beneficiaries.
+
+`POST /api/analyse` accepts date, radius, senior weight, optional planning-area scope and hypothetical `rescheduled_closure_ids`. Only eligible cleaning events can be removed from that day's comparison. Analysis returns summary totals, centre status, zone baseline/current access, area rankings, calendar, limitations, model version and source fingerprint. Scoped demand still considers food alternatives across planning-area boundaries. Missing distances use null.
+
+`POST /api/optimise` adds budget, setup cost, meal cost, site capacity, maximum sites and participation rate. It returns analysis, assumptions, proposed sites and allocations, totals, baseline, uptake sensitivity, deterministic explanation, model version, source fingerprint and limitations. Budget and costs are SGD per day. Results include `summary.total_meals`, `spent`, `sites_selected`, `estimated_demand`, `weighted_benefit`, `improvement_pct` and `solver_status`.
+
+Meal demand is an explicit participation assumption applied to flagged census areas, not observed need. Candidate sites are geographic localities, not verified available venues. An optimisation decision covers one day; it does not book, purchase, deliver or change official dates.
+
+## Private plans and revision conflicts
+
+| Endpoint | Contract |
+| --- | --- |
+| `GET /api/plans` | Owner's lightweight plan metadata and summary; no full geometry payload per row |
+| `POST /api/plans` | `{title,parameters,notes}`; computes the result server-side and assigns an ID |
+| `GET /api/plans/{id}` | Owner's complete proposal, parameters, result and preserved source evidence |
+| `PATCH /api/plans/{id}` | **Required** `expected_updated_at` from the loaded plan; optional title, notes and draft/reviewed status |
+| `DELETE /api/plans/{id}` | Owner-only deletion; 204 on success |
+| `GET /api/plans/{id}/export?format=pdf\|csv\|json` | Owner-only download |
+| `GET /api/brief?plan_id={id}` | Deterministic sourced explanation from the saved result; no LLM required |
+
+A stale edit returns 409 and tells the client to reopen the latest version. A missing/deleted plan returns 404. Updates check the revision atomically and never insert a deleted plan. The client keeps unsaved text for comparison, not silent overwrite. Editing title/notes resets reviewed status unless the request explicitly supplies status. Saved calculations and provenance remain unchanged.
+
+All stores provide `get_plan`, `list_plans`, `save_plan`, `update_plan(owner,plan,expected_updated_at)` and `delete_plan`. Firestore creation quotas and revision updates use transactions; SQLite uses a conditional transaction; Databricks uses a parameterised owner-and-revision conditional UPDATE. Databricks table access is service-principal scoped, with application owner filtering, not database-enforced per-user row security.
+
+## Evidence API
+
+`GET /api/evidence` returns manifest, quarantine, national waste context, methodology and:
+
+- `evaluation`, `evaluation_status`: the current benchmark or null with `current`, `stale` or `unavailable` status.
+- `evaluation_execution`: `local` for the bundled 15-scenario robustness benchmark in local/Firebase mode; `databricks` for the SQL-backed nine-case report in native workspace mode.
+- `workspace_execution`: verified publication record or null. It requires successful pipeline status, finished parent MLflow, matching publication/source/model hashes and passing recorded quality checks.
+- `cloud_evaluation`: matching nine-case report or null, with unique scenario IDs and matching per-scenario source/model hashes.
+
+The 15 local cases and nine cloud cases use different dates and budget grids; see `docs/evaluation.md`. Their objective scores are model comparisons, not predictive accuracy or observed impact. Missing, failed, malformed or stale execution artifacts are withheld. Source, model or publication changes require refreshed evidence before current verification is displayed.

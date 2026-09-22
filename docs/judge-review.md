@@ -1,4 +1,4 @@
-# Internal adversarial review — 22 September 2026
+# Internal adversarial review  -  22 September 2026
 
 **Subsequent verification:** [CI run 35691832262](https://github.com/shi1720/DAISI/actions/runs/35691832262), revision `1ba692e`, completed successfully. Backend/frontend checks and all four functional browser journeys passed, including accessibility of the expanded cleaning comparison. The actual walkthrough was captured separately at `21c1f1f`; its recording test passed, while its broader run found three low-contrast banner nodes. The later revision corrects those colors. Exact capture and verification boundaries are preserved in `output/video/provenance.json`. A source ZIP exported at `c279088` was independently extracted, installed with frozen dependencies, built and started locally; a fresh guest created the expected 225-meal proposal, preserved all five sources and exported a valid PDF. Video assembly also passed H.264-only and H.264/AAC checks at 175 seconds using temporary test silence, with the execution-status footer visually inspected. These checks do not establish cloud deployment, field validation or video publication. The original heuristic scores remain unchanged.
 
@@ -49,7 +49,7 @@ The initial findings below preserve their reproduction and rationale. Subsequent
 | Saved-plan provenance | Closed in code | Restart with new inputs leaves the saved record, JSON, result fingerprint and brief bound to the original sources. |
 | Reviewed status after title/note edits | Closed in code | Both edits persist draft status and remove reviewer metadata; explicit re-review remains available. |
 
-### P1 — Preserve the engine version in cloud evaluation and reject unversioned reports
+### P1  -  Preserve the engine version in cloud evaluation and reject unversioned reports
 
 **Repair status:** addressed in the owned platform files after review. The pipeline now hashes imported `engine.py` before snapshot fingerprinting and persists it in the manifest, every scenario and MLflow artifacts/parameters. `load_evaluation` rejects missing, malformed or mixed engine hashes and embedded input mismatches, and returns the validated engine hash. Regression tests cover each rejection, the successful publication, and engine changes during publication. The API's running-code comparison remains the final check before calling a report current.
 
@@ -65,7 +65,7 @@ The root agent also changed the API comparison to require a matching code hash, 
 
 **Regression:** load a cloud report for identical data but another engine hash and assert that `/api/evidence` withholds it. Also reject mixed scenario hashes and an absent hash. Then test the valid matching report.
 
-### P1 — Prove the Databricks authentication boundary and fail closed outside the supported runtime
+### P1  -  Prove the Databricks authentication boundary and fail closed outside the supported runtime
 
 **Repair status:** closed at the code/test level. `Settings.validate` requires the managed Apps runtime variables before enabling workspace-header authentication. `tests/test_workspace_auth.py` verifies that absent runtime markers fail startup, local mode ignores forged workspace identities, missing workspace identity returns 401, local registration is disabled, CSRF binds to the authenticated identity, and a second identity cannot read the first identity's plans. Runtime variables are a misconfiguration guard, not cryptographic proof; actual proxy-only reachability remains a deployment check.
 
@@ -75,7 +75,7 @@ The root agent also changed the API comparison to require a matching code hash, 
 
 **Recommended repair:** add a clear startup guard for the expected Databricks Apps runtime and document the proxy-only contract. Such a marker prevents accidental configuration; it does not cryptographically authenticate headers. Preserve the network boundary that makes the headers trustworthy. Add lifecycle tests for missing headers, valid platform identity, CSRF, forbidden local register/login routes and cross-owner plans with a mocked durable store. Confirm real proxy behaviour in the deployment checklist.
 
-### P2 — Bound the calendar by the published closure schedule and distinguish failure from loading
+### P2  -  Bound the calendar by the published closure schedule and distinguish failure from loading
 
 **Repair status:** closed in code and targeted DOM tests. The date field now derives its bounds from the manifest, ignores invalid date edits and selects the schedule's first day when today falls outside the available year. A spinner is displayed only while loading; failed requests explicitly label the last successful result as potentially stale and prevent generation. The final evidence addendum records both dedicated failure/year-boundary regressions passing. This reviewer did not change frontend files.
 
@@ -87,7 +87,7 @@ The root agent also changed the API comparison to require a matching code hash, 
 
 **Regression:** select a date outside the supported year, simulate request failure and start with a clock outside the schedule year. Assert there is no permanent spinner and no old result presented as the current selection.
 
-### P2 — Make the SQL dashboard's cooked-food coverage definition agree with the engine
+### P2  -  Make the SQL dashboard's cooked-food coverage definition agree with the engine
 
 **Repair status:** addressed after review. Query 7 now exposes distinct `inventory_centres` and `food_centres` and uses only positive food-stall records in cooked-food density. A regression executes the actual query against the archived snapshot (123 inventory / 120 food centres) and adds a zero-food synthetic market to verify it cannot improve coverage. This local SQLite execution checks the portable calculation; it is not a claim of Databricks warehouse execution.
 
@@ -99,7 +99,7 @@ The root agent also changed the API comparison to require a matching code hash, 
 
 **Regression:** an all-Singapore aggregate should reconcile to 120 food centres and separately to 123 inventory records; a synthetic zero-food market must never increase cooked-food coverage.
 
-### P2 — Enforce the request-size cap before buffering the entire request
+### P2  -  Enforce the request-size cap before buffering the entire request
 
 **Repair status:** closed at the code/test level. The outer ASGI `BodyLimitMiddleware` rejects an oversized declared length without reading the body, checks accumulated streamed bytes before buffering further chunks, and replays accepted bodies to the app. `tests/test_body_limit.py` verifies declared-length rejection, stopping before the unread remainder of an oversized stream and accepted chunked requests. This replaces the previous unbounded `request.body()` check.
 
@@ -136,15 +136,15 @@ The highest-value next milestone is a verifiable source-to-plan Databricks run w
 
 ## Verification recorded in this pass
 
-- Before the platform repairs: `uv run pytest -q tests/test_api.py tests/test_databricks_store.py` — 34 passed.
-- After platform repairs: `uv run pytest -q tests/test_databricks_store.py` — 29 passed, including real-engine publication evaluation and the cooked-food density regression.
-- `uv run ruff check databricks backend/hawkerbridge/databricks_store.py tests/test_databricks_store.py` — passed.
+- Before the platform repairs: `uv run pytest -q tests/test_api.py tests/test_databricks_store.py`  -  34 passed.
+- After platform repairs: `uv run pytest -q tests/test_databricks_store.py`  -  29 passed, including real-engine publication evaluation and the cooked-food density regression.
+- `uv run ruff check databricks backend/hawkerbridge/databricks_store.py tests/test_databricks_store.py`  -  passed.
 - Round 1 v2: text extracted; all three pages rendered and visually inspected; the 28 September infrastructure counts were checked against the real engine output.
 - No workspace deployment, production load test, external stakeholder interview or official judging occurred in this review.
 
-Final backend recheck: `uv run pytest -q tests/test_api.py tests/test_workspace_auth.py tests/test_body_limit.py` — **24 passed**. This includes seven newly added provenance, evaluation-freshness and review-lifecycle cases. Test fixtures use isolated local storage and clearly synthetic evaluation/source metadata; no committed source archive is altered. No new backend implementation defect requiring a change was found in this bounded pass.
+Final backend recheck: `uv run pytest -q tests/test_api.py tests/test_workspace_auth.py tests/test_body_limit.py`  -  **24 passed**. This includes seven newly added provenance, evaluation-freshness and review-lifecycle cases. Test fixtures use isolated local storage and clearly synthetic evaluation/source metadata; no committed source archive is altered. No new backend implementation defect requiring a change was found in this bounded pass.
 
-## Final evidence addendum — 22 September 2026
+## Final evidence addendum  -  22 September 2026
 
 This addendum refreshes the evidence record only. The original **84/100 Round 1** and **65/100 provisional Round 2** internal scores are unchanged. Completed local/browser checks, supplied submission files and actual Databricks execution are separate forms of evidence.
 

@@ -1,0 +1,15 @@
+{
+  "verified_at": "2026-09-22T06:30:40.458382+00:00",
+  "job": "hawkerbridge-retention",
+  "region": "asia-southeast1",
+  "schedule": "15 * * * *",
+  "timezone": "Asia/Singapore",
+  "scheduler_enabled": true,
+  "scheduler_invocation_succeeded": true,
+  "last_scheduler_attempt": "2026-09-22T06:29:14.248428Z",
+  "saved_deletion_command_preserved_after_dry_run": true,
+  "dry_run_execution": "hawkerbridge-retention-xhpl7",
+  "last_execute_execution": "hawkerbridge-retention-n46ws",
+  "workspaces_per_run_limit": 1000,
+  "guest_expiry_days": 7
+}

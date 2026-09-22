@@ -35,8 +35,12 @@ def main() -> None:
     parser.add_argument("--scenes", type=Path, default=ROOT / "submission/narration-scenes.json")
     parser.add_argument("--narration", type=Path, default=ROOT / "output/video/narration")
     args = parser.parse_args()
+    args.output = args.output.resolve()
+    if not args.footage.is_file():
+        parser.error("Provide the verified recording file")
     if args.output.exists():
         parser.error("Choose a new output path, preserving the previous render")
+    args.output.parent.mkdir(parents=True, exist_ok=True)
     scenes = json.loads(args.scenes.read_text())
     work = args.narration / "render"
     work.mkdir(parents=True, exist_ok=True)
@@ -91,6 +95,32 @@ def main() -> None:
     font = ImageFont.truetype(str(font_path), 30)
     small = ImageFont.truetype(str(font_path), 17)
     width, height = 1600, 900
+    intro = work / "intro.png"
+    title = Image.new("RGBA", (width, height), "#123B36")
+    ink = ImageDraw.Draw(title)
+    ink.rounded_rectangle((92, 88, 156, 152), radius=17, fill="#EDEEDC")
+    ink.arc((107, 105, 141, 139), 180, 360, fill="#123B36", width=4)
+    ink.line((107, 122, 141, 122), fill="#123B36", width=4)
+    ink.line((107, 122, 107, 137), fill="#123B36", width=4)
+    ink.line((141, 122, 141, 137), fill="#123B36", width=4)
+    ink.text((178, 98), "HawkerBridge", font=ImageFont.truetype(str(font_path), 42), fill="#F7F6F0")
+    large = ImageFont.truetype(str(font_path), 72)
+    ink.text((96, 260), "A closure notice tells us when.", font=large, fill="#F7F6F0")
+    ink.text((96, 356), "What should we do next?", font=large, fill="#F7F6F0")
+    ink.rounded_rectangle((98, 491, 195, 499), radius=4, fill="#E89766")
+    ink.text((98, 547), "Keep the neighbourhood at the table.", font=ImageFont.truetype(str(font_path), 34), fill="#C2D1BA")
+    ink.text((98, 647), "Shivam Gupta   /   DAISI Singapore 2026   /   C3 KopilamAI", font=ImageFont.truetype(str(font_path), 24), fill="#C2D1BA")
+    title.save(intro)
+    outro = work / "outro.png"
+    closing = Image.new("RGBA", (width, height), "#123B36")
+    ink = ImageDraw.Draw(closing)
+    ink.text((100, 160), "HawkerBridge", font=ImageFont.truetype(str(font_path), 74), fill="#F7F6F0")
+    ink.text((104, 280), "Put a practical planning decision to the test.", font=ImageFont.truetype(str(font_path), 43), fill="#C2D1BA")
+    ink.rounded_rectangle((104, 408, 1490, 536), radius=18, fill="#F7F6F0")
+    ink.text((145, 437), "hawkerbridge-sg.web.app", font=ImageFont.truetype(str(font_path), 64), fill="#123B36")
+    ink.text((104, 606), "Shivam Gupta   /   DAISI Singapore 2026", font=ImageFont.truetype(str(font_path), 30), fill="#C2D1BA")
+    ink.text((104, 670), "github.com/shi1720/DAISI", font=ImageFont.truetype(str(font_path), 28), fill="#C2D1BA")
+    closing.save(outro)
 
     def frame(path: Path, caption: str = "") -> None:
         image = Image.new("RGBA", (width, height))
@@ -131,17 +161,22 @@ def main() -> None:
     subprocess.run([
         "ffmpeg", "-hide_banner", "-loglevel", "warning", "-i", str(args.footage),
         "-f", "concat", "-safe", "0", "-i", str(concat), "-i", str(mixed),
-        "-filter_complex", "[0:v]fps=25,scale=1600:900,tpad=stop_mode=clone:stop_duration=5[base];[base][1:v]overlay=0:0:eof_action=repeat[v]",
+        "-loop", "1", "-i", str(intro),
+        "-loop", "1", "-i", str(outro),
+        "-filter_complex", "[0:v]fps=25,scale=1600:900,tpad=stop_mode=clone:stop_duration=5[base];[base][3:v]overlay=0:0:enable='lt(t,8.5)'[titled];[titled][4:v]overlay=0:0:enable='gte(t,169)'[ended];[ended][1:v]overlay=0:0:eof_action=repeat[v]",
         "-map", "[v]", "-map", "2:a:0", "-t", str(total), "-r", "25",
         "-c:v", "libx264", "-preset", "medium", "-crf", "20", "-pix_fmt", "yuv420p",
-        "-c:a", "aac", "-b:a", "160k", "-movflags", "+faststart", str(args.output),
+        "-c:a", "aac", "-b:a", "128k", "-movflags", "+faststart", str(args.output),
     ], check=True)
-    report = {"video": str(args.output.relative_to(ROOT)), "duration_seconds": total,
+    video_path = args.output.relative_to(ROOT) if args.output.is_relative_to(ROOT) else args.output
+    report = {"video": str(video_path), "duration_seconds": total,
               "footage_sha256": hashlib.sha256(args.footage.read_bytes()).hexdigest(),
               "video_sha256": hashlib.sha256(args.output.read_bytes()).hexdigest(),
               "narrator": "OpenAI gpt-4o-mini-tts built-in cedar voice; synthetic, not a voice clone",
               "captions": "Word timestamps from whisper-1 transcription of each actual narration clip",
-              "caption_count": len(cues), "source": "Actual hosted product recording; see capture provenance"}
+              "caption_count": len(cues), "opening_title_seconds": 8.5,
+              "closing_title_seconds": 6,
+              "source": "Actual hosted product recording with a clearly separate opening title card; see capture provenance"}
     (args.output.parent / "narrated-provenance.json").write_text(json.dumps(report, indent=2) + "\n")
     print(json.dumps(report, indent=2))
 

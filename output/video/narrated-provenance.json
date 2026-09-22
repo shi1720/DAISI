@@ -1,0 +1,42 @@
+{
+  "video": "output/video/hawkerbridge-demo-narrated.mp4",
+  "duration_seconds": 175,
+  "footage_sha256": "3a9f69dc324116938bec48cb255403304f013a7a5806e3d5f6743a803afefa55",
+  "video_sha256": "3e84ae3e13ca872a32f84556251b3cea6cb79cdf7f3770c3971b9a0112063990",
+  "narrator": "OpenAI gpt-4o-mini-tts built-in cedar voice; synthetic, not a voice clone",
+  "captions": "Word timestamps from whisper-1 transcription of each actual narration clip",
+  "caption_count": 33,
+  "opening_title_seconds": 8.5,
+  "closing_title_seconds": 6,
+  "source": "Actual hosted product recording with a clearly separate opening title card; see capture provenance",
+  "source_capture": "output/demo-footage/provenance.json",
+  "container": {
+    "duration_seconds": 175.0,
+    "video_codec": "H.264",
+    "audio_codec": "AAC",
+    "audio_sample_rate": 24000,
+    "width": 1600,
+    "height": 900,
+    "bytes": 8155624
+  },
+  "visual_review": {
+    "sampled_seconds": [
+      3,
+      10,
+      25,
+      45,
+      60,
+      72,
+      86,
+      100,
+      118,
+      125,
+      137,
+      150,
+      165,
+      172
+    ],
+    "findings": "Opening and closing cards, actual225/450/450 screens, draft proposal export, cloud9/12/5 evidence and fifteen-case local benchmark inspected. Captions fit at most two lines and do not obscure the comparison metrics.",
+    "audio_review": "Six actual generated clips transcribed with word timestamps; spoken numbers match the script and displayed decisions. Generic cedar narrator explicitly disclosed."
+  }
+}

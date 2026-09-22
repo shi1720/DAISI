@@ -1,68 +1,33 @@
-# Three-minute demo: HawkerBridge
+# HawkerBridge demo script
 
-The script below is ready to read word for word. It uses the current verified **local** build. Its cloud-status sentence is intentional: no successful workspace execution is presently recorded in `submission/deployment-status.json`. Use the optional replacement only after the real cloud evidence exists.
+Verbatim narration for the 175-second hosted demonstration. The current video uses OpenAI's generic synthetic Cedar voice, not a recording or imitation of Shivam. Shivam may read this same script himself. Scene directions are not spoken.
 
-Record at about 125–135 words per minute, with brief pauses for the three result changes. Aim for 2:45–2:55 overall; never exceed 3:00. The speaking text is separated from screen directions. Do not read the headings, timing or instructions aloud. Record real interactions; a cut between screens is fine, but never present a loading state or fabricated result as a completed operation.
+Scenario: 28 September 2026, all Singapore, 800 m, 5% participation, S$4 per meal, S$300 setup, 150 meals per locality, at most 3 localities, senior weight 2. Reset the cleaning comparison before generating each budget result.
 
-## Prepare the screen
+## 0:00 to 0:20: The decision behind a closure
 
-Start the app using the repository instructions. Sign in or select **Explore as a guest**. Set scope to **All Singapore**, **Analysis date** to **2026-09-28**, and **800 m access**. Use a desktop browser at 1440 × 1000 or wider and 100% zoom. Close unrelated tabs and hide personal identifiers.
+> A hawker centre closes for repairs. The notice gives a date. A community coordinator still has to decide where support is needed and what the budget can achieve. HawkerBridge turns that notice into a reviewable decision. The project is owned by Shivam Gupta.
 
-In **Continuity planner**, use **Assumed meal uptake** 5%, **Maximum collection localities** 3 and **Cost per meal** S$4. Expand **Cost, capacity & priority settings** and set **Setup cost per locality** S$300, **Meal capacity per locality** 150, **Senior priority weight** 2×. Retain all published closures; do not remove any in the cleaning counterfactual. Return to **Overview** for the opening frame. These exact settings reproduce the figures below.
+## 0:20 to 0:55: Find areas to investigate and compare cleaning
 
-## Narration and storyboard
+> On September twenty-eighth, seventeen centres have scheduled closures. At an eight-hundred-metre threshold, six subzones lose nearby hawker coverage at their representative points. Those areas contain about ninety-one thousand Census twenty-twenty residents. That is a screen for investigation, not a count of people going hungry. Walking barriers and other food options still need checking. A coordinator can compare a cleaning-date change before funding support. The official schedule stays unchanged.
 
-**0:00–0:22 · Overview.** Keep the product name and map visible; move the pointer to the analysis date. No stock footage or invented resident testimonial is needed.
+## 0:55 to 1:23: The S$1,500 proposal
 
-> A familiar hawker centre closes for repairs. The notice gives a date. A community coordinator still has to decide where support is needed, and what the available budget can actually achieve.
->
-> I’m Shivam Gupta. This is HawkerBridge: a closure continuity desk for Singapore.
+> Now consider five-percent participation, four dollars per meal, three hundred dollars to set up each collection locality, and capacity of a hundred and fifty meals per locality. With fifteen hundred dollars, the planner allocates two hundred and twenty-five meals across two proposed localities. These locations and capacities still need an operator's verification.
 
-**0:22–0:52 · Overview metrics.** Show the selected date, 17 scheduled closures, 91,180 newly exposed residents and 17,120 aged 65+. Briefly point to the proximity and Census caveat on screen. At about 0:42, open Continuity planner and expand **What if cleaning moved?**. Select **Bedok Reservoir Road Blk 630**: the modelled area total changes from **91,180** to **54,030**. This is a hypothetical change, not permission to move the official closure. Clear that checkbox by 0:50 so the budget demonstration retains every published closure.
+## 1:23 to 1:55: The capacity ceiling
 
-> Let’s examine September twenty-eighth. Seventeen centres have scheduled closures. At an eight-hundred-metre threshold, six subzones lose nearby hawker coverage at their representative points.
->
-> Those areas contain about ninety-one thousand Census twenty-twenty residents. That is an exposure screen, not a count of people going hungry. Coffee shops, walking barriers and individual needs still require verification.
->
-> We can also compare moving a cleaning date before funding support.
+> At three thousand dollars, planned capacity reaches four hundred and fifty meals. Double the budget to six thousand, and it stays there. Three localities times a hundred and fifty meals is the ceiling. Proposed spending is twenty-seven hundred dollars. That is the useful decision: verify more capacity before seeking more funding for this arrangement.
 
-**0:52–1:22 · Continuity planner.** Show the assumption fields. Set **Daily support budget** to **1500**, then click **Generate support proposal**. Show the result's 225 planned meals and two localities.
+## 1:55 to 2:14: Save a draft and inspect review checks
 
-> Now we turn the map into a proposal. I’ll assume five-percent participation, four dollars per meal, three hundred dollars to set up a collection locality, and a hundred and fifty meals of capacity at each locality.
->
-> With fifteen hundred dollars, the planner allocates two hundred and twenty-five meals across two proposed localities. These locations and capacities are assumptions to check with an operator.
+> Save the proposal with its assumptions and source evidence. Inspect the local review checklist, then export a coordination brief. Nothing here books a venue or dispatches food.
 
-**1:22–1:54 · Compare capacity.** Manually enter **3000**, click **Generate support proposal**, then enter **6000** and regenerate. Pause on the 450-meal result and S$2,700 cost. Do not rely on a result left stale after editing an input.
+## 2:14 to 2:54: Databricks evidence and the pilot
 
-> At three thousand dollars, we reach four hundred and fifty meals. Double the budget to six thousand, and the number stays the same. Three localities times a hundred and fifty meals is the ceiling. The proposal spends twenty-seven hundred dollars.
->
-> That is the decision: verify more capacity before requesting more funding for this arrangement.
+> Behind the interface, Databricks preserves the source data in governed tables, quarantines ambiguous dates, and records nine scenario comparisons in MLflow. This public application runs through Firebase and uses that verified data publication. The results are modelled decisions, not measured social impact. The next test is one operator and one scheduled closure: measure preparation time, verify every proposed venue, and learn whether the workflow earns repeat use. HawkerBridge makes that decision visible, testable and reviewable.
 
-**1:54–2:09 · Save and export.** Click **Save proposal**, title it **28 September community continuity**, add **Verify accessible venues, dietary requirements, operator capacity, and actual demand before arranging a service.**, then **Save draft**. Open it in **Saved plans**, inspect the **Mark as reviewed** checklist, and confirm understanding of the assumptions and the need for future field checks. Then use **Export PDF**. Show the exported document with its assumptions and reviewed-proposal status visible. This review does not confirm an operating venue or completed fieldwork. Cut between the saved plan and its actual downloaded PDF if necessary.
+Show the review checklist and cancel it. Export the draft. No site inspection or real operational review has occurred. Captions are timed from the generated audio, and the on-screen label discloses AI narration.
 
-> Save the proposal, inspect its assumptions, and export the brief for review. Nothing here books a venue or dispatches food.
-
-**2:09–2:55 · Evidence & methods.** Show source years, unresolved-date quality findings and benchmark evidence. End on the product with a small readable “Local execution verified · Databricks workspace execution pending” recording caption.
-
-> Behind the interface, the pipeline archives official source data, quarantines ambiguous dates and preserves the last good snapshot. The optimiser checks budget, reach and capacity against a simple baseline.
->
-> The inventory includes a hundred and twenty-three centres. Three markets have no listed food stalls, so they remain visible in the inventory but do not count toward nearby meal access.
->
-> This demonstration runs locally. Databricks deployment code is included; workspace execution is still awaiting verification.
->
-> Our next test is a paid operator pilot: measure planning time, verify the proposed localities, and learn whether the support is useful. HawkerBridge makes that decision visible, testable and reviewable.
-
-## Optional replacement after verified cloud execution
-
-Replace only “This demonstration runs locally. Databricks deployment code is included; workspace execution is still awaiting verification.” with the following **if and only if the recording is of the running Databricks App and the relevant successful run and MLflow links have been captured**:
-
-> This demonstration runs in Databricks. Here are the successful pipeline run, governed tables and MLflow evaluation behind the application.
-
-Show those actual workspace pages for approximately ten seconds. If the successful run used the checksummed archived input mode, add **“This run uses our dated, archived public-data snapshot.”** Do not say “live ingestion” in that case. Shorten the opening pause if needed to keep the video below three minutes. If cloud execution is still pending, the main script is the complete, honest fallback; retain its status caption and mention the limitation in the submission.
-
-## Recording checks
-
-- Keep the same date, geographic scope and assumptions for all three budget runs. Expected results: 225 / 450 / 450 planned meals, costing S$1,500 / S$2,700 / S$2,700.
-- Re-run against the final committed snapshot before recording. If the published source changes, update the script and screenshots together; never freeze a claim to preserve a nicer result.
-- Speak “planned meals,” not “people fed.” Say “Census twenty-twenty,” not “today's population.” The smaller optimisation improvement on this date is acceptable: the useful story is capacity.
-- A recording does not need to show personal email, workspace identifiers, tokens or passwords. The public/unlisted upload and human voiceover remain recording steps, not completed artifacts.
+The actual Databricks pipeline fetched three tabular sources live and reused two checksum-verified URA boundary archives with their original dates. Nine cloud scenarios are separate from the 15-scenario robustness suite rerun locally on the published snapshot.

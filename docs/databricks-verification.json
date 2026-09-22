@@ -1,0 +1,276 @@
+{
+  "verified_at": "2026-09-22T06:17:46.721187+00:00",
+  "workspace_host": "https://dbc-6fea141d-04eb.cloud.databricks.com",
+  "pipeline_run_id": 1046237288082887,
+  "pipeline_run_url": "https://dbc-6fea141d-04eb.cloud.databricks.com/?o=7474659582484876#job/929729986607018/run/1046237288082887",
+  "pipeline_result": "SUCCESS",
+  "publication_id": "69cbf18aae9c4f1883b629ab0de25843",
+  "input_mode": "live",
+  "source_fingerprint": "a3b84df2577a59a9d1cf6ccaf8cb45b47a0caffa4429122e1f409a29de274c4f",
+  "engine_code_sha256": "9833154988fb5f35063982802db4884694ec2e3a5971f641cde3088942abfdcd",
+  "local_snapshot_fingerprint": "a3b84df2577a59a9d1cf6ccaf8cb45b47a0caffa4429122e1f409a29de274c4f",
+  "source_comparison": [
+    {
+      "source": "closures",
+      "sha256": "065304e22607f12f2a61bfa4eaf7f34f465f12bde278fbdfc38c8f41b15663ee",
+      "matches_local_source": true,
+      "fetched_at": "2026-09-22T06:12:12.286116Z",
+      "reused_at": null,
+      "mirror": false
+    },
+    {
+      "source": "population2020",
+      "sha256": "869d3f6fb48e37bb370bcc1946c8fbeb17e9a695c78985e5bae43c8b906e8c5d",
+      "matches_local_source": true,
+      "fetched_at": "2026-09-22T06:12:12.286116Z",
+      "reused_at": null,
+      "mirror": false
+    },
+    {
+      "source": "planning_areas",
+      "sha256": "f23856251b467089f788d0fff72ef5a38e753f21aa69b4352401d7ed50d380cc",
+      "matches_local_source": true,
+      "fetched_at": "2026-09-22T04:25:32.462291Z",
+      "reused_at": "2026-09-22T06:12:12.286116Z",
+      "mirror": false
+    },
+    {
+      "source": "subzones",
+      "sha256": "77e30aa02b1784b649d9b6f23e3b2ebb825af787de554f3a3fb76bbee3013c42",
+      "matches_local_source": true,
+      "fetched_at": "2026-09-22T04:25:32.462291Z",
+      "reused_at": "2026-09-22T06:12:12.286116Z",
+      "mirror": false
+    },
+    {
+      "source": "waste",
+      "sha256": "ad283e68401a948b5598e056434a712e9be61de27fb6d8340aa26417a1a458c1",
+      "matches_local_source": true,
+      "fetched_at": "2026-09-22T06:12:12.286116Z",
+      "reused_at": null,
+      "mirror": false
+    }
+  ],
+  "published_counts": {
+    "centres": "123",
+    "food_centres": "120"
+  },
+  "bronze_payload_integrity": {
+    "sources": "5",
+    "verified_payloads": "5"
+  },
+  "scenarios_evaluated": 9,
+  "quality_checks": [
+    {
+      "check_name": "centres",
+      "passed": "true",
+      "observed_value": "123.0"
+    },
+    {
+      "check_name": "resolved_closure_intervals",
+      "passed": "true",
+      "observed_value": "507.0"
+    },
+    {
+      "check_name": "quarantined_closure_intervals",
+      "passed": "true",
+      "observed_value": "32.0"
+    },
+    {
+      "check_name": "demand_zones",
+      "passed": "true",
+      "observed_value": "332.0"
+    },
+    {
+      "check_name": "populated_demand_zones",
+      "passed": "true",
+      "observed_value": "286.0"
+    },
+    {
+      "check_name": "planning_areas",
+      "passed": "true",
+      "observed_value": "55.0"
+    },
+    {
+      "check_name": "unassigned_centres",
+      "passed": "true",
+      "observed_value": "0.0"
+    },
+    {
+      "check_name": "population_join_coverage_percent",
+      "passed": "true",
+      "observed_value": "100.0"
+    },
+    {
+      "check_name": "resident_sum_subzones",
+      "passed": "true",
+      "observed_value": "4044340.0"
+    },
+    {
+      "check_name": "senior_sum_subzones",
+      "passed": "true",
+      "observed_value": "614900.0"
+    },
+    {
+      "check_name": "budget_violations",
+      "passed": "true",
+      "observed_value": "0.0"
+    },
+    {
+      "check_name": "below_baseline_cases",
+      "passed": "true",
+      "observed_value": "0.0"
+    }
+  ],
+  "dashboard_queries": [
+    {
+      "name": "closures_on_demo_date",
+      "row_count": 1,
+      "columns": [
+        "closure_date",
+        "closed_centres",
+        "food_stalls_closed"
+      ]
+    },
+    {
+      "name": "evaluated_budget_comparison",
+      "row_count": 6,
+      "columns": [
+        "daily_budget_sgd",
+        "strategy",
+        "weighted_meal_benefit"
+      ]
+    },
+    {
+      "name": "published_source_provenance",
+      "row_count": 5,
+      "columns": [
+        "source_key",
+        "source_fetched_at",
+        "reuse_status",
+        "source_route",
+        "sha256",
+        "source_url"
+      ]
+    },
+    {
+      "name": "unresolved_interval_review",
+      "row_count": 32,
+      "columns": [
+        "centre",
+        "closure_kind",
+        "reported_start",
+        "reported_end",
+        "reason",
+        "source_text"
+      ]
+    }
+  ],
+  "mlflow_run_id": "6b80647b3eea44d5bf9af59c315eec66",
+  "mlflow_experiment_id": "2274018642838106",
+  "mlflow_status": "FINISHED",
+  "mlflow_child_runs_verified": 9,
+  "scope": "Actual Databricks processing and query evidence. No browser or field-impact verification.",
+  "app": {
+    "app_url": "https://hawkerbridge-7474659582484876.aws.databricksapps.com",
+    "app_status": {
+      "message": "App has status: App is running",
+      "state": "RUNNING"
+    },
+    "compute_status": {
+      "message": "App compute is running.",
+      "state": "ACTIVE"
+    },
+    "health": {
+      "status": "ready",
+      "version": "hawkerbridge-1.0.0",
+      "storage": "databricks",
+      "auth_mode": "databricks",
+      "snapshot_date": "2026-09-22T06:12:12.286116Z",
+      "source_fingerprint": "a3b84df2577a59a9d1cf6ccaf8cb45b47a0caffa4429122e1f409a29de274c4f"
+    },
+    "auth_mode": "databricks",
+    "signed_in": true,
+    "csrf_present": true,
+    "evaluation_status": "current",
+    "evaluation_scenarios": 9,
+    "live_api_optimisation": [
+      {
+        "budget": 1500,
+        "meals": 225,
+        "spent": 1500.0,
+        "fingerprint": "a3b84df2577a59a9d1cf6ccaf8cb45b47a0caffa4429122e1f409a29de274c4f"
+      },
+      {
+        "budget": 3000,
+        "meals": 450,
+        "spent": 2700.0,
+        "fingerprint": "a3b84df2577a59a9d1cf6ccaf8cb45b47a0caffa4429122e1f409a29de274c4f"
+      },
+      {
+        "budget": 6000,
+        "meals": 450,
+        "spent": 2700.0,
+        "fingerprint": "a3b84df2577a59a9d1cf6ccaf8cb45b47a0caffa4429122e1f409a29de274c4f"
+      }
+    ],
+    "verified_at": "2026-09-22T06:56:43.127561+00:00",
+    "active_deployment_id": "01f1b6527c711b68b2453297522778e5",
+    "anonymous_status": 401,
+    "final_deployment_authenticated_checks": "Health, platform session, current SQL-backed evidence, and three budget scenarios passed against this deployment.",
+    "source_commit": "b539db724c3731897595e81061a73070655920cf",
+    "deployed_source_files_verified": [
+      {
+        "path": "frontend/dist/assets/index-DASgXwJL.js",
+        "sha256": "a5d2ed8ca8988d32d0684a4b0ed451490df7e56d9340605d0acb11861ea591b3",
+        "matches_local_file": true
+      },
+      {
+        "path": "frontend/dist/assets/index-De7vXbZU.css",
+        "sha256": "1162f6096503bc3e5251db9e959a882783a630806277adaf91cd997fe4ca6d23",
+        "matches_local_file": true
+      },
+      {
+        "path": "backend/hawkerbridge/api.py",
+        "sha256": "d62153886cbe0adf3602be679249b31f77f2a21201f94fd4b95de6751f0c8c3c",
+        "matches_local_file": true
+      },
+      {
+        "path": "backend/hawkerbridge/databricks_store.py",
+        "sha256": "f7ec2fb9588956f12f969f1bd27be9af927add489022e8b7602455f0300e409c",
+        "matches_local_file": true
+      }
+    ],
+    "browser_rendering_verified": false,
+    "verification_limitation": "Verified through Workspace source downloads and OAuth HTTP API requests. Native browser rendering, map interaction, and the mobile layout were not inspected."
+  },
+  "plan_integrity": {
+    "verified_at": "2026-09-22T06:22:13.388657+00:00",
+    "test_scope": "Synthetic owner and synthetic plan only; removed after verification",
+    "cross_owner_read_and_update": "denied",
+    "concurrent_updates": [
+      {
+        "writer": 0,
+        "result": "accepted"
+      },
+      {
+        "writer": 1,
+        "result": "conflict"
+      }
+    ],
+    "final_revision": "matches sole accepted writer",
+    "synthetic_plan_deleted": true
+  },
+  "dashboard": {
+    "dashboard_id": "01f1b64b21b9194ea6f98fbdaa0437d2",
+    "published": true,
+    "embed_credentials": false,
+    "dataset_catalog": "workspace",
+    "dataset_schema": "hawkerbridge",
+    "url": "https://dbc-6fea141d-04eb.cloud.databricks.com/dashboardsv3/01f1b64b21b9194ea6f98fbdaa0437d2/published?w=7474659582484876",
+    "visual_rendering_verified": false
+  },
+  "browser_workflow_verified": false,
+  "second_real_workspace_user_verified": false,
+  "recorded_at": "2026-09-22T06:56:43.127561+00:00"
+}

@@ -1,0 +1,13 @@
+{
+  "base_url": "https://hawkerbridge-sg.web.app",
+  "workflow_run": "https://github.com/shi1720/DAISI/actions/runs/35695869659",
+  "capture_revision": "6cd7e88902bc00e8c6eb79d2a202379e7bd590c9",
+  "recording_test_result": "passed",
+  "workflow_result": "failure",
+  "workflow_failure": "Separate full-journey test caught Leaflet animated-map teardown error. All functional assertions, six accessibility scans and 320px mobile checks passed. Lifecycle fixed in6f2e6cc; separate hosted verification follows. Recording pixels are unchanged.",
+  "identity": "Synthetic guest; proposal kept in draft; no venue or operator claimed verified.",
+  "files": {
+    "hawkerbridge-silent-walkthrough.mp4": "3a9f69dc324116938bec48cb255403304f013a7a5806e3d5f6743a803afefa55",
+    "timeline.json": "d55538555b01948b799d07c518f4d066746980dfec33e74f51c43d35c9314592"
+  }
+}

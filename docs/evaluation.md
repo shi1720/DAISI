@@ -1,6 +1,6 @@
 # Computational evaluation and provenance
 
-Generated 2026-09-22T04:34:42.876701Z. This is a fixed scenario benchmark and a mathematical feasibility audit. It is **not an observed welfare evaluation, user trial, demand forecast or model accuracy claim**.
+Generated 2026-09-22T06:19:24.927039Z. This is a fixed scenario benchmark and a mathematical feasibility audit. It is **not an observed welfare evaluation, user trial, demand forecast or model accuracy claim**.
 
 ## Reproduce
 
@@ -65,12 +65,16 @@ Newly exposed counts need not decrease with a larger radius. Radius affects **bo
 
 The auditor reconstructs demand from residents and participation, then checks integer allocations, eligible candidate sites, genuine candidate coordinates, individual zone demand, per-site capacity, integer-cent cost, total budget, maximum site count, geographic reach, objective reconciliation and comparison to baseline. Test-only corruptions demonstrate that it rejects inflated allocations, fabricated locations and invented objective improvements. Baseline failure and solver-boundary tests are covered separately by the engine suite.
 
-On this one local run, model initialization took 39.476 ms. Each unique optimize-plus-analysis call took 4.230–19.652 ms (median 11.822 ms). Environment: Python 3.12.14, NumPy 2.5.3, SciPy 1.18.1, Darwin arm64. These are single local measurements after initialization, not a Databricks measurement, load test or service-level promise. Repeated runs and different environments will vary.
+On this one local run, model initialization took 38.998 ms. Each unique optimize-plus-analysis call took 3.955–18.734 ms (median 11.352 ms). Environment: Python 3.12.14, NumPy 2.5.3, SciPy 1.18.1, Darwin arm64. These are single local measurements after initialization, not a Databricks measurement, load test or service-level promise. Repeated runs and different environments will vary.
 
 ## What remains unvalidated
 
-No operator capacity, collection venue, individual need, uptake, meal affordability, waste reduction, accessible walking route or welfare outcome has been observed. Coffee shops and other meal alternatives are omitted. Source dates marked TBC or ambiguous by block are quarantined. Proposed localities require human verification. Pilot measurements—not a higher optimization score—are needed before making real-world impact claims. See [model-review.md](model-review.md) for the complete interpretation and acceptance review.
+No operator capacity, collection venue, individual need, uptake, meal affordability, waste reduction, accessible walking route or welfare outcome has been observed. Coffee shops and other meal alternatives are omitted. Source dates marked TBC or ambiguous by block are quarantined. Proposed localities require human verification. Pilot measurements - not a higher optimization score - are needed before making real-world impact claims. See [model-review.md](model-review.md) for the complete interpretation and acceptance review.
 
 ## Demonstration counterfactual
 
 In the same archived 28 September 2026, all-Singapore, 800 m scenario, hypothetically removing cleaning event `hc-018-q3` at Bedok Reservoir Road Blk 630 reduces the Census 2020 population in newly flagged subzones from **91,180 to 54,030**. The difference of **37,150** is an area-exposure proxy, not a count of people whose food needs have been met. Other closures remain in place, and the app does not change the published schedule. A replacement date, permissions and operational constraints still require coordinator verification. Clear the counterfactual before reproducing the 225/450/450 budget comparison. This additional demonstration calculation is separate from the predeclared 15-scenario optimisation benchmark.
+
+## Separate Databricks verification
+
+The live Databricks pipeline recorded nine additional cloud scenarios on 22 September, 5 October and 14 December 2026 at budgets S$600, S$1,500 and S$3,000 with 800 m reach. Their objective uplift is 2.8–9.2%. These are a different grid from the 15-run local protocol above. Both use publication `69cbf18aae9c4f1883b629ab0de25843`, source fingerprint `a3b84df2577a59a9d1cf6ccaf8cb45b47a0caffa4429122e1f409a29de274c4f` and identical allocation engine code. [Cloud rows](../data/processed/databricks-evaluation.json) and [verified workspace execution](../data/processed/databricks-publication.json) preserve the evidence. The main 28 September demo is an API calculation from this published snapshot, not a claim that 28 September belongs to the nine cloud benchmark dates.

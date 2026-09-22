@@ -4,7 +4,7 @@ Research checked 22 September 2026. Commercial assumptions below are unvalidated
 
 ## Decision
 
-Build **HawkerBridge**, a closure continuity desk for **C3 — KopilamAI**. The operating question is: **When a hawker centre closes, which neighbourhoods lose nearby hawker access, and what practical support can a coordinator propose within a budget?**
+Build **HawkerBridge**, a closure continuity desk for **C3  -  KopilamAI**. The operating question is: **When a hawker centre closes, which neighbourhoods lose nearby hawker access, and what practical support can a coordinator propose within a budget?**
 
 The product turns a dated closure into a comparison, a budgeted collection proposal and a reviewable decision record. Town council planners can also test removing an adjustable cleaning event from the selected date to understand the possible benefit of staggering it. This is a counterfactual; the tool does not change any published closure schedule or dispatch assistance.
 

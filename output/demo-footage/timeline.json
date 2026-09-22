@@ -1,0 +1,83 @@
+{
+  "format": "Silent, real application recording for synthetic narration and captions.",
+  "base_url": "https://hawkerbridge-sg.web.app",
+  "viewport": {
+    "width": 1600,
+    "height": 900
+  },
+  "proposal_status": "draft",
+  "cues": [
+    {
+      "seconds": 7.6,
+      "scene": "Overview: resolved closures and subzones flagged for review"
+    },
+    {
+      "seconds": 18,
+      "scene": "Map: select a scheduled closure from the accessible centre list"
+    },
+    {
+      "seconds": 29,
+      "scene": "Planning-area ranking and census limitations"
+    },
+    {
+      "seconds": 42,
+      "scene": "Compare a cleaning-date change before proposing support"
+    },
+    {
+      "seconds": 50,
+      "scene": "Restore the published schedule before generating support"
+    },
+    {
+      "seconds": 52,
+      "scene": "Generate the S$1,500 support proposal"
+    },
+    {
+      "seconds": 69,
+      "scene": "Explain unverified collection localities and allocation trade-offs"
+    },
+    {
+      "seconds": 82,
+      "scene": "Increase budget to S$3,000: planned capacity reaches 450 meals"
+    },
+    {
+      "seconds": 96,
+      "scene": "Increase budget to S$6,000: capacity remains 450 meals"
+    },
+    {
+      "seconds": 107,
+      "scene": "Show uptake uncertainty, matched meals and potential surplus"
+    },
+    {
+      "seconds": 114,
+      "scene": "Save a real private proposal"
+    },
+    {
+      "seconds": 121,
+      "scene": "Review the proposal and export the coordination PDF"
+    },
+    {
+      "seconds": 124,
+      "scene": "Keep the proposal in draft until real operational review"
+    },
+    {
+      "seconds": 129,
+      "scene": "Evidence: source lineage and area-level limits"
+    },
+    {
+      "seconds": 139,
+      "scene": "Public datasets and provenance"
+    },
+    {
+      "seconds": 149,
+      "scene": "Benchmark evidence with no measured-impact claims"
+    },
+    {
+      "seconds": 163,
+      "scene": "Close with the real community access overview"
+    },
+    {
+      "seconds": 173,
+      "scene": "End of source footage"
+    }
+  ]
+}

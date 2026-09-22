@@ -1,24 +1,27 @@
-# Finish the three-minute demo
+# The narrated hosted demo
 
-The supplied screen footage records the real local application. It is silent so Shivam can provide the narration in his own voice. Do not describe this footage as a recording of the hosted Databricks App. Cloud execution evidence, when available, is a separate artifact unless the hosted app itself is recorded.
+The final release video is **175 seconds**, below the three-minute limit. It records the actual Firebase application, not the Databricks workspace interface. The Evidence page shows verified Databricks publication records. A generic synthetic narrator reads the [verbatim script](video-script.md); it is not Shivam's recorded or cloned voice.
 
-1. Open the silent MP4 in `output/video/` and the [verbatim script](video-script.md), or use the [printable narration](../output/pdf/hawkerbridge-video-narration.pdf).
-2. Record your voice while watching the footage. Leave the indicated pauses for date, budget and screen changes. The target duration is **2:55**, safely below the three-minute limit. Use headphones so playback does not enter the microphone. A phone voice recorder or QuickTime audio recording is sufficient.
-3. Save the audio outside the repository's tracked files, such as `tmp/voiceover.m4a`. Listen once for clipping, background noise and rushed explanations.
-4. Combine the supplied footage and your actual audio:
+## Reproduce the capture
+
+1. Verify the deployed site with `uv run python scripts/smoke_hosted.py` and complete the container-rollout persistence check in the Firebase runbook.
+2. Dispatch the GitHub Actions **Verify HawkerBridge** workflow with `base_url=https://hawkerbridge-sg.web.app` and `record_demo=true`. The isolated remote Chromium runner follows the real UI. It uses a synthetic guest, inspects the review checklist, cancels it and exports a draft. It does not claim a venue has been checked or a meal dispatched.
+3. Retrieve the footage, timeline and PDF from the run. If artifact storage is unavailable, use `browser-tests/extract-evidence.mjs` on the run logs to verify their SHA256 hashes.
+4. The narration script is `submission/narration-scenes.json`. `scripts/generate_narration.py` uses a locally supplied OpenAI API key to produce six voice clips and word timestamps. Credentials are never written to the repository. The application itself needs no LLM key.
+5. Render the actual hosted capture with the prepared narration:
 
    ```sh
-   python3 scripts/assemble_demo.py \
-     --footage output/video/hawkerbridge-demo-silent.mp4 \
-     --voiceover tmp/voiceover.m4a \
-     --output output/video/hawkerbridge-demo-with-voice.mp4
+   uv run python scripts/render_narrated_demo.py \
+     --footage output/demo-footage/hawkerbridge-silent-walkthrough.mp4 \
+     --output output/video/hawkerbridge-demo-narrated.mp4
    ```
 
-   FFmpeg must be installed. The script creates a new file, keeps the actual browser footage, pads its final frame when needed, and caps the output at 175 seconds. It adds the supplied local-execution status footer during the final twelve seconds. It refuses an overlong audio recording rather than silently cutting your sentence. If the narration finishes too early, record the intended pauses rather than accelerating the screen footage.
-5. The [editable captions](hawkerbridge-captions.srt) contain the spoken script with approximate timings. Align them with your recorded voice in the video editor or upload them as a subtitle track. Check names, Singapore-dollar amounts and the distinction between planned meals and measured impact.
-6. Watch the entire final MP4. Confirm the date is 28 September 2026, the budgets produce **225 / 450 / 450** planned meals, the capacity ceiling is clear, and no email, password or token appears.
-7. Upload the finished video to YouTube or Vimeo as public or unlisted. Record its real URL in `submission/deployment-status.json`, then run `uv run python scripts/check_submission.py --round 2`.
+The renderer begins with an original 8.5-second title card while the recorded page loads, then preserves the actual browser footage. It aligns six narration scenes, burns readable captions and labels the synthetic narration. It also writes an editable SRT track and media hashes to `output/video/narrated-provenance.json`. It refuses to replace an existing final video silently.
 
-The recording uses a synthetic guest account. It does not establish a customer relationship, verified service venue or dispatched meal. The proposal review screen confirms understanding of assumptions and the need for future field checks; it does not claim those checks have happened.
+## Final review
 
-If a final cloud demo is recorded later, follow the conditional cloud paragraph in the script and show the actual successful job, governed tables and matching MLflow run. Pass `--omit-local-caption` only for that separately verified cloud footage. For archived input mode, state that the run processes a dated public-data archive. Never substitute a deployment diagram for execution evidence.
+Watch the complete edit. Check the date, 225 / 450 / 450 outputs, caption timing, speech clarity and safe margins. No real credentials, personal notes or participant voice are shown. The Evidence scene must distinguish nine cloud scenarios from the separate 15-scenario local benchmark. Cloud input provenance is three live tabular downloads plus two checksummed geometry archives.
+
+Use the supplied YouTube title, description and original thumbnail. Publish with Public visibility as requested and verify playback without account access. Record the actual URL in `submission/deployment-status.json` and Devpost. A local MP4 alone does not complete the submission.
+
+The earlier `hawkerbridge-demo-silent.mp4` and `provenance.json` describe a historical local recording. They are retained as historical evidence and are not the final hosted demonstration. `assemble_demo.py` supports that earlier local workflow; use the renderer above for the current narrated release.

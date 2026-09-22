@@ -1,9 +1,9 @@
 {
   "local_app_tested": true,
-  "databricks_workspace_execution_verified": false,
-  "databricks_app_url": null,
-  "successful_pipeline_run_url": null,
-  "mlflow_run_url": null,
+  "databricks_workspace_execution_verified": true,
+  "databricks_app_url": "https://hawkerbridge-7474659582484876.aws.databricksapps.com",
+  "successful_pipeline_run_url": "https://dbc-6fea141d-04eb.cloud.databricks.com/jobs/929729986607018/runs/1046237288082887?o=7474659582484876",
+  "mlflow_run_url": "https://dbc-6fea141d-04eb.cloud.databricks.com/ml/experiments/2274018642838106/runs/6b80647b3eea44d5bf9af59c315eec66",
   "public_or_unlisted_video_url": null,
   "note": "This records actual evidence, not intended architecture. Populate cloud links only after successful workspace execution.",
   "local_browser_workflow_verified": true,
@@ -17,5 +17,17 @@
   "silent_demo_capture_run_url": "https://github.com/shi1720/DAISI/actions/runs/35691366315",
   "silent_demo_capture_note": "The recording test passed; that run also found expanded-banner contrast defects, which were fixed and verified by the later successful CI run. See output/video/provenance.json.",
   "video_assembler_verified": true,
-  "video_assembler_verification": "H.264 silent output and H.264/AAC output using a temporary test-silence input both verified at 175 seconds; local-execution footer visually inspected. No participant voiceover is claimed."
+  "video_assembler_verification": "H.264 silent output and H.264/AAC output using a temporary test-silence input both verified at 175 seconds; local-execution footer visually inspected. No participant voiceover is claimed.",
+  "public_app_url": "https://hawkerbridge-sg.web.app",
+  "public_app_verification": "Hosted HTTP acceptance passed on hawkerbridge-api-00002-6x7: named and guest auth, secure sessions, owner isolation,225/450/450,all exports,CSRF/origin boundaries,concurrent edit409 and matching12/9/15 evidence. Saved account and225-meal plan survived rollout to hawkerbridge-api-00003-92d; test account removed. Real hosted browser journeys running separately.",
+  "databricks_publication_id": "69cbf18aae9c4f1883b629ab0de25843",
+  "databricks_input_mode": "live",
+  "databricks_cloud_scenarios": 9,
+  "source_fingerprint": "a3b84df2577a59a9d1cf6ccaf8cb45b47a0caffa4429122e1f409a29de274c4f",
+  "databricks_app_verification": "Actual OAuth health/session/evidence200, anonymous401,225/450/450 budget workflow; real Delta owner isolation and concurrent update conflict. See docs/databricks-verification.json. Browser render and second real workspace identity not yet tested.",
+  "public_api_revision": "hawkerbridge-api-00003-92d",
+  "hosted_smoke_report": "output/hosted-smoke.json",
+  "hosted_restart_report": "output/hosted-restart-smoke.json",
+  "public_retention_job": "hawkerbridge-retention",
+  "public_retention_schedule": "Hourly at minute15, Asia/Singapore"
 }

@@ -108,12 +108,13 @@ def main() -> None:
         ROOT / "output/presentations/hawkerbridge-final-pitch.pptx",
         ROOT / "output/video/hawkerbridge-demo-narrated.mp4",
         ROOT / "output/demo-footage/timeline.json",
+        ROOT / "output/demo-footage/provenance.json",
         ROOT / "output/video/narrated-provenance.json",
     ]
     for folder, patterns in {
-        "docs": ["*.md"],
+        "docs": ["*.md", "*-verification.json"],
                 "docs/screenshots": ["*.png", "README.md", "provenance.json"],
-        "submission": ["*.md", "*.srt", "deployment-status.json", "team.json"],
+        "submission": ["*.md", "*.srt", "deployment-status.json", "team.json", "narration-scenes.json"],
         "submission/assets": ["*.png"],
         "output": ["example-continuity-plan.csv", "example-continuity-plan.json", "hosted-smoke.json", "hosted-restart-smoke.json"],
         "data/processed": ["databricks-publication.json", "databricks-evaluation.json"],

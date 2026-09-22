@@ -1,8 +1,19 @@
 # Deploy HawkerBridge on Databricks Free Edition
 
-**Status: deployment artifacts are implemented and locally tested. No Databricks workspace run, cloud table creation, MLflow run or hosted app is claimed until the steps below succeed in an authenticated workspace.**
+**Verified 22 September 2026:** the live serverless pipeline succeeded, SQL read-back and all dashboard queries passed, the MLflow parent and nine child runs finished, and the Databricks App served authenticated API requests using its published Delta snapshot. Browser interaction and a second real workspace user's access remain separate checks. See [the dated evidence record](databricks-verification.json).
 
 The application has a complete local path and an explicit Databricks path. Workspace mode loads its snapshot and saves proposals through the SQL Statement Execution API; it never substitutes a local dataset after a workspace error. A real challenge submission should include evidence of this workspace path running.
+
+Verified workspace resources:
+
+- [Successful live pipeline run](https://dbc-6fea141d-04eb.cloud.databricks.com/jobs/929729986607018/runs/1046237288082887?o=7474659582484876), publication `69cbf18aae9c4f1883b629ab0de25843`.
+- [MLflow experiment](https://dbc-6fea141d-04eb.cloud.databricks.com/ml/experiments/2274018642838106?w=7474659582484876), parent run `6b80647b3eea44d5bf9af59c315eec66`.
+- [Published AI/BI evidence dashboard](https://dbc-6fea141d-04eb.cloud.databricks.com/dashboardsv3/01f1b64b21b9194ea6f98fbdaa0437d2/published?w=7474659582484876), with viewer credentials and no embedded owner credentials.
+- [Databricks App](https://hawkerbridge-7474659582484876.aws.databricksapps.com), authenticated through the workspace platform.
+
+These links require the appropriate workspace permissions. Three tabular sources were fetched live at `2026-09-22T06:12:12Z`; two URA geometry files were checksum-reused with their original retrieval dates. All five source hashes matched the official baseline, and all five persisted Bronze payloads matched their stored hashes and byte counts. The published fingerprint is `a3b84df2577a59a9d1cf6ccaf8cb45b47a0caffa4429122e1f409a29de274c4f`. No archive fallback was used.
+
+Real OAuth API checks returned healthy Databricks auth/storage mode, a signed-in platform identity, CSRF protection and a current nine-scenario evaluation. The September 28 planning requests returned 225, 450 and 450 modelled meals for S$1,500, S$3,000 and S$6,000 respectively. A separate actual Delta concurrency test used only disposable synthetic owners: one simultaneous edit won, the other raised a revision conflict, cross-owner reads/updates were denied, and the test row was deleted. These are technical verification results, not observed service delivery.
 
 ## What is deployed
 
@@ -26,6 +37,10 @@ flowchart LR
 Unity Catalog holds the dedicated schema, table descriptions, source provenance, quality audit and explicit Python transformation lineage. SQL views also provide native query lineage. Do not imply that Python driver transformations automatically produce complete Unity Catalog column lineage: `lineage_edges` records the application-level relationships explicitly.
 
 The [official serverless bundle examples](https://docs.databricks.com/aws/en/dev-tools/bundles/examples#job-that-uses-serverless-compute) describe notebook tasks without clusters and environment specifications. The [bundle resource reference](https://docs.databricks.com/aws/en/dev-tools/bundles/resources) documents the job, experiment and app fields used here.
+
+The job uses **serverless environment 6** (Python 3.12), with explicit NumPy, SciPy, Shapely, MLflow and SDK pins. Its Pandas and Arrow base libraries support NumPy 2. Environment 2 includes older binary packages that are incompatible with the current numerical stack. Keep library entries as plain PyPI requirements: the CLI's bundle upload interpreted conditional requirement markers as local paths during the initial deployment. [Environment 6 reference](https://docs.databricks.com/aws/en/release-notes/serverless/environment-version/six)
+
+The notebook obtains the managed Spark session in its first Python cell. It stages four shared Python files and the six baseline archive files through the Workspace download API before importing them from temporary local storage. This handles the mounted Workspace filesystem's observed `EIO` import failures without changing the input data or invoking a different ingestion implementation. Geometry reuse metadata comes from the archive's provenance file; each raw source is checksum-checked by the shared ingestion code. The archive remains an explicit replay option, while `live` still fetches tabular data from the official public endpoints. [Managed notebook Spark session behavior](https://docs.databricks.com/aws/en/dev-tools/databricks-connect/notebooks)
 
 ## 1. Prepare access once
 
@@ -97,7 +112,7 @@ Select the deployed catalog/schema in the SQL editor. The notebook creates these
 
 Every staged analytical row carries a `publication_id`. The final append to `gold_snapshots` is the visibility boundary after evaluations and MLflow logging complete. `published_*` SQL views filter to that publication. This is **not a cross-table ACID transaction**: incomplete staging remains auditable but is hidden from application inputs and published views. No table is dropped or replaced to publish new data, so grants remain intact. A future retention job should remove old staging/history only after a documented retention period; no destructive cleanup is automated here.
 
-The bundle includes a [four-widget AI/BI evidence dashboard](../databricks/dashboard/README.md) for closure counts, optimiser comparison, provenance and quarantine. Its namespace and existing warehouse are bound through the bundle. Refresh and inspect the actual workspace dashboard after the pipeline succeeds. Use [the extended SQL query pack](../databricks/sql/dashboard_queries.sql) for additional publication status, demographics and density views. Pick one query per dataset and use the `evaluation_date` DATE parameter for the three precomputed evaluation dates. Other dates remain available dynamically in the app. The dashboard definition and query pack are supplied; actual cloud creation and rendering remain deployment verification steps.
+The bundle includes a [four-widget AI/BI evidence dashboard](../databricks/dashboard/README.md) for closure counts, optimiser comparison, provenance and quarantine. Its namespace and existing warehouse are bound through the bundle. Refresh and inspect the actual workspace dashboard after the pipeline succeeds. Use [the extended SQL query pack](../databricks/sql/dashboard_queries.sql) for additional publication status, demographics and density views. Pick one query per dataset and use the `evaluation_date` DATE parameter for the three precomputed evaluation dates. Other dates remain available dynamically in the app. Cloud creation, publication and all four dataset SQL queries are now verified in the dated record; visual rendering remains a separate check.
 
 Open the bundle's MLflow experiment. It contains a parent publication run and nine child scenarios: three predeclared dates × three budgets. The real engine produces planned meals, spend, weighted benefit, baseline weighted benefit, solver status and elapsed time. Every scenario is checked for budget feasibility and against the feasible baseline. Source manifest and evaluation JSON are logged as artifacts. These are **modelled decision objectives**, not predictive accuracy, observed meal demand or people helped. No trained model is fabricated or registered just to add a platform feature.
 
@@ -121,13 +136,13 @@ The app takes an immutable snapshot at process start. After a new pipeline publi
 
 Record results in the deployment evidence log; do not check items from code inspection alone.
 
-- [ ] Authenticated `bundle validate` succeeds against the selected workspace and current CLI.
-- [ ] The one-task serverless job finishes successfully with the intended `input_mode`.
-- [ ] Bronze rows contain actual source payloads and checksums; source retrieval dates are visible.
-- [ ] Structured Silver/Gold rows, quarantine, quality checks and the final publication ID are queryable.
-- [ ] MLflow has the actual nine scenario runs and artifacts matching the publication fingerprint and imported engine-code SHA-256.
-- [ ] SQL cooked-food density reconciles to 120 food centres; the separate inventory measure reconciles to 123 records, including three zero-food-stall markets.
-- [ ] The app starts and the health check succeeds without a local-data fallback.
+- [x] Authenticated `bundle validate` succeeds against the selected workspace and current CLI.
+- [x] The one-task serverless job finishes successfully with the intended `input_mode`.
+- [x] Bronze rows contain actual source payloads and checksums; source retrieval dates are visible.
+- [x] Structured Silver/Gold rows, quarantine, quality checks and the final publication ID are queryable.
+- [x] MLflow has nine finished child runs whose recorded metrics match the published results, with the shared engine-code SHA-256 in the evaluation.
+- [x] SQL cooked-food inventory reconciles to 120 food centres; the separate infrastructure measure reconciles to 123 records, including three zero-food-stall markets.
+- [x] The app starts and the health check succeeds without a local-data fallback.
 - [ ] A fresh signed-in browser session can inspect a closure, change assumptions, optimise, save, reload and export a proposal.
 - [ ] Two authorised workspace users cannot read, modify or export each other's saved plans by changing a URL ID.
 - [ ] A missing warehouse ID, revoked table privilege or unavailable warehouse produces an explicit error rather than an apparently successful local mode.
@@ -137,11 +152,21 @@ Record results in the deployment evidence log; do not check items from code insp
 
 Capture the workspace hostname (no token), job run URL, publication ID, input mode, MLflow run URL, app URL and dated screenshots in your private deployment evidence. Store public screenshots only after checking them for sensitive details.
 
+After a successful run, export and verify the actual cloud publication:
+
+```bash
+uv run python databricks/verify_publication.py --profile DAISI \
+  --warehouse-id YOUR_EXISTING_WAREHOUSE_ID \
+  --pipeline-run-id YOUR_SUCCESSFUL_RUN_ID
+```
+
+The command refuses an unsuccessful job, verifies the snapshot and evaluation fingerprints, checks the parent MLflow run, executes all four dashboard SQL datasets and exports `tmp/databricks-published-snapshot.json`, `tmp/databricks-published-evaluation.json` and `tmp/databricks-published-evidence.json`. It preserves each source's acquisition and reuse timestamps. It does not overwrite the delivered baseline or claim that a browser workflow or field pilot was tested. If using the bundled CLI rather than a system installation, add its directory to `PATH` so the SDK's CLI authentication provider can find it.
+
 ## Local verification and its limits
 
 The platform tests exercise SQL state polling, cancellation, result chunks, owner bindings, lightweight plan listing, snapshot/evaluation fingerprint alignment, checksum rejection and publication failure boundaries. A strict local Spark-shaped adapter also checks table row types while the real Python planning engine executes all nine scenarios. It does **not** execute Spark SQL, Delta Lake writes, workspace OAuth or cloud permissions.
 
-The bundle YAML has been checked against the official Databricks CLI JSON Schema. Authenticated `databricks bundle validate`, a real notebook run and the browser checks above remain separate requirements. The included runtime code should be treated as deployment-ready source pending those environment-specific verifications, not proof of a production deployment.
+The bundle YAML passed the official Databricks CLI schema checks and authenticated deployment. The dated record separately captures actual notebook, SQL, MLflow, application API and synthetic-owner persistence evidence. Browser checks above are not implied by API verification. This challenge deployment is not a production availability promise.
 
 ## Operating cost and production boundary
 

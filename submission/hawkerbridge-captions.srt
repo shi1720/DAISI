@@ -1,168 +1,157 @@
 1
-00:00:00,000 --> 00:00:06,651
-A familiar hawker centre closes for
-repairs. The notice gives a date. A
+00:00:00,500 --> 00:00:02,530
+A hawker centre closes for repairs.
 
 2
-00:00:06,651 --> 00:00:12,791
-community coordinator still has to decide
-where support is needed, and what
+00:00:03,040 --> 00:00:04,330
+The notice gives a date.
 
 3
-00:00:12,791 --> 00:00:18,419
-the available budget can actually
-achieve. I’m Shivam Gupta. This is
+00:00:04,900 --> 00:00:08,980
+A community coordinator still has to decide
+where support is needed and what the budget
 
 4
-00:00:18,419 --> 00:00:22,000
-HawkerBridge: a closure continuity desk
-for Singapore.
+00:00:08,980 --> 00:00:13,090
+can achieve. HawkerBridge turns that notice
+into a reviewable decision.
 
 5
-00:00:22,000 --> 00:00:25,692
-Let’s examine September twenty-eighth.
-Seventeen centres have scheduled
+00:00:13,620 --> 00:00:15,470
+The project is owned by Shivam Gupta.
 
 6
-00:00:25,692 --> 00:00:30,308
-closures. At an eight-hundred-metre
-threshold, six subzones lose nearby
-hawker
+00:00:20,000 --> 00:00:24,130
+On September twenty eighth, seventeen centres
+have scheduled closures.
 
 7
-00:00:30,308 --> 00:00:34,923
-coverage at their representative points.
-Those areas contain about ninety-one
+00:00:24,660 --> 00:00:29,520
+At an eight hundred metre threshold, six
+subzones lose nearby hawker coverage at their
 
 8
-00:00:34,923 --> 00:00:40,000
-thousand Census twenty-twenty residents.
-That is an exposure screen, not a
+00:00:29,520 --> 00:00:34,420
+representative points. Those areas contain
+about ninety one thousand Census twenty
 
 9
-00:00:40,000 --> 00:00:45,077
-count of people going hungry. Coffee
-shops, walking barriers and individual
+00:00:34,420 --> 00:00:38,800
+twenty residents. That is a screen for
+investigation, not a count of people going
 
 10
-00:00:45,077 --> 00:00:50,615
-needs still require verification. We can
-also compare moving a cleaning date
+00:00:38,800 --> 00:00:42,730
+hungry. Walking barriers and other food options
+still need checking.
 
 11
-00:00:50,615 --> 00:00:52,000
-before funding support.
+00:00:43,300 --> 00:00:46,860
+A coordinator can compare a cleaning date
+change before funding support.
 
 12
-00:00:52,000 --> 00:00:57,714
-Now we turn the map into a proposal. I’ll
-assume five-percent participation,
+00:00:46,860 --> 00:00:49,570
+The official schedule stays unchanged.
 
 13
-00:00:57,714 --> 00:01:03,905
-four dollars per meal, three hundred
-dollars to set up a collection locality,
+00:00:55,000 --> 00:00:59,640
+Now consider five percent participation, four
+dollars per meal, three hundred dollars
 
 14
-00:01:03,905 --> 00:01:10,095
-and a hundred and fifty meals of capacity
-at each locality. With fifteen
+00:00:59,640 --> 00:01:03,720
+to set up each collection locality, and
+capacity of a hundred and fifty meals per
 
 15
-00:01:10,095 --> 00:01:14,857
-hundred dollars, the planner allocates
-two hundred and twenty-five meals
+00:01:03,720 --> 00:01:08,420
+locality. With fifteen hundred dollars, the
+planner allocates two hundred and twenty
 
 16
-00:01:14,857 --> 00:01:19,619
-across two proposed localities. These
-locations and capacities are assumptions
+00:01:08,420 --> 00:01:11,010
+five meals across two proposed localities.
 
 17
-00:01:19,619 --> 00:01:22,000
-to check with an operator.
+00:01:11,900 --> 00:01:15,050
+These locations and capacities still need an
+operator's verification.
 
 18
-00:01:22,000 --> 00:01:29,704
-At three thousand dollars, we reach four
-hundred and fifty meals. Double the
+00:01:23,000 --> 00:01:27,550
+At three thousand dollars, planned capacity
+reaches four hundred and fifty meals.
 
 19
-00:01:29,704 --> 00:01:37,407
-budget to six thousand, and the number
-stays the same. Three localities times
+00:01:28,440 --> 00:01:30,870
+Double the budget to six thousand, and it stays
+there.
 
 20
-00:01:37,407 --> 00:01:44,519
-a hundred and fifty meals is the ceiling.
-The proposal spends twenty-seven
+00:01:31,740 --> 00:01:35,030
+Three localities times a hundred and fifty
+meals is the ceiling.
 
 21
-00:01:44,519 --> 00:01:51,037
-hundred dollars. That is the decision:
-verify more capacity before requesting
+00:01:35,880 --> 00:01:38,370
+Proposed spending is twenty seven hundred
+dollars.
 
 22
-00:01:51,037 --> 00:01:54,000
-more funding for this arrangement.
+00:01:39,120 --> 00:01:40,590
+That is the useful decision.
 
 23
-00:01:54,000 --> 00:02:03,000
-Save the proposal, inspect its
-assumptions, and export the brief for
-review.
+00:01:41,660 --> 00:01:44,890
+Verify more capacity before seeking more
+funding for this arrangement.
 
 24
-00:02:03,000 --> 00:02:09,000
-Nothing here books a venue or dispatches
-food.
+00:01:55,000 --> 00:01:58,130
+Save the proposal with its assumptions and
+source evidence.
 
 25
-00:02:09,000 --> 00:02:13,423
-Behind the interface, the pipeline
-archives official source data,
-quarantines
+00:01:58,940 --> 00:02:02,530
+Inspect the local review checklist, then export
+a coordination brief.
 
 26
-00:02:13,423 --> 00:02:18,288
-ambiguous dates and preserves the last
-good snapshot. The optimiser checks
+00:02:03,320 --> 00:02:05,490
+Nothing here books a venue or dispatches food.
 
 27
-00:02:18,288 --> 00:02:23,596
-budget, reach and capacity against a
-simple baseline. The inventory includes a
+00:02:14,000 --> 00:02:18,450
+Behind the interface, Databricks preserves the
+source data in governed tables,
 
 28
-00:02:23,596 --> 00:02:28,904
-hundred and twenty-three centres. Three
-markets have no listed food stalls, so
+00:02:19,180 --> 00:02:23,670
+quarantines ambiguous dates, and records nine
+scenario comparisons in MLflow.
 
 29
-00:02:28,904 --> 00:02:34,654
-they remain visible in the inventory but
-do not count toward nearby meal
+00:02:23,860 --> 00:02:28,910
+This public application runs through Firebase
+and uses that verified data publication.
 
 30
-00:02:34,654 --> 00:02:38,635
-access. This demonstration runs locally.
-Databricks deployment code is
+00:02:29,540 --> 00:02:32,930
+The results are modelled decisions, not
+measured social impact.
 
 31
-00:02:38,635 --> 00:02:43,500
-included; workspace execution is still
-awaiting verification. Our next test is
+00:02:32,960 --> 00:02:36,350
+The next test is one operator and one scheduled
+closure.
 
 32
-00:02:43,500 --> 00:02:48,365
-a paid operator pilot: measure planning
-time, verify the proposed localities,
+00:02:37,060 --> 00:02:41,520
+Measure preparation time, verify every proposed
+venue, and learn whether the workflow
 
 33
-00:02:48,365 --> 00:02:53,231
-and learn whether the support is useful.
-HawkerBridge makes that decision
-
-34
-00:02:53,231 --> 00:02:55,000
-visible, testable and reviewable.
+00:02:41,520 --> 00:02:47,090
+earns repeat use. HawkerBridge makes that
+decision visible, testable and reviewable.

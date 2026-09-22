@@ -1,0 +1,33 @@
+{
+  "url": "https://hawkerbridge-sg.web.app",
+  "verified_at": "2026-09-22T06:57:42.749308+00:00",
+  "checks": [
+    "HTML and SPA routes revalidate after releases",
+    "Managed auth, durable storage, unauthenticated access and origin boundary",
+    "225 / 450 / 450 capacity decision and CSRF protection",
+    "Two-user read, update, delete, export and brief isolation",
+    "PDF text, CSV, preserved JSON, source brief and current evaluation",
+    "A stale editor cannot overwrite newer notes or approve them",
+    "Sign out, revocation, sign in and saved-plan persistence"
+  ],
+  "source_fingerprint": "a3b84df2577a59a9d1cf6ccaf8cb45b47a0caffa4429122e1f409a29de274c4f",
+  "budget_results": [
+    {
+      "budget": 1500,
+      "planned_meals": 225,
+      "spent": 1500
+    },
+    {
+      "budget": 3000,
+      "planned_meals": 450,
+      "spent": 2700
+    },
+    {
+      "budget": 6000,
+      "planned_meals": 450,
+      "spent": 2700
+    }
+  ],
+  "publication_id": "69cbf18aae9c4f1883b629ab0de25843",
+  "passed": true
+}

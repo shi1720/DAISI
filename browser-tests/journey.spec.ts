@@ -12,7 +12,14 @@ async function checkAccessibility(page:Page,screen:string){
 
 async function guest(page: Page) {
   await page.goto('/');
-  await page.getByRole('button',{name:'Explore as a guest'}).click();
+  // The hosted identity, snapshot and first analysis requests can take longer
+  // than Playwright's 5s visual-assertion default. Wait for the actual successful
+  // analysis once, with a bounded allowance, rather than retrying the journey.
+  const [initialAnalysis]=await Promise.all([
+    page.waitForResponse(response=>response.url().endsWith('/api/analyse')&&response.request().method()==='POST',{timeout:process.env.HAWKERBRIDGE_BASE_URL?20000:10000}),
+    page.getByRole('button',{name:'Explore as a guest'}).click(),
+  ]);
+  expect(initialAnalysis.ok(),`Initial access analysis returned HTTP ${initialAnalysis.status()}`).toBe(true);
   await expect(page.getByRole('button',{name:'Continuity planner',exact:true,includeHidden:true})).toBeAttached();
   await expect(page.locator('.metric-value').first()).toBeVisible();
   const date=page.getByLabel('Analysis date');

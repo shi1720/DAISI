@@ -1,0 +1,11 @@
+{
+  "url": "https://hawkerbridge-sg.web.app",
+  "verified_at": "2026-09-22T06:27:48.215040+00:00",
+  "checks": [
+    "HTML and SPA routes revalidate after releases",
+    "Managed auth, durable storage, unauthenticated access and origin boundary",
+    "Account and saved plan survive container rollout; test account deleted"
+  ],
+  "source_fingerprint": "a3b84df2577a59a9d1cf6ccaf8cb45b47a0caffa4429122e1f409a29de274c4f",
+  "passed": true
+}
