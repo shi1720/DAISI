@@ -2,3 +2,4 @@ data/raw/** linguist-generated=true
 data/processed/*.json linguist-generated=true
 *.pdf binary
 *.pptx binary
+output/*.json linguist-generated=true

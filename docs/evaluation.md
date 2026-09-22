@@ -70,3 +70,7 @@ On this one local run, model initialization took 39.476 ms. Each unique optimize
 ## What remains unvalidated
 
 No operator capacity, collection venue, individual need, uptake, meal affordability, waste reduction, accessible walking route or welfare outcome has been observed. Coffee shops and other meal alternatives are omitted. Source dates marked TBC or ambiguous by block are quarantined. Proposed localities require human verification. Pilot measurements—not a higher optimization score—are needed before making real-world impact claims. See [model-review.md](model-review.md) for the complete interpretation and acceptance review.
+
+## Demonstration counterfactual
+
+In the same archived 28 September 2026, all-Singapore, 800 m scenario, hypothetically removing cleaning event `hc-018-q3` at Bedok Reservoir Road Blk 630 reduces the Census 2020 population in newly flagged subzones from **91,180 to 54,030**. The difference of **37,150** is an area-exposure proxy, not a count of people whose food needs have been met. Other closures remain in place, and the app does not change the published schedule. A replacement date, permissions and operational constraints still require coordinator verification. Clear the counterfactual before reproducing the 225/450/450 budget comparison. This additional demonstration calculation is separate from the predeclared 15-scenario optimisation benchmark.

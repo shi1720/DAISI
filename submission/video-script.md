@@ -18,11 +18,13 @@ In **Continuity planner**, use **Assumed meal uptake** 5%, **Maximum collection 
 >
 > I’m Shivam Gupta. This is HawkerBridge: a closure continuity desk for Singapore.
 
-**0:22–0:52 · Overview metrics.** Show the selected date, 17 scheduled closures, 91,180 newly exposed residents and 17,120 aged 65+. Briefly point to the proximity and Census caveat on screen.
+**0:22–0:52 · Overview metrics.** Show the selected date, 17 scheduled closures, 91,180 newly exposed residents and 17,120 aged 65+. Briefly point to the proximity and Census caveat on screen. At about 0:42, open Continuity planner and expand **What if cleaning moved?**. Select **Bedok Reservoir Road Blk 630**: the modelled area total changes from **91,180** to **54,030**. This is a hypothetical change, not permission to move the official closure. Clear that checkbox by 0:50 so the budget demonstration retains every published closure.
 
 > Let’s examine September twenty-eighth. Seventeen centres have scheduled closures. At an eight-hundred-metre threshold, six subzones lose nearby hawker coverage at their representative points.
 >
 > Those areas contain about ninety-one thousand Census twenty-twenty residents. That is an exposure screen, not a count of people going hungry. Coffee shops, walking barriers and individual needs still require verification.
+>
+> We can also compare moving a cleaning date before funding support.
 
 **0:52–1:22 · Continuity planner.** Show the assumption fields. Set **Daily support budget** to **1500**, then click **Generate support proposal**. Show the result's 225 planned meals and two localities.
 
@@ -36,7 +38,7 @@ In **Continuity planner**, use **Assumed meal uptake** 5%, **Maximum collection 
 >
 > That is the decision: verify more capacity before requesting more funding for this arrangement.
 
-**1:54–2:09 · Save and export.** Click **Save proposal**, title it **28 September — capacity review**, add **Draft; verify operators, venues, uptake and costs.**, then **Save draft**. Open it in **Saved plans** and use **Export PDF**. Show the exported document, with its assumptions and draft status visible. Cut between the saved plan and its actual downloaded PDF if necessary.
+**1:54–2:09 · Save and export.** Click **Save proposal**, title it **28 September community continuity**, add **Verify accessible venues, dietary requirements, operator capacity, and actual demand before arranging a service.**, then **Save draft**. Open it in **Saved plans**, inspect the **Mark as reviewed** checklist, and confirm understanding of the assumptions and the need for future field checks. Then use **Export PDF**. Show the exported document with its assumptions and reviewed-proposal status visible. This review does not confirm an operating venue or completed fieldwork. Cut between the saved plan and its actual downloaded PDF if necessary.
 
 > Save the proposal, inspect its assumptions, and export the brief for review. Nothing here books a venue or dispatches food.
 
