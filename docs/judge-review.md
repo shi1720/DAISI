@@ -2,7 +2,7 @@
 
 This is an internal heuristic assessment, not an official score, prediction of placing, or independent external validation. The reviewer also contributed platform artifacts earlier in the project. The purpose of this pass is to challenge the current submission and expose defects. Implementation was not edited during the review; several findings were fixed by the implementation agents after the first report and are recorded below.
 
-**Final backend integrity recheck:** the original code defects below have been repaired. Local API regressions now verify preserved plan provenance across a snapshot refresh, suppression of mismatched or unversioned evaluations, and reset of reviewed status after edits. The workspace identity and bounded-body tests also pass. Calendar repairs were inspected in source; this pass did not add frontend tests. Workspace sign-in and deployment are being handled separately; no cloud execution result is inferred from sign-in or from these local tests.
+**Final integrity recheck:** the original code defects below have been repaired. Local API regressions verify preserved plan provenance across a snapshot refresh, suppression of mismatched or unversioned evaluations, and reset of reviewed status after edits. The workspace identity and bounded-body tests also pass. The final evidence addendum records the subsequently added calendar/error regressions and delivered artifact checks. Workspace sign-in and deployment are being handled separately; no cloud execution result is inferred from sign-in or from these local tests.
 
 Scope: the current React application, API and owner-scoped stores, planning engine, ingestion snapshot, Databricks bundle/notebook/pipeline, deployment bootstrap, and the three-page `output/pdf/hawkerbridge-round1-v2.pdf`. The PDF was text-extracted and all three pages were rendered and inspected. The rubric weights come from the [official participant guide](https://daisi.online/guide); eligibility and submission details are separately tracked in `docs/rules-and-eligibility.md`.
 
@@ -41,7 +41,7 @@ The initial findings below preserve their reproduction and rationale. Subsequent
 | --- | --- | --- |
 | Engine version in cloud evaluation | Closed in code | Pipeline/store regressions plus API current/stale/unversioned tests pass; cloud publication still needs an actual run. |
 | Workspace authentication deployment guard | Closed in code | Runtime guard, missing identity, CSRF, forged local headers, forbidden local registration and owner-isolation tests pass against a mocked durable store; genuine platform proxy behaviour remains a deployment check. |
-| Calendar bounds and failed-update display | Repaired; source inspected | Manifest-derived bounds, fallback date, loading-only spinner and explicit stale notice exist; the dedicated out-of-year/failed-request frontend regression was not present in the files inspected in this pass. |
+| Calendar bounds and failed-update display | Closed in code and targeted DOM tests | Manifest-derived bounds, fallback date, loading-only spinner and explicit stale notice exist. Both dedicated regressions now pass; see the final evidence addendum. |
 | SQL food-centre density | Closed in code | Real query reconciles 120 food centres / 123 inventory records locally and excludes a synthetic zero-food market. |
 | Request-body limit | Closed in code | Declared-length rejection before read, streamed overflow early stop and accepted chunked replay tests pass. |
 | Saved-plan provenance | Closed in code | Restart with new inputs leaves the saved record, JSON, result fingerprint and brief bound to the original sources. |
@@ -75,7 +75,7 @@ The root agent also changed the API comparison to require a matching code hash, 
 
 ### P2 — Bound the calendar by the published closure schedule and distinguish failure from loading
 
-**Repair status:** repaired and source-inspected. The date field now derives its bounds from the manifest, ignores invalid date edits and selects the schedule's first day when today falls outside the available year. A spinner is displayed only while loading; failed requests explicitly label the last successful result as potentially stale and prevent generation. The specific failure/year-boundary frontend regression remains a verification follow-up; this backend-only pass did not change frontend files.
+**Repair status:** closed in code and targeted DOM tests. The date field now derives its bounds from the manifest, ignores invalid date edits and selects the schedule's first day when today falls outside the available year. A spinner is displayed only while loading; failed requests explicitly label the last successful result as potentially stale and prevent generation. The final evidence addendum records both dedicated failure/year-boundary regressions passing. This reviewer did not change frontend files.
 
 **Original evidence:** `frontend/src/App.tsx` initialises to today's date, permits `2020-01-01` through `2040-12-31`, and renders the `Updating access outlook…` pill whenever the displayed analysis date differs from the selected date. The backend correctly rejects a year outside `snapshot.manifest.closures_year`.
 
@@ -141,3 +141,36 @@ The highest-value next milestone is a verifiable source-to-plan Databricks run w
 - No workspace deployment, production load test, external stakeholder interview or official judging occurred in this review.
 
 Final backend recheck: `uv run pytest -q tests/test_api.py tests/test_workspace_auth.py tests/test_body_limit.py` — **24 passed**. This includes seven newly added provenance, evaluation-freshness and review-lifecycle cases. Test fixtures use isolated local storage and clearly synthetic evaluation/source metadata; no committed source archive is altered. No new backend implementation defect requiring a change was found in this bounded pass.
+
+## Final evidence addendum — 22 September 2026
+
+This addendum refreshes the evidence record only. The original **84/100 Round 1** and **65/100 provisional Round 2** internal scores are unchanged. Completed local/browser checks, supplied submission files and actual Databricks execution are separate forms of evidence.
+
+### Regression closure
+
+`frontend/src/App.safety.test.tsx` now covers the two previously outstanding calendar/error cases. A simulated browser date of 20 January 2027 initialises analysis to the available 2026 schedule, sets input bounds to that year, and never sends the unsupported date. A simulated failed refresh shows the prior-result warning, removes the updating message and disables proposal generation. The focused command `npm test -- --run src/App.safety.test.tsx` was run during this pass: **2 tests passed**. These are DOM regression tests with a mocked map and network, not geographic rendering tests.
+
+The completed real Chromium journey also opens advanced settings and checks native form validity with the default S$300 setup cost. It generates and saves a real proposal through the running local API, exercises the review checklist and downloads an actual PDF. That closes the earlier browser-validation follow-up for the invalid input step. The action remains a test proposal; no operational venue review or service dispatch is implied.
+
+### Submission artifacts inspected
+
+| File | Verified in this pass | Scope |
+| --- | --- | --- |
+| `output/pdf/hawkerbridge-round1.pdf` | **3 pages**, readable extracted text covering problem, solution/data and intended architecture/impact | Canonical Round 1 template-format deck. |
+| `output/pdf/hawkerbridge-concept-note.pdf` | **1 page** | Supplemental concept note; it does not replace the canonical three-page template artifact. |
+| `output/pdf/hawkerbridge-final-pitch.pdf` | **9 pages** | Within the ten-slide final-round limit; actual local screenshots, source/method limits, baseline results, unvalidated buyer pricing and prospective pilot targets are present. |
+| `output/pdf/hawkerbridge-video-narration.pdf` | **3 pages** | Verbatim narration and screen timings; wording explicitly describes verified local execution. Human narration and uploaded video remain separate completion steps. |
+
+The final pitch's architecture slide explicitly says **“Workspace execution pending”** and **“Local execution verified.”** Its pilot slide states that the targets remain unachieved. This pass checked page counts, text and screenshot provenance; final rendered-slide and video QA is being handled separately. It does not retroactively claim a visual review of a new PDF version based on the earlier v2 review.
+
+At inspection, the canonical Round 1 PDF SHA-256 was `8cddcb28ca7865eecacdc01ca4b7c9996a8690284a7fa06586bd3806c6daeccc`; the nine-page final pitch SHA-256 was `f6c03fd93c911924669456e758d8a3bab9e9ab1107b7709195846750b63b0e7b`. These identify the files inspected, not every later rebuild.
+
+### CI and screenshot provenance
+
+[Run 35689097551](https://github.com/shi1720/DAISI/actions/runs/35689097551) completed successfully on source commit `94b96cf7994093bc77a23eac1171c9a2624a784e`. It passed four real Chromium journeys covering the authenticated planning workflow, account sign-in, scope/counterfactual/zero-budget behaviour and mobile layout. The optional walkthrough recording was skipped in that run. All eight image hashes in `docs/screenshots/provenance.json` were checked against the actual supplied PNGs. Both deck screenshot crops and their original CI captures also match `scripts/presentations/assets/screenshots.json`.
+
+[Run 35690578006](https://github.com/shi1720/DAISI/actions/runs/35690578006) targets commit `507c3545fdd6bd78e44e70ecbcf685157bf538ff`. At the 05:29 UTC status check, backend tests, frontend tests/build/audit and browser installation had passed; the browser/recording step was still running, with compression and artifact preservation pending. No completion or delivered-video claim is made from that partial status. The screenshots already supplied retain their earlier successful-run provenance rather than being relabelled as images from this newer run.
+
+### Remaining gates
+
+Actual source-to-plan execution in Databricks, the workspace identity boundary and viewer permissions, the published AI/BI dashboard, and final video upload still require their own direct evidence. The Lakeview definition and bundle configuration are supplied and offline-validated, but neither a file nor a successful local CI run proves a cloud deployment. `submission/team.json` still leaves institution, course, year and email unresolved and does not certify Singapore IHL eligibility. No stakeholder interview, customer payment or field outcome has been added to the evidence record.
