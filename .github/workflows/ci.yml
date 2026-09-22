@@ -1,11 +1,19 @@
 name: Verify HawkerBridge
-on: [push, pull_request, workflow_dispatch]
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      record_demo:
+        description: Record the real 173-second silent demo for voiceover
+        type: boolean
+        default: false
 permissions:
   contents: read
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
@@ -30,6 +38,7 @@ jobs:
         working-directory: browser-tests
         env:
           HAWKERBRIDGE_DATABASE: /tmp/hawkerbridge-ci.db
+          HAWKERBRIDGE_RECORD_DEMO: ${{ github.event.inputs.record_demo == 'true' && '1' || '' }}
       - name: Preserve PNG evidence in logs
         if: always()
         run: |
@@ -48,6 +57,19 @@ jobs:
               for i in range(0, len(encoded), 4096):
                   print('HB_PNG_DATA|' + encoded[i:i+4096])
               print('HB_PNG_END|' + name)
+          for name in ['hawkerbridge-silent-walkthrough.webm', 'timeline.json', 'recorded-demo-plan.pdf']:
+              path = Path('output/demo-footage') / name
+              if not path.exists():
+                  continue
+              raw = path.read_bytes()
+              if len(raw) > 12 * 1024 * 1024:
+                  print(f'HB_MEDIA_SKIPPED|{name}|too-large')
+                  continue
+              encoded = base64.b64encode(raw).decode('ascii')
+              print(f'HB_MEDIA_BEGIN|{name}|{hashlib.sha256(raw).hexdigest()}|{len(raw)}')
+              for i in range(0, len(encoded), 4096):
+                  print('HB_MEDIA_DATA|' + encoded[i:i+4096])
+              print('HB_MEDIA_END|' + name)
           PY
       - name: Preserve browser evidence
         if: always()
@@ -59,5 +81,6 @@ jobs:
             output/screenshots
             output/browser-report
             output/browser-results
+            output/demo-footage
             coverage.xml
           retention-days: 14

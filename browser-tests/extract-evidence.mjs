@@ -10,11 +10,11 @@ mkdirSync(outputDirectory, { recursive: true });
 let current = null;
 let count = 0;
 for (const line of readFileSync(logPath, 'utf8').split('\n')) {
-  const begin = line.match(/(?:^|\s)HB_PNG_BEGIN\|([^|]+)\|([a-f0-9]{64})\|(\d+)$/);
+  const begin = line.match(/(?:^|\s)HB_(?:PNG|MEDIA)_BEGIN\|([^|]+)\|([a-f0-9]{64})\|(\d+)$/);
   if (begin) { current = {name:basename(begin[1]),sha256:begin[2],bytes:Number(begin[3]),chunks:[]}; continue; }
-  const data = line.match(/(?:^|\s)HB_PNG_DATA\|([A-Za-z0-9+/=]+)$/);
+  const data = line.match(/(?:^|\s)HB_(?:PNG|MEDIA)_DATA\|([A-Za-z0-9+/=]+)$/);
   if (data && current) { current.chunks.push(data[1]); continue; }
-  const end = line.match(/(?:^|\s)HB_PNG_END\|(.+)$/);
+  const end = line.match(/(?:^|\s)HB_(?:PNG|MEDIA)_END\|(.+)$/);
   if (end && current) {
     if (basename(end[1]) !== current.name) throw new Error('Mismatched screenshot record.');
     const image = Buffer.from(current.chunks.join(''), 'base64');
@@ -25,4 +25,4 @@ for (const line of readFileSync(logPath, 'utf8').split('\n')) {
 }
 if (current) throw new Error(`Truncated screenshot record: ${current.name}`);
 if (!count) throw new Error('No complete screenshots were present in the log.');
-console.log(`Extracted and verified ${count} screenshots.`);
+console.log(`Extracted and verified ${count} evidence files.`);

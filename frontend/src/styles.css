@@ -32,3 +32,8 @@
 @media(max-width:1190px){.main-shell{width:calc(100% - 210px)}}
 @media(max-width:960px){.main-shell{width:calc(100% - 190px)}}
 @media(max-width:720px){.main-shell{width:100%;max-width:100vw}.main-content{width:100%}.overview-workspace{grid-template-columns:minmax(0,1fr)}.area-control{min-width:80px;max-width:calc(100% - 235px)}.global-filters{min-width:0}.topbar{max-width:100%}.planner-layout{grid-template-columns:minmax(0,1fr)}.calendar-chart{grid-template-columns:repeat(7,minmax(0,1fr))}.table-scroll{max-width:100%}}
+/* WCAG AA contrast for small overview labels and Leaflet controls. */
+.nav-caption,.sidebar-foot,.top-avatar,.public-data-badge,.edition-label,.edition-label>span,.list-more,.calendar-count,.calendar-day strong,.rank-number{color:#5f7052}.tag{color:#59694f}.count-badge{color:#655f40}.closure-note{color:#786340}.calendar-day.active .calendar-count,.calendar-day.active strong{color:#945025}thead th{color:#5d704d}td{color:#5f754d}.breadcrumb-slash,.context-separator{color:#68765e}.leaflet-control-attribution{color:#576b4c!important}.leaflet-control-scale-line{color:#4b6641!important;border-color:#69825c!important}.leaflet-control-zoom a{color:#516b43!important}.map-panel .tag{color:#63704f}.map-area-chip{color:#5a713d}.planner-date-summary strong{color:#506b3c}
+/* Keep responsive controls hidden until the mobile breakpoint, and anchor scroll contents. */
+.mobile-only{display:none}.table-scroll{position:relative}.breadcrumb-home,.metric-denominator{color:#5f7052}.metric.signal .metric-top{color:#895737}.calendar-day.active>span:last-child{color:#5e6b4f}
+@media(max-width:720px){.mobile-only{display:inline-flex}}

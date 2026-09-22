@@ -12,7 +12,16 @@ async function guest(page: Page) {
 }
 async function screenshot(page:Page, name:string, fullPage=true){
   await page.evaluate(()=>document.fonts.ready);
+  if(fullPage) await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
+  await page.locator('input:focus').evaluateAll(inputs=>inputs.forEach(input=>(input as HTMLInputElement).blur()));
   await page.screenshot({path:`../output/screenshots/${name}.png`,fullPage,animations:'disabled'});
+}
+async function heroScreenshot(page:Page,name:string){
+  const viewport=page.viewportSize();
+  await page.setViewportSize({width:1440,height:1000});
+  await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
+  await screenshot(page,name,false);
+  if(viewport)await page.setViewportSize(viewport);
 }
 
 test('authenticated full journey, saved plan, review, exports and source evidence', async ({page})=>{
@@ -23,6 +32,7 @@ test('authenticated full journey, saved plan, review, exports and source evidenc
   await guest(page);
   await expect(page.locator('.metric-top').getByText('Residents in flagged subzones',{exact:true})).toBeVisible();
   await screenshot(page,'02-overview');
+  await heroScreenshot(page,'02-overview-hero');
   const violations=(await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa']).analyze()).violations;
   console.log('AXE_OVERVIEW',JSON.stringify(violations.map(v=>({id:v.id,impact:v.impact,nodes:v.nodes.map(n=>({target:n.target,summary:n.failureSummary}))}))));
   expect.soft(violations.filter(v=>['serious','critical'].includes(v.impact??''))).toEqual([]);
@@ -30,17 +40,20 @@ test('authenticated full journey, saved plan, review, exports and source evidenc
   await page.getByRole('button',{name:'Cost, capacity & priority settings'}).click();
   await expect(page.getByLabel('Setup cost per locality')).toHaveValue('300');
   expect(await page.locator('form.assumptions-form').evaluate((f:HTMLFormElement)=>f.checkValidity())).toBe(true);
+  await page.getByRole('button',{name:'Cost, capacity & priority settings'}).click();
   await page.getByRole('button',{name:'Generate support proposal'}).click();
   await expect(page.locator('.planner-result')).toContainText('225');
   await screenshot(page,'03-continuity-planner');
+  await heroScreenshot(page,'03-continuity-planner-hero');
   await page.getByLabel('Daily support budget').fill('6000');
   await page.getByRole('button',{name:'Generate support proposal'}).click();
   await expect(page.locator('.planner-result')).toContainText('450');
   await screenshot(page,'03b-capacity-450');
+  await heroScreenshot(page,'03b-capacity-450-hero');
   await page.getByLabel('Daily support budget').fill('1500');
   await page.getByRole('button',{name:'Generate support proposal'}).click();
   await expect(page.locator('.planner-result')).toContainText('225');
-  await page.getByRole('button',{name:/Save.*proposal|Save.*plan/i}).first().click();
+  await page.getByRole('button',{name:'Save proposal',exact:true}).click();
   await page.getByLabel('Plan title',{exact:true}).fill('28 September community continuity');
   await page.getByLabel(/Coordination notes/).fill('Verify accessible venues and confirm actual meal demand with local coordinators.');
   await page.getByRole('button',{name:'Save draft',exact:true}).click();

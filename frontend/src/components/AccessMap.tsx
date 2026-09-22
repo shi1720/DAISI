@@ -22,7 +22,7 @@ export default function AccessMap({ snapshot, analysis, sites = noSites, selecte
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) return;
-    const map = L.map(containerRef.current, { zoomControl:false, attributionControl:false, scrollWheelZoom:false, minZoom:10, maxZoom:15 });
+    const map = L.map(containerRef.current, { zoomControl:false, attributionControl:false, scrollWheelZoom:false, minZoom:10, maxZoom:15, zoomSnap:0.25, zoomDelta:0.5 });
     map.fitBounds(singaporeBounds, { padding:[12,12] });
     mapRef.current = map;
     L.control.zoom({ position:'bottomright' }).addTo(map);
